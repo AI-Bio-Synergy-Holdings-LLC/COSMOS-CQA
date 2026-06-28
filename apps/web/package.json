@@ -11,6 +11,7 @@
     "test:legacy-extraction": "node --test ./test/legacy-script-extraction.test.mjs",
     "test:replay": "node --test ./test/replay.test.mjs",
     "check": "npm run check:source && npm run test:contracts && npm run test:legacy-extraction && npm run test:replay && npm run check:legacy",
+    "evidence:checklist": "node ./scripts/generate-checklist-targets.mjs",
     "release:artifacts": "node ./scripts/generate-release-artifacts.mjs",
     "serve": "node ./scripts/serve.mjs"
   }

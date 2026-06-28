@@ -14,9 +14,9 @@
 
 ## Phase 2: Evidence Model
 
-- Define JSON schemas for labels, tile passports, core pack manifests, SBOM references, and validation reports.
+- Define JSON schemas for labels, tile passports, core pack manifests, SBOM references, validation reports, and checklist target evidence.
 - Add deterministic replay tests.
-- Add checklist-to-test migration plan.
+- Add checklist-to-test migration plan with tracked legacy target manifest.
 
 ## Phase 3: Core Pack and Diagnostics
 
@@ -29,4 +29,3 @@
 - Publish documentation, sample manifests, test reports, and citation metadata.
 - Tag a versioned release.
 - Add release checks for license, provenance, accessibility, and reproducibility.
-

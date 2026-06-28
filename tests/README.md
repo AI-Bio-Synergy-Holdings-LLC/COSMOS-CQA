@@ -11,3 +11,6 @@ Initial test targets:
 - accessibility checks;
 - report generation checks.
 
+Evidence target manifests:
+
+- `evidence/legacy-v3-checklist-targets.json` tracks the 86 manual checklist items and 7 bridge auto-checks extracted from the archived legacy v3 checklist.

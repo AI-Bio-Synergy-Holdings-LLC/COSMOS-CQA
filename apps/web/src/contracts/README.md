@@ -8,7 +8,8 @@ This module owns:
 - label and export row schemas;
 - feed event schemas;
 - provenance bookmark schemas;
-- SBOM and validation report schemas;
+- tile passport and core pack manifest schemas;
+- SBOM, SBOM reference, validation report, and checklist target schemas;
 - dependency-free validation helpers for browser and Node tests.
 
 Keep producer modules responsible for creating data, and keep this module responsible for deciding whether the data shape is valid.

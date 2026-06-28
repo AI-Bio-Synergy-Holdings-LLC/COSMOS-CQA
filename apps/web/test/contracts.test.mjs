@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../src/contracts/index.js";
@@ -12,6 +14,14 @@ import {
   encodeBookmarkPayload,
 } from "../src/provenance/index.js";
 import { createSbom, createValidationReport } from "../src/reports/index.js";
+
+const legacyChecklistTargets = JSON.parse(
+  await readFile(new URL("../../../tests/evidence/legacy-v3-checklist-targets.json", import.meta.url), "utf8"),
+);
+const legacyChecklistSource = await readFile(
+  new URL("../../../archive/original-materials/legacy-v3/COSMOS_TEST_CHECKLIST_v3.html", import.meta.url),
+  "utf8",
+);
 
 const tile = {
   meta: {
@@ -177,6 +187,81 @@ test("report exports satisfy SBOM and validation report contracts", () => {
   assert.equal(report.summary.fail_count, 1);
 });
 
+test("tile passport and core pack manifests satisfy evidence contracts", () => {
+  const generatedAt = "2026-06-28T00:00:00.000Z";
+  const tilePassport = {
+    schema_version: CONTRACT_SCHEMA_VERSION,
+    tile_id: tile.meta.tile_id,
+    dataset: tile.meta.dataset,
+    release: tile.meta.release,
+    doi: tile.meta.doi,
+    band: "T",
+    ra: 120.5,
+    dec: -10.25,
+    checksum: tile.meta.checksum,
+    truth: tile.meta.truth,
+    provenance: {
+      source: "canonical-v3-import",
+      source_url: tile.meta.url,
+      archive_path: "archive/original-materials/legacy-v3/COSMOS_v3_public.html",
+      generated_at: generatedAt,
+      notes: "Demo tile passport for contract stability tests.",
+    },
+    sidecars: {
+      audio_map: "dft32_rowmeans",
+      overlay_modes: ["none", "gradient", "rings", "wavelet"],
+      palette_modes: ["gray", "viridis", "cividis"],
+      metrics: ["pr_auc", "median_latency"],
+    },
+  };
+
+  const sbomReference = {
+    schema_version: CONTRACT_SCHEMA_VERSION,
+    sbom_id: "sbom_v0.1.0-research-alpha",
+    format: "CycloneDX",
+    spec_version: "1.4",
+    path: "docs/releases/v0.1.0-research-alpha-sbom.json",
+    checksum: "sha256:v0.1.0-research-alpha-sbom",
+    generated_at: generatedAt,
+    component_name: "COSMOS-CQA Research Workbench",
+  };
+
+  assertContract("tilePassport", tilePassport);
+  assertContract("sbomReference", sbomReference);
+  assertContract("corePackManifest", {
+    schema_version: CONTRACT_SCHEMA_VERSION,
+    manifest_id: "corepack_demo-v0.1.0",
+    name: "COSMOS-CQA Demo Core Pack",
+    version: "v0.1.0-research-alpha",
+    generated_at: generatedAt,
+    license: "Research-only public use; all other rights reserved.",
+    steward: "AI-Bio Synergy Holdings LLC",
+    tiles: [tilePassport],
+    sbom_refs: [sbomReference],
+    evidence_refs: [
+      {
+        kind: "legacy-checklist-targets",
+        path: "tests/evidence/legacy-v3-checklist-targets.json",
+      },
+    ],
+  });
+});
+
+test("legacy checklist targets are tracked as evidence contract data", () => {
+  assertContract("checklistTestTargets", legacyChecklistTargets);
+  const sourceSha256 = `sha256:${createHash("sha256").update(legacyChecklistSource).digest("hex").toUpperCase()}`;
+  assert.equal(legacyChecklistTargets.legacy_claimed_total, 100);
+  assert.equal(legacyChecklistTargets.source_sha256, sourceSha256);
+  assert.equal(legacyChecklistTargets.manual_target_count, 86);
+  assert.equal(legacyChecklistTargets.bridge_target_count, 7);
+  assert.equal(legacyChecklistTargets.targets.length, 93);
+  assert.equal(new Set(legacyChecklistTargets.targets.map((target) => target.id)).size, 93);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual").length, 86);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "bridge").length, 7);
+  assert.ok(legacyChecklistTargets.targets.every((target) => isAscii(target.label)));
+  assert.ok(legacyChecklistTargets.targets.some((target) => target.data_testid === "sbom-exported"));
+});
+
 test("validation report rejects unsupported check statuses", () => {
   assert.throws(
     () =>
@@ -186,3 +271,7 @@ test("validation report rejects unsupported check statuses", () => {
     /Invalid validationReport contract/,
   );
 });
+
+function isAscii(value) {
+  return [...value].every((char) => char.charCodeAt(0) <= 127);
+}

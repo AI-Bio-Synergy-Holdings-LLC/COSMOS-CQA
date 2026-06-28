@@ -5,6 +5,9 @@ export const SEVERITY_LEVELS = ["low", "medium", "high"];
 export const OVERLAY_TYPES = ["none", "gradient", "rings", "wavelet"];
 export const PALETTES = ["gray", "viridis", "cividis"];
 export const EXPERT_CLASSES = ["residual", "clean", "other"];
+export const CHECKLIST_TARGET_MODES = ["manual", "bridge"];
+export const CHECKLIST_AUTOMATION_STATES = ["manual", "planned", "automated"];
+export const CHECKLIST_MIGRATION_STATES = ["tracked", "planned", "migrated"];
 
 const idPattern = "^[A-Za-z0-9._:-]+$";
 const checksumPattern = "^(sha256:[A-Za-z0-9._:-]+|)$";
@@ -170,6 +173,178 @@ export const schemas = {
               loop: { type: "boolean" },
               frames: { type: "integer", minimum: 1, maximum: 10000 },
             },
+          },
+        },
+      },
+    },
+  },
+
+  tilePassport: {
+    $id: "cosmos-cqa/tile-passport.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "tile_id",
+      "dataset",
+      "release",
+      "band",
+      "ra",
+      "dec",
+      "checksum",
+      "truth",
+      "provenance",
+      "sidecars",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      tile_id: { type: "string", minLength: 1, maxLength: 128, pattern: idPattern },
+      dataset: { type: "string", minLength: 1, maxLength: 128 },
+      release: { type: "string", minLength: 1, maxLength: 128 },
+      doi: { type: "string", maxLength: 256 },
+      band: { type: "string", minLength: 1, maxLength: 32 },
+      ra: { type: "number", minimum: 0, maximum: 360 },
+      dec: { type: "number", minimum: -90, maximum: 90 },
+      checksum: { type: "string", pattern: checksumPattern },
+      truth: { anyOf: [{ $ref: "truthRecord" }, { type: "null" }] },
+      provenance: {
+        type: "object",
+        required: ["source", "generated_at"],
+        additionalProperties: false,
+        properties: {
+          source: { type: "string", minLength: 1, maxLength: 256 },
+          source_url: { type: "string", maxLength: 2048 },
+          archive_path: { type: "string", maxLength: 2048 },
+          generated_at: { type: "string", format: "date-time" },
+          notes: { type: "string", maxLength: 1000 },
+        },
+      },
+      sidecars: {
+        type: "object",
+        required: ["audio_map", "overlay_modes", "palette_modes"],
+        additionalProperties: false,
+        properties: {
+          audio_map: { type: "string", minLength: 1, maxLength: 128 },
+          overlay_modes: {
+            type: "array",
+            minItems: 1,
+            items: { type: "string", enum: OVERLAY_TYPES },
+          },
+          palette_modes: {
+            type: "array",
+            minItems: 1,
+            items: { type: "string", enum: PALETTES },
+          },
+          metrics: {
+            type: "array",
+            items: { type: "string", minLength: 1, maxLength: 128 },
+          },
+        },
+      },
+    },
+  },
+
+  sbomReference: {
+    $id: "cosmos-cqa/sbom-reference.schema.json",
+    type: "object",
+    required: ["schema_version", "sbom_id", "format", "spec_version", "path", "checksum", "generated_at"],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      sbom_id: { type: "string", pattern: "^sbom_[A-Za-z0-9._:-]+$" },
+      format: { type: "string", const: "CycloneDX" },
+      spec_version: { type: "string", minLength: 1, maxLength: 32 },
+      path: { type: "string", minLength: 1, maxLength: 2048 },
+      checksum: { type: "string", pattern: checksumPattern },
+      generated_at: { type: "string", format: "date-time" },
+      component_name: { type: "string", maxLength: 256 },
+    },
+  },
+
+  corePackManifest: {
+    $id: "cosmos-cqa/core-pack-manifest.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "manifest_id",
+      "name",
+      "version",
+      "generated_at",
+      "license",
+      "steward",
+      "tiles",
+      "sbom_refs",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      manifest_id: { type: "string", pattern: "^corepack_[A-Za-z0-9._:-]+$" },
+      name: { type: "string", minLength: 1, maxLength: 256 },
+      version: { type: "string", minLength: 1, maxLength: 128 },
+      generated_at: { type: "string", format: "date-time" },
+      license: { type: "string", minLength: 1, maxLength: 256 },
+      steward: { type: "string", minLength: 1, maxLength: 256 },
+      tiles: {
+        type: "array",
+        minItems: 1,
+        items: { $ref: "tilePassport" },
+      },
+      sbom_refs: {
+        type: "array",
+        minItems: 1,
+        items: { $ref: "sbomReference" },
+      },
+      evidence_refs: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["kind", "path"],
+          additionalProperties: false,
+          properties: {
+            kind: { type: "string", minLength: 1, maxLength: 128 },
+            path: { type: "string", minLength: 1, maxLength: 2048 },
+          },
+        },
+      },
+    },
+  },
+
+  checklistTestTargets: {
+    $id: "cosmos-cqa/checklist-test-targets.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "source",
+      "source_sha256",
+      "legacy_claimed_total",
+      "manual_target_count",
+      "bridge_target_count",
+      "targets",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      source: { type: "string", minLength: 1, maxLength: 2048 },
+      source_sha256: { type: "string", pattern: checksumPattern },
+      legacy_claimed_total: { type: "integer", minimum: 0 },
+      manual_target_count: { type: "integer", minimum: 0 },
+      bridge_target_count: { type: "integer", minimum: 0 },
+      targets: {
+        type: "array",
+        minItems: 1,
+        items: {
+          type: "object",
+          required: ["id", "source_line", "section", "label", "mode", "automation", "status"],
+          additionalProperties: false,
+          properties: {
+            id: { type: "string", minLength: 1, maxLength: 256, pattern: idPattern },
+            source_line: { type: "integer", minimum: 1 },
+            section: { type: "string", minLength: 1, maxLength: 256 },
+            label: { type: "string", minLength: 1, maxLength: 512 },
+            mode: { type: "string", enum: CHECKLIST_TARGET_MODES },
+            automation: { type: "string", enum: CHECKLIST_AUTOMATION_STATES },
+            status: { type: "string", enum: CHECKLIST_MIGRATION_STATES },
+            data_testid: { type: "string", pattern: idPattern },
           },
         },
       },

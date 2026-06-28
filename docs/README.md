@@ -5,6 +5,7 @@ This directory holds the public research documentation for COSMOS-CQA.
 Core documents:
 
 - `canonical-v3-import.md` records the first stable legacy import.
+- `checklist-to-test-migration.md` defines the legacy checklist target migration plan.
 - `contracts.md` defines the first data contract set.
 - `source-architecture.md` explains the source split architecture and alternatives.
 - `scientific-scope.md` defines the research lane.

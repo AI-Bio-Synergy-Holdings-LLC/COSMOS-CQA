@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, SBOM exports, and validation reports.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist target evidence.
 
 The canonical contract implementation lives in `apps/web/src/contracts/`.
 
@@ -12,7 +12,7 @@ Current version:
 cosmos-cqa.contracts.v0.1.0
 ```
 
-Bookmark payloads and validation reports include this version as `schema_version`.
+Bookmark payloads, tile passports, core pack manifests, SBOM references, validation reports, and checklist target manifests include this version as `schema_version`.
 
 ## Covered Shapes
 
@@ -21,8 +21,12 @@ Bookmark payloads and validation reports include this version as `schema_version
 - `feedTileEvent`: tile ingest records from upload, HTTP polling, or WebSocket feeds.
 - `feedExpertEvent`: expert adjudication records from upload, HTTP polling, or WebSocket feeds.
 - `bookmarkPayload`: encoded replay/provenance state for shareable bookmarks.
+- `tilePassport`: tile-level provenance, checksum, truth, coordinate, and sidecar metadata.
+- `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
+- `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, and evidence references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
 - `validationReport`: structured report summary for contract and workflow checks.
+- `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 
 ## Verification
 
