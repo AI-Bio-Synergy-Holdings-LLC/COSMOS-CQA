@@ -21,9 +21,9 @@ Expected evidence artifacts include:
 
 - core pack manifest;
 - tile passport;
+- diagnostic concept caveats;
 - label export;
 - expert adjudication export;
 - SBOM;
 - validation report JSON;
 - validation report PDF or human-readable summary.
-

@@ -13,10 +13,12 @@
     "check:source": "node ./scripts/check-source-syntax.mjs",
     "test:contracts": "node --test ./test/contracts.test.mjs",
     "test:unit": "node --test ./test/unit/*.test.mjs",
+    "test:core-pack": "node --test ./test/core-pack-intake.test.mjs",
     "test:legacy-extraction": "node --test ./test/legacy-script-extraction.test.mjs",
     "test:browser": "playwright test",
     "test:replay": "node --test ./test/replay.test.mjs",
-    "check": "npm run check:source && npm run test:contracts && npm run test:unit && npm run test:legacy-extraction && npm run test:replay && npm run test:browser && npm run check:legacy",
+    "validate:core-pack": "node ./scripts/validate-core-pack.mjs examples/core-pack/core-pack.manifest.json",
+    "check": "npm run check:source && npm run test:contracts && npm run test:unit && npm run test:core-pack && npm run validate:core-pack && npm run test:legacy-extraction && npm run test:replay && npm run test:browser && npm run check:legacy",
     "evidence:checklist": "node ./scripts/generate-checklist-targets.mjs",
     "release:artifacts": "node ./scripts/generate-release-artifacts.mjs",
     "serve": "node ./scripts/serve.mjs"

@@ -25,13 +25,15 @@ Use Node.js 24 or newer. The repository root `.node-version` pins the maintained
 npm --prefix apps/web run check:source
 npm --prefix apps/web run test:contracts
 npm --prefix apps/web run test:unit
+npm --prefix apps/web run test:core-pack
+npm --prefix apps/web run validate:core-pack
 npm --prefix apps/web run test:replay
 npm --prefix apps/web run test:browser
 npm --prefix apps/web run check:legacy
 npm --prefix apps/web run check
 ```
 
-`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:core-pack` verifies the Core Pack intake lane. `validate:core-pack` validates the sample manifest, local evidence paths, and SBOM checksum. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
 
 Install dependencies and Chromium before running the full browser-backed check locally:
 

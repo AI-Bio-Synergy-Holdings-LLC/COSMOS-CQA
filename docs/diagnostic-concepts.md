@@ -1,0 +1,41 @@
+# Diagnostic Concepts
+
+The Core Pack intake lane preserves useful diagnostic ideas from the CSSFP/Core Pack provenance notes without importing missing or malformed prototype code.
+
+These entries are documentation-only. They are intended to support future expert review and fixture design. They are not scientific results.
+
+## Kappa-y Cross-Check
+
+Machine-readable id: `diag_kappa_y_crosscheck`
+
+Potential use: future research triage for cross-map quality-assurance review.
+
+Caveat: this is not a validated cosmology diagnostic, does not estimate physical parameters, and must not be reported as evidence of foreground detection, lensing quality, or survey performance without independent scientific review.
+
+Blocked until:
+
+- the original CSSFP/Core Pack prototype source is available with provenance;
+- license and redistribution terms are reviewed;
+- the proposed statistic is independently reviewed by qualified domain experts;
+- validation fixtures define expected inputs, outputs, and failure modes.
+
+## E/B Residual Placeholder
+
+Machine-readable id: `diag_eb_residual_placeholder`
+
+Potential use: future research triage for residual-map quality-assurance review.
+
+Caveat: this is not a validated weak-lensing diagnostic, does not separate physical E/B modes, and must not be used to claim survey calibration, bias reduction, or artifact detection performance without independent scientific review.
+
+Blocked until:
+
+- the original CSSFP/Core Pack prototype source is available with provenance;
+- license and redistribution terms are reviewed;
+- domain experts define scientifically meaningful E/B inputs and outputs;
+- validation fixtures define expected inputs, outputs, and failure modes.
+
+## Implementation Boundary
+
+The maintained registry lives in `packages/core/src/diagnostics/index.js`.
+
+During intake, diagnostic concepts must use `implementation_state: "documentation-only"` or `implementation_state: "not-implemented"`. Executable diagnostics require a later PR with source provenance, contract fixtures, tests, and scientific caveat review.
