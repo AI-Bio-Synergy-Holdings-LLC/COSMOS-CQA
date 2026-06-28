@@ -1,0 +1,204 @@
+{
+  "schema_version": "cosmos-cqa.replay-fixture.v0.1.0",
+  "seed": 12648430,
+  "tile_size": 16,
+  "tile_count": 5,
+  "first_tile": {
+    "meta": {
+      "tile_id": "tile_001",
+      "dataset": "DEMO_SIM_T",
+      "band": "T",
+      "ra": "7.611",
+      "dec": "29.900",
+      "truth": {
+        "class": "stripe",
+        "severity": "low"
+      },
+      "checksum": "sha256:demo-c0ffee-001"
+    },
+    "pixel_sha256": "6878d579079643ab3553dd0c2ae3995003fdc9b21283246f1498d46ce3700afe",
+    "pixel_sample": [
+      160,
+      221,
+      187,
+      200,
+      86,
+      42,
+      56,
+      37,
+      115,
+      153,
+      249,
+      203,
+      95,
+      41,
+      32,
+      84
+    ]
+  },
+  "audio": {
+    "frame_count": 120,
+    "first_frames": [
+      {
+        "freq": 600,
+        "gain": 0.3
+      },
+      {
+        "freq": 600,
+        "gain": 0.3
+      },
+      {
+        "freq": 600,
+        "gain": 0.3
+      },
+      {
+        "freq": 600,
+        "gain": 0.3
+      },
+      {
+        "freq": 182.506511,
+        "gain": 0.051492
+      },
+      {
+        "freq": 182.506511,
+        "gain": 0.051492
+      },
+      {
+        "freq": 182.506511,
+        "gain": 0.051492
+      },
+      {
+        "freq": 182.506511,
+        "gain": 0.051492
+      }
+    ],
+    "sha256": "8ae761d0c776742e743ff74f139e0926d8f67d34f8ae16b6f3cac7cc9cd9a5a7"
+  },
+  "bookmark": {
+    "payload": {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "dataset": {
+        "name": "DEMO_SIM_T",
+        "release": "v0",
+        "doi": "doi:10.0000/demo",
+        "tile_url": ""
+      },
+      "tile": {
+        "id": "tile_001",
+        "checksum": "sha256:demo-c0ffee-001"
+      },
+      "overlay": "gradient",
+      "palette": "cividis",
+      "captions": true,
+      "env": {
+        "seed": 12648430,
+        "audio": {
+          "map": "dft32_rowmeans",
+          "rate": 1.5,
+          "loop": true,
+          "frames": 120
+        }
+      }
+    },
+    "encoded": "eyJzY2hlbWFfdmVyc2lvbiI6ImNvc21vcy1jcWEuY29udHJhY3RzLnYwLjEuMCIsImRhdGFzZXQiOnsibmFtZSI6IkRFTU9fU0lNX1QiLCJyZWxlYXNlIjoidjAiLCJkb2kiOiJkb2k6MTAuMDAwMC9kZW1vIiwidGlsZV91cmwiOiIifSwidGlsZSI6eyJpZCI6InRpbGVfMDAxIiwiY2hlY2tzdW0iOiJzaGEyNTY6ZGVtby1jMGZmZWUtMDAxIn0sIm92ZXJsYXkiOiJncmFkaWVudCIsInBhbGV0dGUiOiJjaXZpZGlzIiwiY2FwdGlvbnMiOnRydWUsImVudiI6eyJzZWVkIjoxMjY0ODQzMCwiYXVkaW8iOnsibWFwIjoiZGZ0MzJfcm93bWVhbnMiLCJyYXRlIjoxLjUsImxvb3AiOnRydWUsImZyYW1lcyI6MTIwfX19",
+    "decoded_sha256": "ef5a3306213c9a94a211f6033fb6a6fc90a28c2cbfd878d7a3fcff56b7de7a51"
+  },
+  "labels": {
+    "columns": [
+      "tile_id",
+      "dataset",
+      "volunteer_id",
+      "clazz",
+      "severity",
+      "note",
+      "weight",
+      "ts",
+      "expert_class",
+      "expert_confidence",
+      "expert_latency"
+    ],
+    "rows": [
+      {
+        "tile_id": "tile_001",
+        "dataset": "DEMO_SIM_T",
+        "volunteer_id": "vol_replay",
+        "clazz": "stripe",
+        "severity": "medium",
+        "note": "golden replay label",
+        "weight": 0.85,
+        "ts": "2026-06-28T00:00:00.000Z",
+        "expert_class": "residual",
+        "expert_confidence": 0.9,
+        "expert_latency": 1.25
+      }
+    ],
+    "csv": "tile_id,dataset,volunteer_id,clazz,severity,note,weight,ts,expert_class,expert_confidence,expert_latency\n\"tile_001\",\"DEMO_SIM_T\",\"vol_replay\",\"stripe\",\"medium\",\"golden replay label\",\"0.85\",\"2026-06-28T00:00:00.000Z\",\"residual\",\"0.9\",\"1.25\"\n",
+    "csv_sha256": "057dfd231febd5dcac0fab8c90289786931e23edec98a0fbbedfd18c1228a3ef"
+  },
+  "report": {
+    "validation_report": {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "report_id": "rpt_replay_001",
+      "generated_at": "2026-06-28T00:00:00.000Z",
+      "build": {
+        "version": "source-split-public",
+        "sha": "source-split",
+        "dev": false
+      },
+      "summary": {
+        "label_count": 1,
+        "feed_error_count": 1,
+        "pass_count": 1,
+        "fail_count": 1
+      },
+      "checks": [
+        {
+          "name": "label schema",
+          "status": "pass",
+          "detail": "label contract valid"
+        },
+        {
+          "name": "feed schema",
+          "status": "fail",
+          "detail": "one feed event rejected"
+        }
+      ]
+    },
+    "validation_report_sha256": "5fa64b7cabd370453d3459d23eac569b877c6311ea4e8a999cba7e2a3d111cb7",
+    "sbom": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "metadata": {
+        "timestamp": "2026-06-28T00:00:00.000Z",
+        "component": {
+          "type": "application",
+          "name": "COSMOS-CQA Research Workbench",
+          "version": "0.0.0-source-split"
+        }
+      },
+      "components": [
+        {
+          "type": "library",
+          "name": "Chart.js",
+          "version": "4.4.1",
+          "purl": "pkg:npm/chart.js@4.4.1",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "sbom_sha256": "659bdc0ada4f70fa1533c81ff3001f4c3cb5f33b2c73649aa08b062ad02f71e9"
+  },
+  "ui_policy": {
+    "public_option": "tile_001",
+    "dev_option": "tile_001 - stripe",
+    "public_truth_display": "none",
+    "dev_truth_display": ""
+  }
+}

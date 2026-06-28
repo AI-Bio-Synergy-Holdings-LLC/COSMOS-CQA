@@ -24,6 +24,14 @@ const HINTS = {
   clean: "Hint: if none of the artifact cues are evident, mark clean.",
 };
 
+export function formatTileOptionLabel(meta, config = {}) {
+  return config.dev ? `${meta.tile_id} - ${meta.truth.class}` : meta.tile_id;
+}
+
+export function truthTagDisplay(config = {}) {
+  return config.dev ? "" : "none";
+}
+
 export function createCosmosWorkbench({ documentRef = document, windowRef = window, tiles, state, config }) {
   const dom = bindDom(documentRef);
   const ctx = dom.tileCanvas.getContext("2d");
@@ -55,7 +63,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     tiles.forEach((tile, index) => {
       const option = documentRef.createElement("option");
       option.value = String(index);
-      option.textContent = config.dev ? `${tile.meta.tile_id} - ${tile.meta.truth.class}` : tile.meta.tile_id;
+      option.textContent = formatTileOptionLabel(tile.meta, config);
       dom.tileSelect.appendChild(option);
     });
   }
@@ -72,7 +80,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     drawOverlay(ctx, dom.overlaySel.value);
     dom.tileId.textContent = tile.meta.tile_id;
     dom.truthTag.textContent = `truth: ${tile.meta.truth.class}`;
-    dom.truthTag.style.display = config.dev ? "" : "none";
+    dom.truthTag.style.display = truthTagDisplay(config);
     dom.tileSelect.value = String(index);
   }
 

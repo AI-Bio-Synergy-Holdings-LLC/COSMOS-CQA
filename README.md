@@ -13,6 +13,7 @@ Current status:
 - Canonical COSMOS v3 legacy browser materials are archived under `archive/original-materials/legacy-v3/`.
 - The maintained browser workbench is split into native ES modules under `apps/web/src/`.
 - Labels, feed events, provenance/bookmarks, SBOM exports, and validation reports have first-pass contracts and contract tests.
+- Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use
@@ -39,7 +40,7 @@ Run the current verification suite from the repository root:
 npm --prefix apps/web run check
 ```
 
-This runs maintained source syntax checks, contract tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md).
+This runs maintained source syntax checks, contract tests, deterministic replay tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
 
 For local browser review:
 

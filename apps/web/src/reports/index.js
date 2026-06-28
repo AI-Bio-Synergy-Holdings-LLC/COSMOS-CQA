@@ -27,7 +27,14 @@ export function createSbom({ generatedAt = new Date().toISOString(), extraCompon
   });
 }
 
-export function createValidationReport({ build = createBuildInfo(), labels = [], feedErrors = [], checks = [] } = {}) {
+export function createValidationReport({
+  build = createBuildInfo(),
+  labels = [],
+  feedErrors = [],
+  checks = [],
+  generatedAt = new Date().toISOString(),
+  reportId = `rpt_${Date.now().toString(36)}`,
+} = {}) {
   const normalizedChecks = checks.map((check) => ({
     name: check.name,
     status: check.status,
@@ -38,8 +45,8 @@ export function createValidationReport({ build = createBuildInfo(), labels = [],
 
   return assertContract("validationReport", {
     schema_version: CONTRACT_SCHEMA_VERSION,
-    report_id: `rpt_${Date.now().toString(36)}`,
-    generated_at: new Date().toISOString(),
+    report_id: reportId,
+    generated_at: generatedAt,
     build,
     summary: {
       label_count: labels.length,
