@@ -1,0 +1,54 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-11-05T07:28:13.155998Z",
+    "tools": [
+      {
+        "vendor": "AI Bio Synergy Inc.",
+        "name": "SBOM-Gen",
+        "version": "0.2"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "application",
+      "name": "cosmos-app",
+      "version": "v3-dev",
+      "purl": "pkg:generic/cosmos-app@v3-dev",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "38474ac4b06c57b21c699bd754165cdac88ebae83428232d8a395fe9e3db799b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "NOASSERTION"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "Chart.js",
+      "version": "4.4.1",
+      "purl": "pkg:npm/chart.js@4.4.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MPL-2.0"
+          }
+        },
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  ]
+}

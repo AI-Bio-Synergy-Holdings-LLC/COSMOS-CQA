@@ -1,0 +1,11 @@
+{
+  "name": "@ai-bio-synergy/cosmos-cqa-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser workbench for COSMOS-CQA research workflows.",
+  "scripts": {
+    "check:legacy": "node ./scripts/check-legacy-syntax.mjs"
+  }
+}
+

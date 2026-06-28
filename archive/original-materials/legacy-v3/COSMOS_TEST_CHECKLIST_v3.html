@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>COSMOS v3 - Test Checklist</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:900px;margin:40px auto;padding:20px;background:#0b1220;color:#e6edf3;line-height:1.6}
+h1{color:#60a5fa;border-bottom:2px solid #2a395f;padding-bottom:10px}
+h2{color:#e0b35a;margin-top:30px}
+.section{background:#141c2e;border:1px solid #24314d;border-radius:8px;padding:20px;margin:20px 0}
+.test-item{padding:10px;margin:8px 0;background:#0e1528;border-left:4px solid #2a395f;border-radius:4px}
+.test-item:hover{border-left-color:#60a5fa}
+input[type="checkbox"]{width:18px;height:18px;margin-right:10px;cursor:pointer}
+label{cursor:pointer;display:flex;align-items:center}
+.complete{border-left-color:#39d353}
+.kbd{background:#0a1020;border:1px solid #2a395f;padding:2px 8px;border-radius:4px;font-family:monospace;font-size:13px}
+.btn{background:#1a2540;color:#e6edf3;border:1px solid #3e5796;padding:8px 16px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;margin:5px}
+.btn:hover{background:#2a3550;border-color:#60a5fa}
+.status{float:right;font-weight:bold}
+.pass{color:#39d353}
+.pending{color:#ffcc00}
+</style>
+</head>
+<body>
+<h1>🧪 COSMOS v3 - Interactive Test Checklist</h1>
+<p>Use this checklist to verify all features in <strong>COSMOS_v3_dev.html</strong> and <strong>COSMOS_v3_public.html</strong>. Check off each item as you test.</p>
+<a href="COSMOS_v3_dev.html" target="_blank" class="btn">🚀 Open COSMOS v3 (dev)</a>
+<a href="COSMOS_v3_public.html" target="_blank" class="btn">🚀 Open COSMOS v3 (public)</a>
+<a href="#" class="btn" onclick="resetAll();return false;">🔄 Reset All</a>
+
+<div class="section">
+<h2>1. Tile Navigation & Display</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Tile canvas displays synthetic CMB/weak-lensing data</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Tile selector dropdown populates with 32 tiles</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Previous button (◄) navigates to previous tile</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Next button (►) navigates to next tile</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">Ctrl+←</span> and <span class="kbd">Ctrl+→</span> work</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Tile ID badge updates when navigating</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Truth tag shows correct class (DEV mode)</label></div>
+</div>
+
+<div class="section">
+<h2>2. Overlays & Visualization</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Overlay: None - shows base tile</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Overlay: Gradient (Sobel) - shows edge detection</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Overlay: Power-rings - shows circular overlays</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Overlay: Wavelet-like - shows grid pattern</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Palette: Gray - monochrome display</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Palette: Viridis - color gradient</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Palette: Cividis - color-safe palette</label></div>
+</div>
+
+<div class="section">
+<h2>3. Audio Sonification</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Play button (▶) starts audio sonification</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Pause button (⏸) appears when playing</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Audio uses deterministic mapping from tile data</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Progress bar animates during playback</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Loop button (↻) toggles looping</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Rate selector (0.5x, 1x, 1.5x, 2x) changes speed</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">Space</span> toggles play/pause</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">L</span> toggles loop</label></div>
+</div>
+
+<div class="section">
+<h2>4. Classification & Submission</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Class selector shows all artifact types</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Severity selector (Low/Medium/High) works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Note field accepts text input (240 char max)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Submit button (✓) saves label to localStorage</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Undo button (↶) removes last label</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">S</span> submits label</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">Ctrl+Z</span> undos label</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Caption updates with feedback messages</label></div>
+</div>
+
+<div class="section">
+<h2>5. Calibration Wizard</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Calibration button (⚙) opens wizard</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Wizard mode selector works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Progress policy selector works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Start button begins calibration (3 tiles)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Hints appear for current tile class</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Submit gives correct/incorrect feedback</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Next button advances through steps</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Final score displayed (X/3)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Keyboard: <span class="kbd">C</span> starts calibration</label></div>
+</div>
+
+<div class="section">
+<h2>6. Expert Queue</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Expert Queue button (👁) opens panel</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Queue shows recent submissions</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Classical analyzers compute scores (stripe/dipole/ringing)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Confirm button records expert decision</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Override button allows corrections</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Confidence selector (0.6, 0.75, 0.9) works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Expert note field accepts input</label></div>
+</div>
+
+<div class="section">
+<h2>7. Live Metrics & Charts</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> PR-AUC KPI displays and updates</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Precision/Recall KPI displays and updates</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Cohen κ / Krippendorff's α displays</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Median latency KPI displays</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Accessibility score displays (percentage)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> PR Curve chart renders (Chart.js)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Live Ops Metrics chart updates</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Confidence Distribution chart shows bars</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Live Graph Feed chart displays timeline</label></div>
+</div>
+
+<div class="section">
+<h2>8. Data Import/Export</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Bookmark button (🔗) copies URL to clipboard</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Bookmark includes provenance (DOI, seed, audio params)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Export CSV button downloads labels.csv</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> CSV contains all label fields</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Export SBOM button downloads sbom.json</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> SBOM includes v2 components & licenses</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> File upload input accepts .json files</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> WebSocket/HTTP feed options available</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> "Load public sample" button adds 4 demo tiles</label></div>
+</div>
+
+<div class="section">
+<h2>9. Built-in Tests</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Run Tests button executes test suite</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> CSV builder test passes</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> PR-AUC test passes</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Tile synth test passes</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> EMA test passes</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Test results display in log area</label></div>
+</div>
+
+<div class="section">
+<h2>10. UI/UX Polish</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Buttons show hover effects (border color change)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Cards show hover effects (shadow lift)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Canvas shows hover zoom effect</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> KPI cards animate on hover</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Disabled buttons show reduced opacity</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Details sections expand/collapse smoothly</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Summary text changes color on hover</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Icons display correctly in buttons (✓ ↶ ⚙ 👁 🔗 etc.)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Fullscreen button (⛶) works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Responsive design works on narrow screens</label></div>
+</div>
+
+<div class="section">
+<h2>11. Accessibility</h2>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Skip to main content link present</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> ARIA labels on interactive elements</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Focus visible on keyboard navigation</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Captions toggle works</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> Color-safe palette option (Cividis)</label></div>
+<div class="test-item"><label><input type="checkbox" onchange="updateStatus()"/> A11y audit runs and updates score</label></div>
+</div>
+
+<div class="section" style="background:#0f1730;border:2px solid #3e5796">
+<h2>📊 Test Summary</h2>
+<p><strong>Progress:</strong> <span id="progress">0/100</span> tests completed (<span id="percent">0%</span>)</p>
+<p><strong>Status:</strong> <span id="overallStatus" class="pending">Testing in progress...</span></p>
+</div>
+
+<script>
+function updateStatus(){
+  const boxes = document.querySelectorAll('input[type="checkbox"]');
+  const total = boxes.length;
+  const checked = Array.from(boxes).filter(b=>b.checked).length;
+  const pct = Math.round((checked/total)*100);
+  
+  document.getElementById('progress').textContent = checked + '/' + total;
+  document.getElementById('percent').textContent = pct + '%';
+  
+  const status = document.getElementById('overallStatus');
+  if(checked === total){
+    status.textContent = '✅ All tests passed!';
+    status.className = 'pass';
+  } else if(checked > 0){
+    status.textContent = '🔄 Testing in progress...';
+    status.className = 'pending';
+  } else {
+    status.textContent = '⏳ Ready to test';
+    status.className = 'pending';
+  }
+  
+  // Highlight completed items
+  boxes.forEach(box=>{
+    const item = box.closest('.test-item');
+    if(box.checked){
+      item.classList.add('complete');
+    } else {
+      item.classList.remove('complete');
+    }
+  });
+  
+  // Save to localStorage
+  const states = Array.from(boxes).map(b=>b.checked);
+  localStorage.setItem('cosmos_test_state', JSON.stringify(states));
+}
+
+function resetAll(){
+  if(confirm('Reset all checkboxes?')){
+    document.querySelectorAll('input[type="checkbox"]').forEach(b=>b.checked=false);
+    localStorage.removeItem('cosmos_test_state');
+    updateStatus();
+  }
+}
+
+// Restore state
+window.addEventListener('load',()=>{
+  try{
+    const saved = JSON.parse(localStorage.getItem('cosmos_test_state')||'[]');
+    const boxes = document.querySelectorAll('input[type="checkbox"]');
+    saved.forEach((state,i)=>{
+      if(boxes[i]) boxes[i].checked = state;
+    });
+    updateStatus();
+  }catch{}
+});
+</script>
+
+<!-- COSMOS v3 Checklist Bridge -->
+<script>
+(function(){
+  const SECTION_ID='autoChecks';
+  if(!document.getElementById(SECTION_ID)){
+    const sec=document.createElement('section'); sec.id=SECTION_ID;
+    sec.innerHTML=`<h2>Auto‑Validated Checks (Bridge)</h2>
+      <div><label><input type="checkbox" data-testid="audio-deterministic"> Audio sidecar is deterministic</label></div>
+      <div><label><input type="checkbox" data-testid="bookmark-created"> Bookmark created (includes DOI/seed/audio)</label></div>
+      <div><label><input type="checkbox" data-testid="bookmark-roundtrip"> Bookmark reload restores state + preview</label></div>
+      <div><label><input type="checkbox" data-testid="irr-alpha-ok"> Krippendorff α ≥ 0.60 after calibration</label></div>
+      <div><label><input type="checkbox" data-testid="truth-hidden-public"> Truth tag hidden in public mode</label></div>
+      <div><label><input type="checkbox" data-testid="a11y-95"> A11y coverage ≥ 95%</label></div>
+      <div><label><input type="checkbox" data-testid="sbom-exported"> SBOM exported (contains SPDX licenses & SHA-256)</label></div>
+      <div style="margin-top:8px;">
+        <button id="openDev">Open COSMOS v3 (dev)</button>
+        <button id="openPub">Open COSMOS v3 (public)</button>
+        <button id="exportReport">Export Test Report (JSON)</button>
+      </div>
+      <small>Keep this window open while testing; the demo reports events back here.</small>
+      <pre id="bridgeLog" style="background:#111;color:#9f9;padding:8px;max-height:240px;overflow:auto;"></pre>`;
+    document.body.appendChild(sec);
+  }
+  let demoInfo={version:null,sha:null,dev:null};
+  function log(msg,obj){ const pre=document.getElementById('bridgeLog'); if(!pre) return; const line=document.createElement('div'); line.textContent='['+new Date().toISOString()+'] '+msg; if(obj){ const code=document.createElement('code'); code.textContent=' '+JSON.stringify(obj); line.appendChild(code);} pre.prepend(line); }
+  function tick(sel){ const el=document.querySelector(sel); if(el){ el.checked=true; } }
+  window.addEventListener('message', (e)=>{
+    const d=e.data||{}; if(d.channel!=='cosmos-test-bridge') return;
+    if(d.type==='build.info'){ demoInfo=d.detail||{}; log('Build', d.detail); }
+    if(d.type==='audio.play' && d.detail && d.detail.deterministic){ tick('[data-testid="audio-deterministic"]'); log('Audio', d.detail); }
+    if(d.type==='bookmark.created'){ tick('[data-testid="bookmark-created"]'); log('Bookmark created', d.detail); }
+    if(d.type==='bookmark.reload' && d.detail && d.detail.ok){ tick('[data-testid="bookmark-roundtrip"]'); log('Bookmark reload', d.detail); }
+    if(d.type==='irr.alpha' && d.detail && d.detail.alpha>=0.60){ tick('[data-testid="irr-alpha-ok"]'); }
+    if(d.type==='a11y.coverage' && d.detail && d.detail.percent>=95){ tick('[data-testid="a11y-95"]'); }
+    if(d.type==='truth.visible' && d.detail && d.detail.dev===false && d.detail.visible===false){ tick('[data-testid="truth-hidden-public"]'); }
+    if(d.type==='sbom.exported'){ tick('[data-testid="sbom-exported"]'); }
+  });
+  document.getElementById('openDev').addEventListener('click',()=>{ window.open('COSMOS_v3_dev.html','_blank','noopener'); });
+  document.getElementById('openPub').addEventListener('click',()=>{ window.open('COSMOS_v3_public.html','_blank','noopener'); });
+  document.getElementById('exportReport').addEventListener('click',()=>{
+    const boxes=[...document.querySelectorAll('input[type=checkbox]')];
+    const checks=boxes.map(b=>{ const label=b.closest('label')?b.closest('label').innerText.trim():(b.getAttribute('data-testid')||b.id||''); return {id:b.getAttribute('data-testid')||b.id||null,label:label,checked:b.checked}; });
+    const pass=checks.filter(c=>c.checked).length;
+    const report={
+      schema:'https://example.org/cosmos/test-report/1-0',
+      generatedAt:new Date().toISOString(),
+      demo:{version:demoInfo.version,sha:demoInfo.sha},
+      checklistVersion:'v3',
+      totals:{pass:pass,total:checks.length},
+      checks:checks
+    };
+    const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='COSMOS_test_report.json'; a.click(); URL.revokeObjectURL(url); log('Report exported',report);
+  });
+})(); 
+</script>
+
+</body>
+</html>
