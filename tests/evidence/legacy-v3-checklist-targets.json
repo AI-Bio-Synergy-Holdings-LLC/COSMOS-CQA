@@ -12,8 +12,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Tile canvas displays synthetic CMB/weak-lensing data",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.002",
@@ -21,8 +24,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Tile selector dropdown populates with 32 tiles",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.003",
@@ -30,8 +36,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Previous button (left arrow) navigates to previous tile",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.004",
@@ -39,8 +48,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Next button (right arrow) navigates to next tile",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.005",
@@ -48,8 +60,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Keyboard: Ctrl+Left and Ctrl+Right work",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.006",
@@ -57,8 +72,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Tile ID badge updates when navigating",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.1-tile-navigation-display.007",
@@ -66,8 +84,11 @@
       "section": "1. Tile Navigation & Display",
       "label": "Truth tag shows correct class (DEV mode)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.001",
@@ -210,8 +231,11 @@
       "section": "4. Classification & Submission",
       "label": "Class selector shows all artifact types",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.002",
@@ -219,8 +243,11 @@
       "section": "4. Classification & Submission",
       "label": "Severity selector (Low/Medium/High) works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.003",
@@ -228,8 +255,11 @@
       "section": "4. Classification & Submission",
       "label": "Note field accepts text input (240 char max)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.004",
@@ -237,8 +267,11 @@
       "section": "4. Classification & Submission",
       "label": "Submit button (check) saves label to localStorage",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.005",
@@ -246,8 +279,11 @@
       "section": "4. Classification & Submission",
       "label": "Undo button (undo) removes last label",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.006",
@@ -255,8 +291,11 @@
       "section": "4. Classification & Submission",
       "label": "Keyboard: S submits label",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.007",
@@ -264,8 +303,11 @@
       "section": "4. Classification & Submission",
       "label": "Keyboard: Ctrl+Z undos label",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.008",
@@ -273,8 +315,11 @@
       "section": "4. Classification & Submission",
       "label": "Caption updates with feedback messages",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.001",
@@ -507,8 +552,11 @@
       "section": "8. Data Import/Export",
       "label": "Bookmark button (link) copies URL to clipboard",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.002",
@@ -516,8 +564,11 @@
       "section": "8. Data Import/Export",
       "label": "Bookmark includes provenance (DOI, seed, audio params)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.003",
@@ -798,7 +849,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "bookmark-created"
+      "data_testid": "bookmark-created",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.bookmark-roundtrip",
@@ -808,7 +862,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "bookmark-roundtrip"
+      "data_testid": "bookmark-roundtrip",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.irr-alpha-ok",
@@ -828,7 +885,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "truth-hidden-public"
+      "data_testid": "truth-hidden-public",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.a11y-95",

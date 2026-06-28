@@ -345,6 +345,11 @@ export const schemas = {
             automation: { type: "string", enum: CHECKLIST_AUTOMATION_STATES },
             status: { type: "string", enum: CHECKLIST_MIGRATION_STATES },
             data_testid: { type: "string", pattern: idPattern },
+            covered_by: {
+              type: "array",
+              minItems: 1,
+              items: { type: "string", minLength: 1, maxLength: 2048 },
+            },
           },
         },
       },

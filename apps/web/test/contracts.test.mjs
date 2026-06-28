@@ -22,6 +22,29 @@ const legacyChecklistSource = await readFile(
   new URL("../../../archive/original-materials/legacy-v3/COSMOS_TEST_CHECKLIST_v3.html", import.meta.url),
   "utf8",
 );
+const browserWorkflowSpec = "apps/web/test/browser/workflows.spec.mjs";
+const expectedBrowserCoveredTargets = [
+  "legacy-v3.manual.1-tile-navigation-display.001",
+  "legacy-v3.manual.1-tile-navigation-display.002",
+  "legacy-v3.manual.1-tile-navigation-display.003",
+  "legacy-v3.manual.1-tile-navigation-display.004",
+  "legacy-v3.manual.1-tile-navigation-display.005",
+  "legacy-v3.manual.1-tile-navigation-display.006",
+  "legacy-v3.manual.1-tile-navigation-display.007",
+  "legacy-v3.manual.4-classification-submission.001",
+  "legacy-v3.manual.4-classification-submission.002",
+  "legacy-v3.manual.4-classification-submission.003",
+  "legacy-v3.manual.4-classification-submission.004",
+  "legacy-v3.manual.4-classification-submission.005",
+  "legacy-v3.manual.4-classification-submission.006",
+  "legacy-v3.manual.4-classification-submission.007",
+  "legacy-v3.manual.4-classification-submission.008",
+  "legacy-v3.manual.8-data-import-export.001",
+  "legacy-v3.manual.8-data-import-export.002",
+  "legacy-v3.bridge.bookmark-created",
+  "legacy-v3.bridge.bookmark-roundtrip",
+  "legacy-v3.bridge.truth-hidden-public",
+];
 
 const tile = {
   meta: {
@@ -258,6 +281,14 @@ test("legacy checklist targets are tracked as evidence contract data", () => {
   assert.equal(new Set(legacyChecklistTargets.targets.map((target) => target.id)).size, 93);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual").length, 86);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "bridge").length, 7);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual" && target.status === "migrated").length, 17);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.covered_by?.includes(browserWorkflowSpec)).length, 20);
+  for (const targetId of expectedBrowserCoveredTargets) {
+    const target = legacyChecklistTargets.targets.find((entry) => entry.id === targetId);
+    assert.equal(target?.automation, "automated", targetId);
+    assert.equal(target?.status, "migrated", targetId);
+    assert.deepEqual(target?.covered_by, [browserWorkflowSpec], targetId);
+  }
   assert.ok(legacyChecklistTargets.targets.every((target) => isAscii(target.label)));
   assert.ok(legacyChecklistTargets.targets.some((target) => target.data_testid === "sbom-exported"));
 });

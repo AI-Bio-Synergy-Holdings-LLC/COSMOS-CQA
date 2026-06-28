@@ -13,4 +13,4 @@ Initial test targets:
 
 Evidence target manifests:
 
-- `evidence/legacy-v3-checklist-targets.json` tracks the 86 manual checklist items and 7 bridge auto-checks extracted from the archived legacy v3 checklist.
+- `evidence/legacy-v3-checklist-targets.json` tracks the 86 manual checklist items and 7 bridge auto-checks extracted from the archived legacy v3 checklist. The current browser migration covers 17 manual targets plus 3 bridge targets through `apps/web/test/browser/workflows.spec.mjs`.

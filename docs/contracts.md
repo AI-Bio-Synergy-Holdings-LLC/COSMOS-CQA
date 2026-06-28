@@ -28,6 +28,8 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `validationReport`: structured report summary for contract and workflow checks.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 
+Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.
+
 ## Verification
 
 Run the contract test suite from the repository root:

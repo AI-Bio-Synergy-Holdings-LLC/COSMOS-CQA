@@ -11,7 +11,14 @@ import {
   recordExpertMetric,
   recordVolunteerFlag,
 } from "../metrics/index.js";
-import { createBookmarkPayload, createBookmarkUrl, createBuildInfo, notifyTestBridge, writeClipboard } from "../provenance/index.js";
+import {
+  createBookmarkPayload,
+  createBookmarkUrl,
+  createBuildInfo,
+  decodeBookmarkPayload,
+  notifyTestBridge,
+  writeClipboard,
+} from "../provenance/index.js";
 import { createSbom, downloadCsv, downloadJson } from "../reports/index.js";
 import { createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { synthTile } from "../tile-synthesis/index.js";
@@ -675,6 +682,55 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     notifyTestBridge("bookmark.created", { payload, url });
   }
 
+  function restoreBookmarkFromHash({ notifyMissing = false } = {}) {
+    const encoded = getEncodedBookmark(windowRef.location.hash);
+    if (!encoded) {
+      if (notifyMissing) {
+        notifyTestBridge("bookmark.reload", { ok: false, reason: "missing-state" });
+      }
+      return false;
+    }
+
+    try {
+      const payload = decodeBookmarkPayload(encoded);
+      const tileIndex = tiles.findIndex((tile) => tile.meta.tile_id === payload.tile.id);
+      if (tileIndex < 0) {
+        notifyTestBridge("bookmark.reload", { ok: false, reason: "tile-not-found", payload });
+        return false;
+      }
+
+      dom.overlaySel.value = payload.overlay;
+      dom.paletteSel.value = payload.palette;
+      setRateSelection(payload.env.audio.rate);
+      state.rate = payload.env.audio.rate;
+      state.looping = payload.env.audio.loop;
+      dom.loopBtn.textContent = `Loop: ${state.looping ? "on" : "off"}`;
+      dom.loopBtn.setAttribute("aria-pressed", state.looping ? "true" : "false");
+      dom.captionsChk.checked = payload.captions;
+      state.seed = payload.env.seed;
+
+      drawTile(tileIndex);
+      recalcKPIs();
+      setCaption("Bookmark restored.");
+      notifyTestBridge("bookmark.reload", {
+        ok: true,
+        payload,
+        tile_id: payload.tile.id,
+        overlay: payload.overlay,
+        palette: payload.palette,
+      });
+      return true;
+    } catch (error) {
+      notifyTestBridge("bookmark.reload", { ok: false, reason: "invalid-state", message: error.message });
+      return false;
+    }
+  }
+
+  function setRateSelection(rate) {
+    const match = Array.from(dom.rateSel.options).find((option) => Number(option.value) === rate);
+    dom.rateSel.value = match ? match.value : String(rate);
+  }
+
   function installKeyboardScope() {
     windowRef.__HOTKEYS_MASTER__ = true;
 
@@ -810,13 +866,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.startFeed.addEventListener("click", handleFeedUrl);
     dom.stopFeed.addEventListener("click", stopFeed);
     dom.fileInput.addEventListener("change", handleFileLoad);
-    windowRef.addEventListener("hashchange", () => {
-      const ok = /#state=/.test(windowRef.location.hash);
-      notifyTestBridge("bookmark.reload", {
-        ok,
-        preview: makeAudioMapForTile(tiles[state.idx]).slice(0, 5).map((point) => point.freq),
-      });
-    });
+    windowRef.addEventListener("hashchange", () => restoreBookmarkFromHash({ notifyMissing: true }));
   }
 
   function init() {
@@ -831,8 +881,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     wireEvents();
     installKeyboardScope();
     addHotkeyToggle();
+    const restoredBookmark = restoreBookmarkFromHash();
     recalcKPIs();
-    setCaption("Ready. Use keyboard or controls; captions appear here.");
+    if (!restoredBookmark) {
+      setCaption("Ready. Use keyboard or controls; captions appear here.");
+    }
 
     notifyTestBridge("build.info", build);
     notifyTestBridge("truth.visible", {
@@ -848,6 +901,15 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state,
     tiles,
   };
+}
+
+function getEncodedBookmark(hash) {
+  if (!hash || !hash.startsWith("#")) {
+    return "";
+  }
+
+  const params = new URLSearchParams(hash.slice(1));
+  return params.get("state") || "";
 }
 
 function bindDom(documentRef) {

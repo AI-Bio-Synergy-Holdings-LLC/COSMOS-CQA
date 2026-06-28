@@ -23,11 +23,19 @@ Run checks from the repository root:
 npm --prefix apps/web run check:source
 npm --prefix apps/web run test:contracts
 npm --prefix apps/web run test:replay
+npm --prefix apps/web run test:browser
 npm --prefix apps/web run check:legacy
 npm --prefix apps/web run check
 ```
 
-`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:replay` verifies deterministic golden fixtures. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright browser workflows for migrated checklist targets. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+
+Install dependencies and Chromium before running the full browser-backed check locally:
+
+```bash
+npm --prefix apps/web ci
+npm --prefix apps/web exec -- playwright install chromium
+```
 
 ## Local Development
 

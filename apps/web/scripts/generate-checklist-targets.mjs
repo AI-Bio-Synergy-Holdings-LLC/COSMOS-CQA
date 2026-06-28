@@ -15,6 +15,31 @@ const legacyClaimedTotal = 100;
 const expectedManualTargetCount = 86;
 const expectedBridgeTargetCount = 7;
 const bridgeSection = "Auto-Validated Checks (Bridge)";
+const browserWorkflowSpec = "apps/web/test/browser/workflows.spec.mjs";
+const migratedTargetCoverage = new Map(
+  [
+    "legacy-v3.manual.1-tile-navigation-display.001",
+    "legacy-v3.manual.1-tile-navigation-display.002",
+    "legacy-v3.manual.1-tile-navigation-display.003",
+    "legacy-v3.manual.1-tile-navigation-display.004",
+    "legacy-v3.manual.1-tile-navigation-display.005",
+    "legacy-v3.manual.1-tile-navigation-display.006",
+    "legacy-v3.manual.1-tile-navigation-display.007",
+    "legacy-v3.manual.4-classification-submission.001",
+    "legacy-v3.manual.4-classification-submission.002",
+    "legacy-v3.manual.4-classification-submission.003",
+    "legacy-v3.manual.4-classification-submission.004",
+    "legacy-v3.manual.4-classification-submission.005",
+    "legacy-v3.manual.4-classification-submission.006",
+    "legacy-v3.manual.4-classification-submission.007",
+    "legacy-v3.manual.4-classification-submission.008",
+    "legacy-v3.manual.8-data-import-export.001",
+    "legacy-v3.manual.8-data-import-export.002",
+    "legacy-v3.bridge.bookmark-created",
+    "legacy-v3.bridge.bookmark-roundtrip",
+    "legacy-v3.bridge.truth-hidden-public",
+  ].map((targetId) => [targetId, browserWorkflowSpec]),
+);
 
 const html = await readFile(sourcePath, "utf8");
 const lines = html.split("\n");
@@ -34,22 +59,23 @@ lines.forEach((rawLine, index) => {
   }
 
   if (line.includes('class="test-item"') && line.includes("<label>")) {
+    const id = buildTargetId("manual", currentSection);
     const label = normalizeText(stripTags(extractBetween(line, "<label>", "</label>")));
-    manualTargets.push({
-      id: buildTargetId("manual", currentSection),
+    manualTargets.push(applyMigrationCoverage({
+      id,
       source_line: lineNumber,
       section: currentSection,
       label,
       mode: "manual",
       automation: "manual",
       status: "tracked",
-    });
+    }));
   }
 
   if (line.includes("data-testid=") && line.includes("<input")) {
     const dataTestId = extractAttribute(line, "data-testid");
     const label = normalizeText(stripTags(extractBetween(line, "<label>", "</label>")));
-    bridgeTargets.push({
+    bridgeTargets.push(applyMigrationCoverage({
       id: `legacy-v3.bridge.${dataTestId}`,
       source_line: lineNumber,
       section: bridgeSection,
@@ -58,7 +84,7 @@ lines.forEach((rawLine, index) => {
       automation: "automated",
       status: "migrated",
       data_testid: dataTestId,
-    });
+    }));
   }
 });
 
@@ -94,6 +120,20 @@ function buildTargetId(mode, section) {
   const next = (sectionCounters.get(key) || 0) + 1;
   sectionCounters.set(key, next);
   return `legacy-v3.${mode}.${sectionSlug}.${String(next).padStart(3, "0")}`;
+}
+
+function applyMigrationCoverage(target) {
+  const coveredBy = migratedTargetCoverage.get(target.id);
+  if (!coveredBy) {
+    return target;
+  }
+
+  return {
+    ...target,
+    automation: "automated",
+    status: "migrated",
+    covered_by: [coveredBy],
+  };
 }
 
 function extractAttribute(line, name) {

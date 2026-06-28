@@ -24,7 +24,13 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Run web source, contract, and legacy checks
+      - name: Install web dependencies
+        run: npm --prefix apps/web ci
+
+      - name: Install Chromium for browser workflow tests
+        run: npm --prefix apps/web exec -- playwright install --with-deps chromium
+
+      - name: Run web source, contract, browser, and legacy checks
         run: npm --prefix apps/web run check
 
       - name: Check whitespace hygiene

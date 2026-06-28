@@ -9,6 +9,8 @@ It is provenance evidence, not the maintained test source.
 - Legacy claimed total: `100`
 - Extracted manual checklist targets: `86`
 - Extracted bridge auto-check targets: `7`
+- Current migrated manual targets: `17`
+- Current browser-covered targets: `20`
 - Tracked manifest: `tests/evidence/legacy-v3-checklist-targets.json`
 
 The legacy page displays a `0/100` counter, but the archived HTML contains 93 trackable targets: 86 manual checklist items plus 7 bridge auto-checks. The tracked manifest preserves that discrepancy instead of treating the UI counter as canonical.
@@ -25,6 +27,7 @@ Each legacy checklist item becomes a stable target with:
 - `automation`: current automation state.
 - `status`: migration state.
 - `data_testid`: bridge target hook when present.
+- `covered_by`: automated test path when the target has browser or contract coverage.
 
 Regenerate the manifest from the repository root with:
 
@@ -38,7 +41,7 @@ The generator validates the output with the `checklistTestTargets` contract befo
 
 1. Preserve the source checklist in `archive/original-materials/legacy-v3/`.
 2. Track every manual and bridge checklist item in `tests/evidence/legacy-v3-checklist-targets.json`.
-3. Keep current contract, replay, source syntax, legacy extraction, and legacy syntax checks under `npm --prefix apps/web run check`.
+3. Keep current contract, replay, browser workflow, source syntax, legacy extraction, and legacy syntax checks under `npm --prefix apps/web run check`.
 4. Promote stable manual targets into automated tests as browser coverage becomes available.
 5. Retire manual-only status only after an automated assertion covers the target and passes in CI.
 
@@ -47,15 +50,16 @@ The generator validates the output with the `checklistTestTargets` contract befo
 - Contracts: labels, feeds, bookmarks, reports, SBOM references, tile passports, core pack manifests, and checklist target manifests.
 - Deterministic replay: tile synthesis, sidecars, bookmarks, CSV, reports, and public/dev truth-label policy.
 - Legacy bridge targets: audio determinism, bookmark creation, bookmark round trip, IRR alpha threshold, public truth hiding, accessibility threshold, and SBOM export.
+- Browser workflows: tile navigation, label submit/undo, bookmark creation/reload, and public truth-label hiding.
 
 ## Next Test Targets
 
+The migrated browser targets are covered by `apps/web/test/browser/workflows.spec.mjs`.
+
 The highest leverage manual targets to automate next are:
 
-- tile navigation and keyboard movement;
 - overlay and palette rendering state;
-- label submit, undo, and CSV export;
-- bookmark copy and reload behavior in the browser;
+- CSV export download behavior;
 - accessibility focus/caption behavior;
 - chart render/update smoke checks;
 - data import and sample-load workflows.

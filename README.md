@@ -14,7 +14,7 @@ Current status:
 - The maintained browser workbench is split into native ES modules under `apps/web/src/`.
 - Labels, feed events, provenance/bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist targets have first-pass contracts and contract tests.
 - Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
-- The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`.
+- The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with the first browser workflows migrated to Playwright automation.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use
@@ -38,10 +38,12 @@ archive/original-materials/ Provenance manifest for original COSMOS materials
 Run the current verification suite from the repository root:
 
 ```bash
+npm --prefix apps/web ci
+npm --prefix apps/web exec -- playwright install chromium
 npm --prefix apps/web run check
 ```
 
-This runs maintained source syntax checks, contract tests, deterministic replay tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), checklist migration is documented in [docs/checklist-to-test-migration.md](docs/checklist-to-test-migration.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
+This runs maintained source syntax checks, contract tests, deterministic replay tests, browser workflow tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), checklist migration is documented in [docs/checklist-to-test-migration.md](docs/checklist-to-test-migration.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
 
 For local browser review:
 
