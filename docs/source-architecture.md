@@ -20,7 +20,9 @@ The source split uses these first-class modules:
 
 - `tile-synthesis`: deterministic synthetic tile generation and pixel helpers;
 - `sidecars`: overlays, audio maps, and sonification playback;
-- `labels`: volunteer label capture, persistence, CSV export, and feed ingestion;
+- `contracts`: schema definitions and dependency-free validation for research workflow records;
+- `feeds`: feed payload parsing, normalization, and contract rejection reporting;
+- `labels`: volunteer label capture, persistence, and CSV export;
 - `metrics`: PR-AUC, precision/recall, EMA, reliability, latency, and KPI helpers;
 - `expert-review`: expert queue scoring, confirm/override, and adjudication persistence;
 - `provenance`: bookmark payloads, build metadata, test bridge events, and replay handles;
@@ -58,4 +60,3 @@ Good future option for expensive diagnostics, FITS/HEALPix transforms, and repor
 ## Near-Term Rule
 
 Do not edit imported legacy HTML to create active behavior. Use `apps/web/index.html` and `apps/web/src/` for maintained source, and keep `archive/original-materials/legacy-v3/` as provenance.
-

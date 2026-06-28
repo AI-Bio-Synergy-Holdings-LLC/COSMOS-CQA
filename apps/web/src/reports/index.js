@@ -1,10 +1,13 @@
-export function createSbom() {
-  return {
+import { CONTRACT_SCHEMA_VERSION, assertContract } from "../contracts/index.js";
+import { createBuildInfo } from "../provenance/index.js";
+
+export function createSbom({ generatedAt = new Date().toISOString(), extraComponents = [] } = {}) {
+  return assertContract("cycloneDxSbom", {
     bomFormat: "CycloneDX",
     specVersion: "1.4",
     version: 1,
     metadata: {
-      timestamp: new Date().toISOString(),
+      timestamp: generatedAt,
       component: {
         type: "application",
         name: "COSMOS-CQA Research Workbench",
@@ -19,8 +22,33 @@ export function createSbom() {
         purl: "pkg:npm/chart.js@4.4.1",
         licenses: [{ license: { id: "MIT" } }],
       },
+      ...extraComponents,
     ],
-  };
+  });
+}
+
+export function createValidationReport({ build = createBuildInfo(), labels = [], feedErrors = [], checks = [] } = {}) {
+  const normalizedChecks = checks.map((check) => ({
+    name: check.name,
+    status: check.status,
+    detail: check.detail || "",
+  }));
+  const passCount = normalizedChecks.filter((check) => check.status === "pass").length;
+  const failCount = normalizedChecks.filter((check) => check.status === "fail").length;
+
+  return assertContract("validationReport", {
+    schema_version: CONTRACT_SCHEMA_VERSION,
+    report_id: `rpt_${Date.now().toString(36)}`,
+    generated_at: new Date().toISOString(),
+    build,
+    summary: {
+      label_count: labels.length,
+      feed_error_count: feedErrors.length,
+      pass_count: passCount,
+      fail_count: failCount,
+    },
+    checks: normalizedChecks,
+  });
 }
 
 export function downloadBlob({ contents, type, filename }) {
@@ -48,4 +76,3 @@ export function downloadCsv(csv, filename) {
     filename,
   });
 }
-

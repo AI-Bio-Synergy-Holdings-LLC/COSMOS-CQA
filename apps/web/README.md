@@ -21,11 +21,12 @@ Run checks from the repository root:
 
 ```bash
 npm --prefix apps/web run check:source
+npm --prefix apps/web run test:contracts
 npm --prefix apps/web run check:legacy
 npm --prefix apps/web run check
 ```
 
-`check:source` validates the maintained ES module source. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
 
 ## Local Development
 
@@ -53,6 +54,8 @@ The source now separates:
 
 - `tile-synthesis`
 - `sidecars`
+- `contracts`
+- `feeds`
 - `labels`
 - `metrics`
 - `expert-review`

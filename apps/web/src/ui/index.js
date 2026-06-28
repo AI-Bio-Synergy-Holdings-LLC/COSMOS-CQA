@@ -1,4 +1,5 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
+import { parseFeedPayload } from "../feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
 import {
   calculateAccessibilityCoverage,
@@ -426,6 +427,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
             band: object.band || "T",
             ra: object.ra || 0,
             dec: object.dec || 0,
+            release: object.release || "v0",
+            doi: object.doi || "",
             truth: { class: "clean", severity: "low" },
             checksum: object.checksum || "",
           },
@@ -487,24 +490,13 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function parseFeedText(text) {
-    try {
-      const object = JSON.parse(text);
-      if (Array.isArray(object)) {
-        object.forEach(processFeedObject);
-      } else {
-        processFeedObject(object);
-      }
-    } catch {
-      text
-        .split("\n")
-        .filter(Boolean)
-        .forEach((line) => {
-          try {
-            processFeedObject(JSON.parse(line));
-          } catch {
-            dom.feedStatus.textContent = "Feed parse error";
-          }
-        });
+    const { events, errors } = parseFeedPayload(text);
+    events.forEach(processFeedObject);
+
+    if (errors.length) {
+      dom.feedStatus.textContent = `Feed contract rejected ${errors.length} event(s): ${errors[0].message}`;
+    } else if (events.length) {
+      dom.feedStatus.textContent = `Accepted ${events.length} feed event(s).`;
     }
   }
 
@@ -594,14 +586,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const parsed = JSON.parse(reader.result);
-        const objects = Array.isArray(parsed) ? parsed : [parsed];
-        objects.forEach(processFeedObject);
-        dom.feedStatus.textContent = `Loaded ${objects.length} feed objects from JSON (sim disabled)`;
-      } catch {
-        dom.feedStatus.textContent = "Invalid JSON.";
-      }
+      const { events, errors } = parseFeedPayload(reader.result);
+      events.forEach(processFeedObject);
+      dom.feedStatus.textContent = errors.length
+        ? `Loaded ${events.length} feed object(s); rejected ${errors.length} by contract.`
+        : `Loaded ${events.length} feed object(s) from JSON (sim disabled)`;
     };
     reader.readAsText(file);
   }
@@ -907,4 +896,3 @@ function bindDom(documentRef) {
     expertPane: get("expertPane"),
   };
 }
-
