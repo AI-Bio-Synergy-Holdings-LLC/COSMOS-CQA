@@ -41,7 +41,7 @@ The generator validates the output with the `checklistTestTargets` contract befo
 
 1. Preserve the source checklist in `archive/original-materials/legacy-v3/`.
 2. Track every manual and bridge checklist item in `tests/evidence/legacy-v3-checklist-targets.json`.
-3. Keep current contract, replay, browser workflow, source syntax, legacy extraction, and legacy syntax checks under `npm --prefix apps/web run check`.
+3. Keep current contract, unit domain, replay, browser workflow, source syntax, legacy extraction, and legacy syntax checks under `npm --prefix apps/web run check`.
 4. Promote stable manual targets into automated tests as browser coverage becomes available.
 5. Retire manual-only status only after an automated assertion covers the target and passes in CI.
 
@@ -50,12 +50,13 @@ The generator validates the output with the `checklistTestTargets` contract befo
 - Contracts: labels, feeds, bookmarks, reports, SBOM references, tile passports, core pack manifests, and checklist target manifests.
 - Deterministic replay: tile synthesis, sidecars, bookmarks, CSV, reports, and public/dev truth-label policy.
 - Legacy bridge targets: audio determinism, bookmark creation, bookmark round trip, IRR alpha threshold, public truth hiding, accessibility threshold, and SBOM export.
-- Browser workflows: tile navigation, overlay/palette rendering, audio controls, label submit/undo, calibration, expert queue, metrics/charts, CSV export, SBOM export, data import/sample load, built-in checks, UI polish/responsive checks, bookmark creation/reload, accessibility focus/caption checks, and public truth-label hiding.
+- Browser domain workflows: tile navigation, overlay/palette rendering, audio controls, label submit/undo, calibration, expert queue, metrics/charts, CSV export, SBOM export, data import/sample load, built-in checks, UI polish/responsive checks, bookmark creation/reload, accessibility focus/caption checks, and public truth-label hiding.
+- Unit domain checks: deterministic metric math, accessibility scoring, tile/audio determinism, and public truth-label display policy where browser coverage is more expensive than necessary.
 
 ## Migration Status
 
-The migrated browser targets are covered by `apps/web/test/browser/workflows.spec.mjs`.
+The migrated browser targets are covered by domain specs under `apps/web/test/browser/`: `tile.spec.mjs`, `labels.spec.mjs`, `provenance.spec.mjs`, `reports.spec.mjs`, `accessibility.spec.mjs`, `diagnostics.spec.mjs`, and `import-export.spec.mjs`.
 
 All 86 manual checklist targets and all 7 bridge auto-checks now have automated coverage references in `tests/evidence/legacy-v3-checklist-targets.json`.
 
-The highest leverage follow-on work is to split browser workflows by domain, add per-domain fixtures, and promote selected checks into smaller unit-level tests where browser coverage is more expensive than necessary.
+The highest leverage follow-on work is to keep the shared checklist coverage map synchronized as Phase 3 adds diagnostics/core-pack workflows, and to continue promoting stable browser assertions into unit-level tests when they can be verified without UI state.

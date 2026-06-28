@@ -14,6 +14,7 @@ import {
   encodeBookmarkPayload,
 } from "../../../packages/core/src/provenance/index.js";
 import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
+import { TARGET_COVERAGE, expectedBrowserTargetIds } from "./browser/fixtures/legacy-targets.mjs";
 
 const legacyChecklistTargets = JSON.parse(
   await readFile(new URL("../../../tests/evidence/legacy-v3-checklist-targets.json", import.meta.url), "utf8"),
@@ -22,102 +23,7 @@ const legacyChecklistSource = await readFile(
   new URL("../../../archive/original-materials/legacy-v3/COSMOS_TEST_CHECKLIST_v3.html", import.meta.url),
   "utf8",
 );
-const browserWorkflowSpec = "apps/web/test/browser/workflows.spec.mjs";
-const expectedBrowserCoveredTargets = [
-  "legacy-v3.manual.1-tile-navigation-display.001",
-  "legacy-v3.manual.1-tile-navigation-display.002",
-  "legacy-v3.manual.1-tile-navigation-display.003",
-  "legacy-v3.manual.1-tile-navigation-display.004",
-  "legacy-v3.manual.1-tile-navigation-display.005",
-  "legacy-v3.manual.1-tile-navigation-display.006",
-  "legacy-v3.manual.1-tile-navigation-display.007",
-  "legacy-v3.manual.2-overlays-visualization.001",
-  "legacy-v3.manual.2-overlays-visualization.002",
-  "legacy-v3.manual.2-overlays-visualization.003",
-  "legacy-v3.manual.2-overlays-visualization.004",
-  "legacy-v3.manual.2-overlays-visualization.005",
-  "legacy-v3.manual.2-overlays-visualization.006",
-  "legacy-v3.manual.2-overlays-visualization.007",
-  "legacy-v3.manual.3-audio-sonification.001",
-  "legacy-v3.manual.3-audio-sonification.002",
-  "legacy-v3.manual.3-audio-sonification.003",
-  "legacy-v3.manual.3-audio-sonification.004",
-  "legacy-v3.manual.3-audio-sonification.005",
-  "legacy-v3.manual.3-audio-sonification.006",
-  "legacy-v3.manual.3-audio-sonification.007",
-  "legacy-v3.manual.3-audio-sonification.008",
-  "legacy-v3.manual.4-classification-submission.001",
-  "legacy-v3.manual.4-classification-submission.002",
-  "legacy-v3.manual.4-classification-submission.003",
-  "legacy-v3.manual.4-classification-submission.004",
-  "legacy-v3.manual.4-classification-submission.005",
-  "legacy-v3.manual.4-classification-submission.006",
-  "legacy-v3.manual.4-classification-submission.007",
-  "legacy-v3.manual.4-classification-submission.008",
-  "legacy-v3.manual.5-calibration-wizard.001",
-  "legacy-v3.manual.5-calibration-wizard.002",
-  "legacy-v3.manual.5-calibration-wizard.003",
-  "legacy-v3.manual.5-calibration-wizard.004",
-  "legacy-v3.manual.5-calibration-wizard.005",
-  "legacy-v3.manual.5-calibration-wizard.006",
-  "legacy-v3.manual.5-calibration-wizard.007",
-  "legacy-v3.manual.5-calibration-wizard.008",
-  "legacy-v3.manual.5-calibration-wizard.009",
-  "legacy-v3.manual.6-expert-queue.001",
-  "legacy-v3.manual.6-expert-queue.002",
-  "legacy-v3.manual.6-expert-queue.003",
-  "legacy-v3.manual.6-expert-queue.004",
-  "legacy-v3.manual.6-expert-queue.005",
-  "legacy-v3.manual.6-expert-queue.006",
-  "legacy-v3.manual.6-expert-queue.007",
-  "legacy-v3.manual.7-live-metrics-charts.001",
-  "legacy-v3.manual.7-live-metrics-charts.002",
-  "legacy-v3.manual.7-live-metrics-charts.003",
-  "legacy-v3.manual.7-live-metrics-charts.004",
-  "legacy-v3.manual.7-live-metrics-charts.005",
-  "legacy-v3.manual.7-live-metrics-charts.006",
-  "legacy-v3.manual.7-live-metrics-charts.007",
-  "legacy-v3.manual.7-live-metrics-charts.008",
-  "legacy-v3.manual.7-live-metrics-charts.009",
-  "legacy-v3.manual.8-data-import-export.001",
-  "legacy-v3.manual.8-data-import-export.002",
-  "legacy-v3.manual.8-data-import-export.003",
-  "legacy-v3.manual.8-data-import-export.004",
-  "legacy-v3.manual.8-data-import-export.005",
-  "legacy-v3.manual.8-data-import-export.006",
-  "legacy-v3.manual.8-data-import-export.007",
-  "legacy-v3.manual.8-data-import-export.008",
-  "legacy-v3.manual.8-data-import-export.009",
-  "legacy-v3.manual.9-built-in-tests.001",
-  "legacy-v3.manual.9-built-in-tests.002",
-  "legacy-v3.manual.9-built-in-tests.003",
-  "legacy-v3.manual.9-built-in-tests.004",
-  "legacy-v3.manual.9-built-in-tests.005",
-  "legacy-v3.manual.9-built-in-tests.006",
-  "legacy-v3.manual.10-ui-ux-polish.001",
-  "legacy-v3.manual.10-ui-ux-polish.002",
-  "legacy-v3.manual.10-ui-ux-polish.003",
-  "legacy-v3.manual.10-ui-ux-polish.004",
-  "legacy-v3.manual.10-ui-ux-polish.005",
-  "legacy-v3.manual.10-ui-ux-polish.006",
-  "legacy-v3.manual.10-ui-ux-polish.007",
-  "legacy-v3.manual.10-ui-ux-polish.008",
-  "legacy-v3.manual.10-ui-ux-polish.009",
-  "legacy-v3.manual.10-ui-ux-polish.010",
-  "legacy-v3.manual.11-accessibility.001",
-  "legacy-v3.manual.11-accessibility.002",
-  "legacy-v3.manual.11-accessibility.003",
-  "legacy-v3.manual.11-accessibility.004",
-  "legacy-v3.manual.11-accessibility.005",
-  "legacy-v3.manual.11-accessibility.006",
-  "legacy-v3.bridge.a11y-95",
-  "legacy-v3.bridge.audio-deterministic",
-  "legacy-v3.bridge.bookmark-created",
-  "legacy-v3.bridge.bookmark-roundtrip",
-  "legacy-v3.bridge.irr-alpha-ok",
-  "legacy-v3.bridge.sbom-exported",
-  "legacy-v3.bridge.truth-hidden-public",
-];
+const expectedBrowserCoveredTargets = expectedBrowserTargetIds();
 
 const tile = {
   meta: {
@@ -363,12 +269,12 @@ test("legacy checklist targets are tracked as evidence contract data", () => {
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual").length, 86);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "bridge").length, 7);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual" && target.status === "migrated").length, 86);
-  assert.equal(legacyChecklistTargets.targets.filter((target) => target.covered_by?.includes(browserWorkflowSpec)).length, 93);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.covered_by?.some((path) => path.startsWith("apps/web/test/browser/"))).length, 93);
   for (const targetId of expectedBrowserCoveredTargets) {
     const target = legacyChecklistTargets.targets.find((entry) => entry.id === targetId);
     assert.equal(target?.automation, "automated", targetId);
     assert.equal(target?.status, "migrated", targetId);
-    assert.deepEqual(target?.covered_by, [browserWorkflowSpec], targetId);
+    assert.deepEqual(target?.covered_by, [TARGET_COVERAGE.get(targetId)], targetId);
   }
   assert.ok(legacyChecklistTargets.targets.every((target) => isAscii(target.label)));
   assert.ok(legacyChecklistTargets.targets.some((target) => target.data_testid === "sbom-exported"));
