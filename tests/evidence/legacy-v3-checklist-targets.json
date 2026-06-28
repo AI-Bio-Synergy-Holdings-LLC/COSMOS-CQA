@@ -15,7 +15,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -27,7 +27,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -39,7 +39,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -51,7 +51,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -63,7 +63,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -75,7 +75,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -87,7 +87,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -111,7 +111,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -123,7 +123,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -135,7 +135,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -147,7 +147,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -159,7 +159,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -171,7 +171,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -183,7 +183,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -195,7 +195,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -207,7 +207,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -219,7 +219,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -231,7 +231,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -243,7 +243,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -255,7 +255,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -267,7 +267,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -291,7 +291,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -303,7 +303,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -315,7 +315,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -327,7 +327,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -339,7 +339,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -351,7 +351,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -363,7 +363,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -375,7 +375,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -387,7 +387,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -399,7 +399,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -411,7 +411,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -423,7 +423,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -435,7 +435,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -447,7 +447,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -459,7 +459,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -471,7 +471,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -483,7 +483,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -495,7 +495,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -507,7 +507,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -519,7 +519,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -531,7 +531,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -543,7 +543,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -555,7 +555,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/labels.spec.mjs"
       ]
     },
     {
@@ -567,7 +567,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -579,7 +579,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -591,7 +591,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -603,7 +603,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -615,7 +615,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -627,7 +627,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -639,7 +639,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -651,7 +651,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -663,7 +663,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -675,7 +675,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/provenance.spec.mjs"
       ]
     },
     {
@@ -687,7 +687,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/provenance.spec.mjs"
       ]
     },
     {
@@ -699,7 +699,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/import-export.spec.mjs"
       ]
     },
     {
@@ -711,7 +711,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/import-export.spec.mjs"
       ]
     },
     {
@@ -723,7 +723,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -735,7 +735,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -747,7 +747,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/import-export.spec.mjs"
       ]
     },
     {
@@ -759,7 +759,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/import-export.spec.mjs"
       ]
     },
     {
@@ -771,7 +771,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/import-export.spec.mjs"
       ]
     },
     {
@@ -783,7 +783,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -795,7 +795,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -807,7 +807,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -819,7 +819,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -831,7 +831,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -843,7 +843,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     },
     {
@@ -855,7 +855,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -867,7 +867,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -879,7 +879,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -891,7 +891,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -903,7 +903,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -915,7 +915,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -927,7 +927,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -939,7 +939,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -951,7 +951,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -963,7 +963,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -975,7 +975,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -987,7 +987,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -999,7 +999,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -1011,7 +1011,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -1023,7 +1023,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -1035,7 +1035,7 @@
       "automation": "automated",
       "status": "migrated",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -1048,7 +1048,7 @@
       "status": "migrated",
       "data_testid": "audio-deterministic",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -1061,7 +1061,7 @@
       "status": "migrated",
       "data_testid": "bookmark-created",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/provenance.spec.mjs"
       ]
     },
     {
@@ -1074,7 +1074,7 @@
       "status": "migrated",
       "data_testid": "bookmark-roundtrip",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/provenance.spec.mjs"
       ]
     },
     {
@@ -1087,7 +1087,7 @@
       "status": "migrated",
       "data_testid": "irr-alpha-ok",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/diagnostics.spec.mjs"
       ]
     },
     {
@@ -1100,7 +1100,7 @@
       "status": "migrated",
       "data_testid": "truth-hidden-public",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/tile.spec.mjs"
       ]
     },
     {
@@ -1113,7 +1113,7 @@
       "status": "migrated",
       "data_testid": "a11y-95",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/accessibility.spec.mjs"
       ]
     },
     {
@@ -1126,7 +1126,7 @@
       "status": "migrated",
       "data_testid": "sbom-exported",
       "covered_by": [
-        "apps/web/test/browser/workflows.spec.mjs"
+        "apps/web/test/browser/reports.spec.mjs"
       ]
     }
   ]
