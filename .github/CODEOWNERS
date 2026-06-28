@@ -1,0 +1,23 @@
+# COSMOS-CQA is stewarded by AI-Bio Synergy Holdings LLC.
+# GitHub CODEOWNERS entries require resolvable users or teams; this file
+# uses the current steward maintainer account until an organization team exists.
+
+* @SIONSOULSION
+
+# Steward-controlled governance, legal, security, and release surfaces.
+/.github/ @SIONSOULSION
+/CODE_OF_CONDUCT.md @SIONSOULSION
+/CONTRIBUTING.md @SIONSOULSION
+/GOVERNANCE.md @SIONSOULSION
+/LICENSE.md @SIONSOULSION
+/NOTICE @SIONSOULSION
+/OWNERSHIP_AND_USE.md @SIONSOULSION
+/SECURITY.md @SIONSOULSION
+/docs/releases/ @SIONSOULSION
+
+# Research infrastructure and provenance surfaces.
+/apps/ @SIONSOULSION
+/packages/ @SIONSOULSION
+/examples/ @SIONSOULSION
+/tests/ @SIONSOULSION
+/archive/original-materials/ @SIONSOULSION

@@ -10,6 +10,7 @@
 *.html text eol=lf
 *.css text eol=lf
 .editorconfig text eol=lf
+.github/CODEOWNERS text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
 .node-version text eol=lf
