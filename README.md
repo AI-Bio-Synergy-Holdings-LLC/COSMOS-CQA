@@ -37,6 +37,8 @@ archive/original-materials/ Provenance manifest for original COSMOS materials
 
 Run the current verification suite from the repository root:
 
+Use Node.js 24 or newer. The repository includes `.node-version` so local tools and CI use the same runtime family.
+
 ```bash
 npm --prefix apps/web ci
 npm --prefix apps/web exec -- playwright install chromium

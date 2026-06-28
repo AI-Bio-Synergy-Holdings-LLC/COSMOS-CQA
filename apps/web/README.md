@@ -19,6 +19,8 @@ The first canonical import comes from the stable COSMOS v3 public/dev demo after
 
 Run checks from the repository root:
 
+Use Node.js 24 or newer. The repository root `.node-version` pins the maintained CI runtime family.
+
 ```bash
 npm --prefix apps/web run check:source
 npm --prefix apps/web run test:contracts
