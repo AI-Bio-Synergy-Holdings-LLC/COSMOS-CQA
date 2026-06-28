@@ -20,8 +20,10 @@
 
 ## Phase 3: Core Pack and Diagnostics
 
-- Repair and merge the newer CSSFP Core Pack diagnostic prototype.
-- Add kappa-y and E/B diagnostic placeholders with clear scientific caveats.
+- Build the Core Pack intake lane before importing diagnostics.
+- Validate sample Core Pack manifests with provenance, SBOM, evidence, and diagnostic concept references.
+- Keep kappa-y and E/B diagnostic placeholders documentation-only until source provenance, license review, fixtures, and scientific review are complete.
+- Repair and merge useful CSSFP Core Pack diagnostic concepts only after intake gates pass.
 - Produce report JSON before PDF generation.
 
 ## Phase 4: Public Research Release

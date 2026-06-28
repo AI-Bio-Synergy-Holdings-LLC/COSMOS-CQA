@@ -7,6 +7,8 @@
   "license": "SEE LICENSE IN ../../LICENSE.md",
   "exports": {
     ".": "./src/index.js",
+    "./core-pack": "./src/core-pack/index.js",
+    "./diagnostics": "./src/diagnostics/index.js",
     "./feeds": "./src/feeds/index.js",
     "./labels": "./src/labels/index.js",
     "./metrics": "./src/metrics/index.js",

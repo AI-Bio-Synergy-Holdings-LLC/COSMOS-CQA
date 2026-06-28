@@ -1,0 +1,132 @@
+{
+  "schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "manifest_id": "corepack_demo-v0.1.0-intake",
+  "name": "COSMOS-CQA Demo Core Pack Intake Sample",
+  "version": "v0.1.0-research-alpha",
+  "generated_at": "2026-06-28T00:00:00.000Z",
+  "license": "Research-only public use; all other rights reserved.",
+  "steward": "AI-Bio Synergy Holdings LLC",
+  "tiles": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "tile_id": "demo_corepack_tile_001",
+      "dataset": "DEMO_SIM_T",
+      "release": "v0.1.0-research-alpha",
+      "doi": "doi:10.0000/demo",
+      "band": "T",
+      "ra": 7.611,
+      "dec": 29.9,
+      "checksum": "sha256:demo-corepack-tile-001",
+      "truth": {
+        "class": "stripe",
+        "severity": "low"
+      },
+      "provenance": {
+        "source": "synthetic-demo-core-pack",
+        "source_url": "examples/core-pack/replay-fixture.json",
+        "archive_path": "archive/original-materials/legacy-v3/COSMOS_v3_public.html",
+        "generated_at": "2026-06-28T00:00:00.000Z",
+        "notes": "Synthetic demo tile passport for validating Core Pack intake wiring. This is not imported from the missing nested CSSFP/Core Pack prototype."
+      },
+      "sidecars": {
+        "audio_map": "dft32_rowmeans",
+        "overlay_modes": ["none", "gradient", "rings", "wavelet"],
+        "palette_modes": ["gray", "viridis", "cividis"],
+        "metrics": ["pr_auc", "reliability_kappa", "median_latency", "accessibility_coverage"]
+      }
+    },
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "tile_id": "demo_corepack_tile_002",
+      "dataset": "DEMO_SIM_T",
+      "release": "v0.1.0-research-alpha",
+      "doi": "doi:10.0000/demo",
+      "band": "E",
+      "ra": 19.25,
+      "dec": -4.5,
+      "checksum": "sha256:demo-corepack-tile-002",
+      "truth": null,
+      "provenance": {
+        "source": "synthetic-demo-core-pack",
+        "source_url": "examples/core-pack/replay-fixture.json",
+        "archive_path": "archive/original-materials/legacy-v3/COSMOS_v3_public.html",
+        "generated_at": "2026-06-28T00:00:00.000Z",
+        "notes": "Synthetic demo tile passport for exercising nullable truth records and intake validation without committing third-party data."
+      },
+      "sidecars": {
+        "audio_map": "dft32_rowmeans",
+        "overlay_modes": ["none", "gradient"],
+        "palette_modes": ["gray", "cividis"],
+        "metrics": ["pr_auc", "median_latency"]
+      }
+    }
+  ],
+  "sbom_refs": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "sbom_id": "sbom_v0.1.0-research-alpha",
+      "format": "CycloneDX",
+      "spec_version": "1.4",
+      "path": "docs/releases/v0.1.0-research-alpha-sbom.json",
+      "checksum": "sha256:bf9851b36a7d88dfe0874745b11f7f4d736a665161a0fa46d37b0a5541caddf9",
+      "generated_at": "2026-06-28T00:00:00.000Z",
+      "component_name": "COSMOS-CQA Research Workbench"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "kind": "archive-original-materials-manifest",
+      "path": "archive/original-materials/MANIFEST.md"
+    },
+    {
+      "kind": "legacy-v3-checklist-targets",
+      "path": "tests/evidence/legacy-v3-checklist-targets.json"
+    },
+    {
+      "kind": "core-pack-intake-plan",
+      "path": "docs/core-pack-intake.md"
+    },
+    {
+      "kind": "core-pack-import-checklist",
+      "path": "docs/core-pack-import-checklist.md"
+    },
+    {
+      "kind": "diagnostic-concept-caveats",
+      "path": "docs/diagnostic-concepts.md"
+    }
+  ],
+  "diagnostic_refs": [
+    {
+      "diagnostic_id": "diag_kappa_y_crosscheck",
+      "name": "Kappa-y cross-correlation review placeholder",
+      "status": "prototype-note",
+      "implementation_state": "documentation-only",
+      "source": "Roadmap and archive provenance note for the missing nested CSSFP/Core Pack prototype; no prototype code is imported.",
+      "caveat": "This is a review concept only. It is not a validated cosmology diagnostic, does not estimate physical parameters, and must not be reported as evidence of foreground detection, lensing quality, or survey performance without independent scientific review.",
+      "allowed_use": "Use only as a research-triage note for future expert review of possible cross-map QA features.",
+      "blocked_until": [
+        "the original CSSFP/Core Pack prototype source is available with provenance",
+        "license and redistribution terms are reviewed",
+        "the proposed statistic is independently reviewed by qualified domain experts",
+        "validation fixtures define expected inputs, outputs, and failure modes"
+      ],
+      "claim_boundary_refs": ["docs/claim-boundaries.md", "docs/scientific-scope.md"]
+    },
+    {
+      "diagnostic_id": "diag_eb_residual_placeholder",
+      "name": "E/B residual review placeholder",
+      "status": "prototype-note",
+      "implementation_state": "documentation-only",
+      "source": "Roadmap and archive provenance note for the missing nested CSSFP/Core Pack prototype; no prototype code is imported.",
+      "caveat": "This is a review concept only. It is not a validated weak-lensing diagnostic, does not separate physical E/B modes, and must not be used to claim survey calibration, bias reduction, or artifact detection performance without independent scientific review.",
+      "allowed_use": "Use only as a research-triage note for future expert review of possible residual-map QA features.",
+      "blocked_until": [
+        "the original CSSFP/Core Pack prototype source is available with provenance",
+        "license and redistribution terms are reviewed",
+        "domain experts define scientifically meaningful E/B inputs and outputs",
+        "validation fixtures define expected inputs, outputs, and failure modes"
+      ],
+      "claim_boundary_refs": ["docs/claim-boundaries.md", "docs/scientific-scope.md"]
+    }
+  ]
+}

@@ -23,8 +23,9 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `feedExpertEvent`: expert adjudication records from upload, HTTP polling, or WebSocket feeds.
 - `bookmarkPayload`: encoded replay/provenance state for shareable bookmarks.
 - `tilePassport`: tile-level provenance, checksum, truth, coordinate, and sidecar metadata.
+- `diagnosticConcept`: review-gated diagnostic concept metadata with required scientific caveats.
 - `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
-- `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, and evidence references together.
+- `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, evidence references, and optional diagnostic concept references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
 - `validationReport`: structured report summary for contract and workflow checks.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.

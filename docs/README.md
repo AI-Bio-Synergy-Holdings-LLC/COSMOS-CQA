@@ -7,6 +7,9 @@ Core documents:
 - `canonical-v3-import.md` records the first stable legacy import.
 - `checklist-to-test-migration.md` defines the legacy checklist target migration plan.
 - `contracts.md` defines the first data contract set.
+- `core-pack-intake.md` defines the safe Core Pack intake lane before diagnostic import.
+- `core-pack-import-checklist.md` defines provenance, rights, scientific, and engineering gates for Core Pack imports.
+- `diagnostic-concepts.md` records documentation-only diagnostic concepts and caveats.
 - `source-architecture.md` explains the source split architecture and alternatives.
 - `scientific-scope.md` defines the research lane.
 - `claim-boundaries.md` prevents overstatement.

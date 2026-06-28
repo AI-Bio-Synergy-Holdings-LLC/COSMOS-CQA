@@ -18,6 +18,7 @@ Current status:
 - Labels, feed events, provenance/bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist targets have first-pass contracts and contract tests.
 - Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
 - The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with all tracked legacy targets covered by Playwright browser automation.
+- A Core Pack intake lane now validates a sample manifest, evidence/SBOM references, and documentation-only diagnostic concepts before any CSSFP prototype repair or import.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use

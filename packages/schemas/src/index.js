@@ -8,6 +8,8 @@ export const EXPERT_CLASSES = ["residual", "clean", "other"];
 export const CHECKLIST_TARGET_MODES = ["manual", "bridge"];
 export const CHECKLIST_AUTOMATION_STATES = ["manual", "planned", "automated"];
 export const CHECKLIST_MIGRATION_STATES = ["tracked", "planned", "migrated"];
+export const DIAGNOSTIC_STATUSES = ["concept-only", "prototype-note", "review-required"];
+export const DIAGNOSTIC_IMPLEMENTATION_STATES = ["not-implemented", "documentation-only", "planned"];
 
 const idPattern = "^[A-Za-z0-9._:-]+$";
 const checksumPattern = "^(sha256:[A-Za-z0-9._:-]+|)$";
@@ -261,6 +263,40 @@ export const schemas = {
     },
   },
 
+  diagnosticConcept: {
+    $id: "cosmos-cqa/diagnostic-concept.schema.json",
+    type: "object",
+    required: [
+      "diagnostic_id",
+      "name",
+      "status",
+      "implementation_state",
+      "source",
+      "caveat",
+      "allowed_use",
+      "blocked_until",
+    ],
+    additionalProperties: false,
+    properties: {
+      diagnostic_id: { type: "string", pattern: "^diag_[A-Za-z0-9._:-]+$" },
+      name: { type: "string", minLength: 1, maxLength: 256 },
+      status: { type: "string", enum: DIAGNOSTIC_STATUSES },
+      implementation_state: { type: "string", enum: DIAGNOSTIC_IMPLEMENTATION_STATES },
+      source: { type: "string", minLength: 1, maxLength: 512 },
+      caveat: { type: "string", minLength: 80, maxLength: 1600 },
+      allowed_use: { type: "string", minLength: 1, maxLength: 512 },
+      blocked_until: {
+        type: "array",
+        minItems: 1,
+        items: { type: "string", minLength: 1, maxLength: 256 },
+      },
+      claim_boundary_refs: {
+        type: "array",
+        items: { type: "string", minLength: 1, maxLength: 2048 },
+      },
+    },
+  },
+
   corePackManifest: {
     $id: "cosmos-cqa/core-pack-manifest.schema.json",
     type: "object",
@@ -305,6 +341,10 @@ export const schemas = {
             path: { type: "string", minLength: 1, maxLength: 2048 },
           },
         },
+      },
+      diagnostic_refs: {
+        type: "array",
+        items: { $ref: "diagnosticConcept" },
       },
     },
   },

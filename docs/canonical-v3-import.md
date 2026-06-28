@@ -32,5 +32,6 @@ Do not edit imported legacy HTML in place unless the change is a deliberate arch
 
 ## Known Follow-Up
 
-The nested CSSFP/Core Pack prototype should be repaired and merged later. Its diagnostic concepts are valuable, but the extracted package currently contains invalid JavaScript caused by doubled template braces.
+The nested CSSFP/Core Pack prototype should not be imported directly. Its diagnostic concepts may be valuable, but the extracted package is not present in maintained source and the provenance notes report invalid JavaScript caused by doubled template braces.
 
+Core Pack work now starts with the intake lane in `docs/core-pack-intake.md`, the checklist in `docs/core-pack-import-checklist.md`, and the sample manifest in `examples/core-pack/core-pack.manifest.json`. Executable diagnostic repair should only happen after source provenance, rights review, fixtures, and scientific caveat review pass.
