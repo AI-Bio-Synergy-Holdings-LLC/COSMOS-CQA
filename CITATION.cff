@@ -5,6 +5,7 @@ type: software
 authors:
   - name: "AI-Bio Synergy Holdings LLC"
 repository-code: "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
+url: "https://cosmos-cqa.org"
 license: "LicenseRef-COSMOS-CQA-Research-Only"
 abstract: "A research-source workbench for citizen-assisted quality assurance of cosmology artifacts, including CMB and weak-lensing map tiles, deterministic sidecars, expert adjudication, provenance manifests, and validation reports."
 keywords:
@@ -15,4 +16,3 @@ keywords:
   - CMB
   - provenance
   - research-source
-

@@ -2,6 +2,8 @@
 
 COSMOS-CQA is a research-source workbench for citizen-assisted quality assurance of cosmology artifacts, including CMB and weak-lensing map tiles, deterministic sidecars, expert adjudication, provenance manifests, and validation reports.
 
+Canonical public URL: [https://cosmos-cqa.org](https://cosmos-cqa.org)
+
 ## Project Status
 
 This repository is being reworked from the original COSMOS prototype materials into a clean public research project stewarded by AI-Bio Synergy Holdings LLC.
@@ -69,6 +71,12 @@ Public project name: `COSMOS-CQA`
 Long name: `COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts`
 
 Recommended edition label: `COSMOS-CQA Research Edition`
+
+Canonical domain: `cosmos-cqa.org`
+
+Redirect domains: `cosmoscqa.org`, `cosmos-cqa.com`, and `cosmoscqa.com`
+
+Domain identity and redirect handling are documented in [docs/domain-identity.md](docs/domain-identity.md).
 
 ## License
 

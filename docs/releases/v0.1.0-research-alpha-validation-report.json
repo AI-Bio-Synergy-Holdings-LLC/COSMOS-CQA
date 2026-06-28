@@ -10,7 +10,7 @@
   "summary": {
     "label_count": 1,
     "feed_error_count": 0,
-    "pass_count": 7,
+    "pass_count": 8,
     "fail_count": 0
   },
   "checks": [
@@ -48,6 +48,11 @@
       "name": "sbom artifact",
       "status": "pass",
       "detail": "Release SBOM artifact generated at docs/releases/v0.1.0-research-alpha-sbom.json."
+    },
+    {
+      "name": "canonical public URL",
+      "status": "pass",
+      "detail": "Canonical public project identity is https://cosmos-cqa.org; cosmoscqa.org, cosmos-cqa.com, and cosmoscqa.com are redirect domains."
     }
   ]
 }
