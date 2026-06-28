@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: COSMOS-CQA Research-Only License
+    url: https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/LICENSE.md
+    about: Review public research-only use terms before proposing data, deployment, or reuse changes.

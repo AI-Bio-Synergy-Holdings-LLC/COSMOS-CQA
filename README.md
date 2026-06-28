@@ -10,7 +10,10 @@ Current status:
 
 - Repository scaffold established.
 - Original materials are inventoried in `archive/original-materials/`.
-- Canonical app and package sources are not yet imported.
+- Canonical COSMOS v3 legacy browser materials are archived under `archive/original-materials/legacy-v3/`.
+- The maintained browser workbench is split into native ES modules under `apps/web/src/`.
+- Labels, feed events, provenance/bookmarks, SBOM exports, and validation reports have first-pass contracts and contract tests.
+- Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use
@@ -29,6 +32,30 @@ tests/                     Verification plans and future automated tests
 archive/original-materials/ Provenance manifest for original COSMOS materials
 ```
 
+## Current Verification
+
+Run the current verification suite from the repository root:
+
+```bash
+npm --prefix apps/web run check
+```
+
+This runs maintained source syntax checks, contract tests, deterministic replay tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
+
+For local browser review:
+
+```bash
+npm --prefix apps/web run serve
+```
+
+Then open:
+
+```text
+http://localhost:4173/
+```
+
+Use `http://localhost:4173/?dev=1` only for dev-mode truth-label review.
+
 ## Naming
 
 Public project name: `COSMOS-CQA`
@@ -46,4 +73,3 @@ This is a research-source license, not an OSI open-source license.
 ## Stewardship
 
 COSMOS-CQA is owned and stewarded by AI-Bio Synergy Holdings LLC. See [OWNERSHIP_AND_USE.md](OWNERSHIP_AND_USE.md), [GOVERNANCE.md](GOVERNANCE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
-

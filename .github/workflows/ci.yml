@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "feat/**"
+
+permissions:
+  contents: read
+
+jobs:
+  web-checks:
+    name: Web checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run web source, contract, and legacy checks
+        run: npm --prefix apps/web run check
+
+      - name: Check whitespace hygiene
+        run: git diff --check
+
+      - name: Smoke static module serving
+        shell: bash
+        run: |
+          node apps/web/scripts/serve.mjs &
+          server_pid=$!
+          trap "kill $server_pid" EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4173/ >/dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          curl --fail --silent --show-error http://127.0.0.1:4173/src/main.js >/dev/null
+          curl --fail --silent --show-error http://127.0.0.1:4173/src/contracts/index.js >/dev/null
+          curl --fail --silent --show-error http://127.0.0.1:4173/src/feeds/index.js >/dev/null

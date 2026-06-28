@@ -41,3 +41,17 @@ Recommended canonical import order:
 4. Repair and merge Core Pack diagnostic concepts from the nested CSSFP demo package.
 5. Reconcile all docs with the research-only public license.
 
+## Canonical Legacy Import
+
+The first canonical import is recorded in `legacy-v3/`.
+
+Imported:
+
+- `COSMOS_v3_public.html`
+- `COSMOS_v3_dev.html`
+- `COSMOS_v3_1_dev.html`
+- `COSMOS_TEST_CHECKLIST_v3.html`
+- `COSMOS_test_report.json`
+- `COSMOS_v3_sbom.json`
+
+These files are preserved as legacy provenance artifacts. They should be modularized into `apps/web/` before becoming the active maintained source.

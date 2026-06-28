@@ -1,0 +1,25 @@
+export function createAppState() {
+  return {
+    idx: 0,
+    playing: false,
+    looping: true,
+    rate: 1,
+    volunteerId: `anon_${Math.random().toString(36).slice(2, 6)}`,
+    weight: 0.5,
+    labels: [],
+    expert: [],
+    startTimes: {},
+    scores: [],
+    lastFlagTs: null,
+    rateEMA: 0,
+    latEMA: 0,
+    confEMA: { low: 0, mid: 0, high: 0 },
+    histTime: [],
+    histRate: [],
+    histLat: [],
+    simDisabled: false,
+    usedKeyboard: false,
+    seed: 12648430,
+  };
+}
+

@@ -1,0 +1,480 @@
+{
+  "schema": "https://example.org/cosmos/test-report/1-0",
+  "generatedAt": "2025-11-05T16:44:06.276Z",
+  "demo": {
+    "version": null,
+    "sha": null
+  },
+  "checklistVersion": "v3",
+  "totals": {
+    "pass": 93,
+    "total": 93
+  },
+  "checks": [
+    {
+      "id": null,
+      "label": "Tile canvas displays synthetic CMB/weak-lensing data",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Tile selector dropdown populates with 32 tiles",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Previous button (◄) navigates to previous tile",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Next button (►) navigates to next tile",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nCtrl+←\nand\nCtrl+→\nwork",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Tile ID badge updates when navigating",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Truth tag shows correct class (DEV mode)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Overlay: None - shows base tile",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Overlay: Gradient (Sobel) - shows edge detection",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Overlay: Power-rings - shows circular overlays",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Overlay: Wavelet-like - shows grid pattern",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Palette: Gray - monochrome display",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Palette: Viridis - color gradient",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Palette: Cividis - color-safe palette",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Play button (▶) starts audio sonification",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Pause button (⏸) appears when playing",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Audio uses deterministic mapping from tile data",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Progress bar animates during playback",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Loop button (↻) toggles looping",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Rate selector (0.5x, 1x, 1.5x, 2x) changes speed",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nSpace\ntoggles play/pause",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nL\ntoggles loop",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Class selector shows all artifact types",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Severity selector (Low/Medium/High) works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Note field accepts text input (240 char max)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Submit button (✓) saves label to localStorage",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Undo button (↶) removes last label",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nS\nsubmits label",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nCtrl+Z\nundos label",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Caption updates with feedback messages",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Calibration button (⚙) opens wizard",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Wizard mode selector works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Progress policy selector works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Start button begins calibration (3 tiles)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Hints appear for current tile class",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Submit gives correct/incorrect feedback",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Next button advances through steps",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Final score displayed (X/3)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Keyboard:\nC\nstarts calibration",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Expert Queue button (👁) opens panel",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Queue shows recent submissions",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Classical analyzers compute scores (stripe/dipole/ringing)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Confirm button records expert decision",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Override button allows corrections",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Confidence selector (0.6, 0.75, 0.9) works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Expert note field accepts input",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "PR-AUC KPI displays and updates",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Precision/Recall KPI displays and updates",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Cohen κ / Krippendorff's α displays",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Median latency KPI displays",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Accessibility score displays (percentage)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "PR Curve chart renders (Chart.js)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Live Ops Metrics chart updates",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Confidence Distribution chart shows bars",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Live Graph Feed chart displays timeline",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Bookmark button (🔗) copies URL to clipboard",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Bookmark includes provenance (DOI, seed, audio params)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Export CSV button downloads labels.csv",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "CSV contains all label fields",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Export SBOM button downloads sbom.json",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "SBOM includes v2 components & licenses",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "File upload input accepts .json files",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "WebSocket/HTTP feed options available",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "\"Load public sample\" button adds 4 demo tiles",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Run Tests button executes test suite",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "CSV builder test passes",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "PR-AUC test passes",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Tile synth test passes",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "EMA test passes",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Test results display in log area",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Buttons show hover effects (border color change)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Cards show hover effects (shadow lift)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Canvas shows hover zoom effect",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "KPI cards animate on hover",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Disabled buttons show reduced opacity",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Details sections expand/collapse smoothly",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Summary text changes color on hover",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Icons display correctly in buttons (✓ ↶ ⚙ 👁 🔗 etc.)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Fullscreen button (⛶) works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Responsive design works on narrow screens",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Skip to main content link present",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "ARIA labels on interactive elements",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Focus visible on keyboard navigation",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Captions toggle works",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "Color-safe palette option (Cividis)",
+      "checked": true
+    },
+    {
+      "id": null,
+      "label": "A11y audit runs and updates score",
+      "checked": true
+    },
+    {
+      "id": "audio-deterministic",
+      "label": "Audio sidecar is deterministic",
+      "checked": true
+    },
+    {
+      "id": "bookmark-created",
+      "label": "Bookmark created (includes DOI/seed/audio)",
+      "checked": true
+    },
+    {
+      "id": "bookmark-roundtrip",
+      "label": "Bookmark reload restores state + preview",
+      "checked": true
+    },
+    {
+      "id": "irr-alpha-ok",
+      "label": "Krippendorff α ≥ 0.60 after calibration",
+      "checked": true
+    },
+    {
+      "id": "truth-hidden-public",
+      "label": "Truth tag hidden in public mode",
+      "checked": true
+    },
+    {
+      "id": "a11y-95",
+      "label": "A11y coverage ≥ 95%",
+      "checked": true
+    },
+    {
+      "id": "sbom-exported",
+      "label": "SBOM exported (contains SPDX licenses & SHA-256)",
+      "checked": true
+    }
+  ]
+}

@@ -1,10 +1,18 @@
+*.cff text eol=lf
 *.md text eol=lf
 *.txt text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
 *.js text eol=lf
+*.mjs text eol=lf
 *.ts text eol=lf
 *.html text eol=lf
 *.css text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+NOTICE text eol=lf
 
+# Preserve imported legacy artifacts byte-for-byte for provenance checks.
+archive/original-materials/legacy-v3/* -text
