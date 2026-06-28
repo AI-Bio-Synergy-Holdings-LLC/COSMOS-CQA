@@ -75,6 +75,69 @@ const ACCESSIBILITY_TARGETS = [
   "legacy-v3.bridge.a11y-95",
 ];
 
+const AUDIO_TARGETS = [
+  "legacy-v3.manual.3-audio-sonification.001",
+  "legacy-v3.manual.3-audio-sonification.002",
+  "legacy-v3.manual.3-audio-sonification.003",
+  "legacy-v3.manual.3-audio-sonification.004",
+  "legacy-v3.manual.3-audio-sonification.005",
+  "legacy-v3.manual.3-audio-sonification.006",
+  "legacy-v3.manual.3-audio-sonification.007",
+  "legacy-v3.manual.3-audio-sonification.008",
+  "legacy-v3.bridge.audio-deterministic",
+];
+
+const CALIBRATION_TARGETS = [
+  "legacy-v3.manual.5-calibration-wizard.001",
+  "legacy-v3.manual.5-calibration-wizard.002",
+  "legacy-v3.manual.5-calibration-wizard.003",
+  "legacy-v3.manual.5-calibration-wizard.004",
+  "legacy-v3.manual.5-calibration-wizard.005",
+  "legacy-v3.manual.5-calibration-wizard.006",
+  "legacy-v3.manual.5-calibration-wizard.007",
+  "legacy-v3.manual.5-calibration-wizard.008",
+  "legacy-v3.manual.5-calibration-wizard.009",
+  "legacy-v3.bridge.irr-alpha-ok",
+];
+
+const EXPERT_QUEUE_TARGETS = [
+  "legacy-v3.manual.6-expert-queue.001",
+  "legacy-v3.manual.6-expert-queue.002",
+  "legacy-v3.manual.6-expert-queue.003",
+  "legacy-v3.manual.6-expert-queue.004",
+  "legacy-v3.manual.6-expert-queue.005",
+  "legacy-v3.manual.6-expert-queue.006",
+  "legacy-v3.manual.6-expert-queue.007",
+];
+
+const SBOM_TARGETS = [
+  "legacy-v3.manual.8-data-import-export.005",
+  "legacy-v3.manual.8-data-import-export.006",
+  "legacy-v3.bridge.sbom-exported",
+];
+
+const BUILT_IN_TEST_TARGETS = [
+  "legacy-v3.manual.9-built-in-tests.001",
+  "legacy-v3.manual.9-built-in-tests.002",
+  "legacy-v3.manual.9-built-in-tests.003",
+  "legacy-v3.manual.9-built-in-tests.004",
+  "legacy-v3.manual.9-built-in-tests.005",
+  "legacy-v3.manual.9-built-in-tests.006",
+];
+
+const UI_POLISH_TARGETS = [
+  "legacy-v3.manual.10-ui-ux-polish.001",
+  "legacy-v3.manual.10-ui-ux-polish.002",
+  "legacy-v3.manual.10-ui-ux-polish.003",
+  "legacy-v3.manual.10-ui-ux-polish.004",
+  "legacy-v3.manual.10-ui-ux-polish.005",
+  "legacy-v3.manual.10-ui-ux-polish.006",
+  "legacy-v3.manual.10-ui-ux-polish.007",
+  "legacy-v3.manual.10-ui-ux-polish.008",
+  "legacy-v3.manual.10-ui-ux-polish.009",
+  "legacy-v3.manual.10-ui-ux-polish.010",
+];
+
 test("migrates tracked tile navigation targets into browser automation", async ({ page }) => {
   annotateTargets(TILE_NAVIGATION_TARGETS);
   await openWorkbench(page);
@@ -366,6 +429,220 @@ test("migrates accessibility focus, captions, and audit targets into browser aut
   await expect(page.locator("#kpiA11y")).toHaveText("100%");
 });
 
+test("migrates audio control targets into browser automation", async ({ page }) => {
+  annotateTargets(AUDIO_TARGETS);
+  await installMockAudio(page);
+  await openWorkbench(page);
+
+  const firstPreview = await audioPreview(page);
+  const secondPreview = await audioPreview(page);
+  expect(firstPreview).toEqual(secondPreview);
+
+  await page.locator("#rateSel").selectOption("2.0");
+  await expect(page.locator("#caption")).toContainText("Rate 2x.");
+  await expect.poll(() => page.evaluate(() => window.COSMOS_CQA_APP.state.rate)).toBe(2);
+
+  await page.locator("#playBtn").click();
+  await expect(page.locator("#playBtn")).toHaveText("Pause");
+  await expect(page.locator("#playBtn")).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => progressWidth(page)).toBeGreaterThan(0);
+
+  await page.locator("#playBtn").click();
+  await expect(page.locator("#playBtn")).toHaveText("Play");
+  await expect(page.locator("#playBtn")).toHaveAttribute("aria-pressed", "false");
+
+  await page.locator("#loopBtn").click();
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
+  await page.locator("#loopBtn").click();
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: on");
+
+  await blurActiveElement(page);
+  await page.keyboard.press("Space");
+  await expect(page.locator("#playBtn")).toHaveText("Pause");
+  await blurActiveElement(page);
+  await page.keyboard.press("Space");
+  await expect(page.locator("#playBtn")).toHaveText("Play");
+
+  await blurActiveElement(page);
+  await page.keyboard.press("l");
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
+});
+
+test("migrates calibration wizard targets into browser automation", async ({ page }) => {
+  annotateTargets(CALIBRATION_TARGETS);
+  await openWorkbench(page);
+
+  await page.locator("#calibBtn").click();
+  await expect(page.locator("#calibStep")).toHaveText("1/3");
+  await expect(page.locator("#calibHint")).toContainText("Hint:");
+
+  await openWorkbench(page);
+  await page.locator("#calibMode").selectOption("inline");
+  await expect(page.locator("#calibMode")).toHaveValue("inline");
+  await page.locator("#gatePolicy").selectOption("learning");
+  await expect(page.locator("#gatePolicy")).toHaveValue("learning");
+
+  await page.locator("#startCalib").click();
+  await expect(page.locator("#calibStep")).toHaveText("1/3");
+  await expect(page.locator("#calibHint")).toContainText("Hint:");
+
+  for (const expectedStep of ["1/3", "2/3", "3/3"]) {
+    await expect(page.locator("#calibStep")).toHaveText(expectedStep);
+    await page.locator("#classSel").selectOption("clean");
+    await page.locator("#submitBtn").click();
+    await expect(page.locator("#calibExplain")).toContainText("Expected");
+    await page.locator("#nextStep").click();
+  }
+
+  await expect(page.locator("#calibStep")).toHaveText("Done");
+  await expect(page.locator("#calibStatus")).toHaveText(/Score: [0-3]\/3/);
+
+  await openWorkbench(page);
+  await blurActiveElement(page);
+  await page.keyboard.press("c");
+  await expect(page.locator("#calibStep")).toHaveText("1/3");
+});
+
+test("migrates expert queue targets into browser automation", async ({ page }) => {
+  annotateTargets(EXPERT_QUEUE_TARGETS);
+  await openWorkbench(page);
+  await page.evaluate(() => {
+    window.COSMOS_CQA_APP.state.simDisabled = true;
+  });
+
+  for (const [index, clazz] of ["stripe", "dipole"].entries()) {
+    await page.locator("#tileSelect").selectOption(String(index));
+    await page.locator("#classSel").selectOption(clazz);
+    await page.locator("#submitBtn").click();
+  }
+
+  await page.locator("#expertBtn").click();
+  await expect(page.locator("#expertDetails")).toHaveJSProperty("open", true);
+  await expect(page.locator("#expertPane")).toContainText("residual:");
+  await expect(page.locator("#expertPane")).toContainText("truth residual:");
+
+  const rows = page.locator("#expertPane > div");
+  await expect(rows.first()).toBeVisible();
+  await rows.nth(0).locator('select[data-c="conf"]').selectOption("0.9");
+  await rows.nth(0).locator('input[data-c="note"]').fill("confirm residual");
+  await rows.nth(0).locator('button[data-d="confirm"]').click();
+
+  await rows.nth(1).locator('select[data-c="conf"]').selectOption("0.6");
+  await rows.nth(1).locator('input[data-c="note"]').fill("override clean");
+  await rows.nth(1).locator('button[data-d="override"]').click();
+
+  const expert = await page.evaluate(() => JSON.parse(localStorage.getItem("expert") || "[]"));
+  expect(expert).toHaveLength(2);
+  expect(expert[0]).toMatchObject({
+    expert_class: "residual",
+    expert_confidence: 0.9,
+    note: "confirm residual",
+  });
+  expect(expert[1]).toMatchObject({
+    expert_class: "clean",
+    expert_confidence: 0.6,
+    note: "override clean",
+  });
+});
+
+test("migrates SBOM download targets into browser automation", async ({ page }) => {
+  annotateTargets(SBOM_TARGETS);
+  await openWorkbench(page);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportSBOM").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("sbom.json");
+  const sbom = JSON.parse(await download.createReadStream().then(readStreamText));
+
+  expect(sbom.bomFormat).toBe("CycloneDX");
+  expect(sbom.specVersion).toBe("1.4");
+  expect(sbom.metadata.component.name).toBe("COSMOS-CQA Research Workbench");
+  expect(sbom.components).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "Chart.js",
+        version: "4.4.1",
+        licenses: expect.arrayContaining([expect.objectContaining({ license: { id: "MIT" } })]),
+      }),
+    ]),
+  );
+  await expect(page.locator("#caption")).toContainText("SBOM exported.");
+});
+
+test("migrates built-in self-check targets into browser automation", async ({ page }) => {
+  annotateTargets(BUILT_IN_TEST_TARGETS);
+  await openWorkbench(page);
+
+  const selfChecks = page.locator("details").filter({ has: page.locator("#runTests") });
+  await selfChecks.locator("summary").click();
+  await page.locator("#runTests").click();
+
+  await expect(page.locator("#testLog")).toContainText("OK CSV builder");
+  await expect(page.locator("#testLog")).toContainText("OK PR-AUC");
+  await expect(page.locator("#testLog")).toContainText("OK Tile synth");
+  await expect(page.locator("#testLog")).toContainText("OK EMA");
+  await expect(page.locator("#testLog")).toContainText("4/4 passed.");
+});
+
+test("migrates remaining UI polish and responsive targets into browser automation", async ({ page }) => {
+  annotateTargets(UI_POLISH_TARGETS);
+  await page.addInitScript(() => {
+    Element.prototype.requestFullscreen = function requestFullscreen() {
+      window.__fullscreenRequestedFor = this.tagName;
+      return Promise.resolve();
+    };
+  });
+  await openWorkbench(page);
+
+  const buttonBorder = await cssValue(page.locator("#nextBtn"), "borderTopColor");
+  await page.locator("#nextBtn").hover();
+  await page.waitForTimeout(250);
+  await expect.poll(() => cssValue(page.locator("#nextBtn"), "borderTopColor")).not.toBe(buttonBorder);
+
+  const cardShadow = await cssValue(page.locator(".card").first(), "boxShadow");
+  await page.locator(".card").first().hover();
+  await page.waitForTimeout(350);
+  await expect.poll(() => cssValue(page.locator(".card").first(), "boxShadow")).not.toBe(cardShadow);
+
+  const canvasTransform = await cssValue(page.locator("#tileCanvas"), "transform");
+  await page.locator("#tileCanvas").hover();
+  await page.waitForTimeout(250);
+  await expect.poll(() => cssValue(page.locator("#tileCanvas"), "transform")).not.toBe(canvasTransform);
+
+  const kpiTransform = await cssValue(page.locator(".kpi").first(), "transform");
+  await page.locator(".kpi").first().hover();
+  await page.waitForTimeout(250);
+  await expect.poll(() => cssValue(page.locator(".kpi").first(), "transform")).not.toBe(kpiTransform);
+
+  await expect(page.locator("#nextStep")).toBeDisabled();
+  expect(Number(await cssValue(page.locator("#nextStep"), "opacity"))).toBeLessThan(1);
+
+  const selfChecks = page.locator("details").filter({ has: page.locator("#runTests") });
+  await expect(selfChecks).not.toHaveAttribute("open", "");
+  const summaryColor = await cssValue(selfChecks.locator("summary"), "color");
+  await selfChecks.locator("summary").hover();
+  await page.waitForTimeout(250);
+  await expect.poll(() => cssValue(selfChecks.locator("summary"), "color")).not.toBe(summaryColor);
+  await selfChecks.locator("summary").click();
+  await expect(selfChecks).toHaveAttribute("open", "");
+
+  await expect(page.locator(".cmd-icon")).toHaveCount(5);
+  for (const icon of await page.locator(".cmd-icon").all()) {
+    await expect(icon).toBeVisible();
+    expect((await icon.textContent()).trim()).not.toBe("");
+  }
+
+  await page.locator("#fullscreenBtn").click();
+  await expect.poll(() => page.evaluate(() => window.__fullscreenRequestedFor)).toBe("HTML");
+
+  await page.setViewportSize({ width: 390, height: 800 });
+  await openWorkbench(page);
+  await expect.poll(() => cssValue(page.locator(".viewer"), "flexDirection")).toBe("column");
+  const canvasBox = await page.locator("#tileCanvas").boundingBox();
+  expect(canvasBox.width).toBeLessThanOrEqual(358);
+});
+
 async function openWorkbench(page, url = "/") {
   await page.goto(url, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
@@ -463,6 +740,59 @@ async function blurActiveElement(page) {
 
 async function readClipboard(page) {
   return page.evaluate(() => navigator.clipboard.readText());
+}
+
+async function installMockAudio(page) {
+  await page.addInitScript(() => {
+    class MockOscillator {
+      constructor() {
+        this.frequency = { value: 0 };
+        this.type = "sine";
+      }
+      connect() {}
+      disconnect() {}
+      start() {}
+      stop() {}
+    }
+
+    class MockGain {
+      constructor() {
+        this.gain = { value: 0 };
+      }
+      connect() {}
+      disconnect() {}
+    }
+
+    class MockAudioContext {
+      constructor() {
+        this.destination = {};
+      }
+      createOscillator() {
+        return new MockOscillator();
+      }
+      createGain() {
+        return new MockGain();
+      }
+    }
+
+    window.AudioContext = MockAudioContext;
+    window.webkitAudioContext = MockAudioContext;
+  });
+}
+
+async function audioPreview(page) {
+  return page.evaluate(() => window.COSMOS_CQA_APP.audioPreview());
+}
+
+async function progressWidth(page) {
+  return page.locator("#prog").evaluate((element) => parseFloat(element.style.width || "0"));
+}
+
+async function cssValue(locator, property) {
+  return locator.evaluate((element, name) => {
+    const styles = getComputedStyle(element);
+    return styles.getPropertyValue(name) || styles[name];
+  }, property);
 }
 
 async function createPngDataUrl(page) {

@@ -388,10 +388,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function updateCalibrationUI() {
     dom.calibStep.textContent = calibration.active ? `${calibration.index + 1}/3` : "";
     const explainOk = dom.calibExplain.dataset.ok === "1";
-    dom.nextStep.disabled =
-      !calibration.active ||
-      (calibration.gate === "gated" && !explainOk) ||
-      calibration.index >= calibration.tiles.length - 1;
+    dom.nextStep.disabled = !calibration.active || (calibration.gate === "gated" && !explainOk);
 
     const meta = calibration.active ? calibration.tiles[calibration.index].meta : null;
     dom.calibHint.textContent = meta ? HINTS[meta.truth.class] : "";
@@ -674,8 +671,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function exportSbom() {
-    downloadJson(createSbom(), "sbom.json");
+    const sbom = createSbom();
+    downloadJson(sbom, "sbom.json");
     setCaption("SBOM exported.");
+    notifyTestBridge("sbom.exported", { sbom });
   }
 
   function runSelfChecks() {
@@ -957,6 +956,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   return {
     init,
     drawTile,
+    audioPreview: () => makeAudioMapForTile(tiles[state.idx]).slice(0, 5).map((point) => point.freq),
     recalcKPIs,
     state,
     tiles,

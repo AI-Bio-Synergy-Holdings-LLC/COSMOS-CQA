@@ -9,8 +9,8 @@ It is provenance evidence, not the maintained test source.
 - Legacy claimed total: `100`
 - Extracted manual checklist targets: `86`
 - Extracted bridge auto-check targets: `7`
-- Current migrated manual targets: `44`
-- Current browser-covered targets: `48`
+- Current migrated manual targets: `86`
+- Current browser-covered targets: `93`
 - Tracked manifest: `tests/evidence/legacy-v3-checklist-targets.json`
 
 The legacy page displays a `0/100` counter, but the archived HTML contains 93 trackable targets: 86 manual checklist items plus 7 bridge auto-checks. The tracked manifest preserves that discrepancy instead of treating the UI counter as canonical.
@@ -50,16 +50,12 @@ The generator validates the output with the `checklistTestTargets` contract befo
 - Contracts: labels, feeds, bookmarks, reports, SBOM references, tile passports, core pack manifests, and checklist target manifests.
 - Deterministic replay: tile synthesis, sidecars, bookmarks, CSV, reports, and public/dev truth-label policy.
 - Legacy bridge targets: audio determinism, bookmark creation, bookmark round trip, IRR alpha threshold, public truth hiding, accessibility threshold, and SBOM export.
-- Browser workflows: tile navigation, overlay/palette rendering, label submit/undo, metrics/charts, CSV export, data import/sample load, bookmark creation/reload, accessibility focus/caption checks, and public truth-label hiding.
+- Browser workflows: tile navigation, overlay/palette rendering, audio controls, label submit/undo, calibration, expert queue, metrics/charts, CSV export, SBOM export, data import/sample load, built-in checks, UI polish/responsive checks, bookmark creation/reload, accessibility focus/caption checks, and public truth-label hiding.
 
-## Next Test Targets
+## Migration Status
 
 The migrated browser targets are covered by `apps/web/test/browser/workflows.spec.mjs`.
 
-The highest leverage manual targets to automate next are:
+All 86 manual checklist targets and all 7 bridge auto-checks now have automated coverage references in `tests/evidence/legacy-v3-checklist-targets.json`.
 
-- audio sonification controls and deterministic playback bridge coverage;
-- calibration wizard step/score behavior;
-- expert queue confirm/override behavior;
-- SBOM download content checks;
-- remaining UI polish workflows such as fullscreen, disabled states, details toggles, and responsive layout.
+The highest leverage follow-on work is to split browser workflows by domain, add per-domain fixtures, and promote selected checks into smaller unit-level tests where browser coverage is more expensive than necessary.

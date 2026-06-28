@@ -180,8 +180,11 @@
       "section": "3. Audio Sonification",
       "label": "Play button (play) starts audio sonification",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.002",
@@ -189,8 +192,11 @@
       "section": "3. Audio Sonification",
       "label": "Pause button (pause) appears when playing",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.003",
@@ -198,8 +204,11 @@
       "section": "3. Audio Sonification",
       "label": "Audio uses deterministic mapping from tile data",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.004",
@@ -207,8 +216,11 @@
       "section": "3. Audio Sonification",
       "label": "Progress bar animates during playback",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.005",
@@ -216,8 +228,11 @@
       "section": "3. Audio Sonification",
       "label": "Loop button (loop) toggles looping",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.006",
@@ -225,8 +240,11 @@
       "section": "3. Audio Sonification",
       "label": "Rate selector (0.5x, 1x, 1.5x, 2x) changes speed",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.007",
@@ -234,8 +252,11 @@
       "section": "3. Audio Sonification",
       "label": "Keyboard: Space toggles play/pause",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.008",
@@ -243,8 +264,11 @@
       "section": "3. Audio Sonification",
       "label": "Keyboard: L toggles loop",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.4-classification-submission.001",
@@ -348,8 +372,11 @@
       "section": "5. Calibration Wizard",
       "label": "Calibration button (settings) opens wizard",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.002",
@@ -357,8 +384,11 @@
       "section": "5. Calibration Wizard",
       "label": "Wizard mode selector works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.003",
@@ -366,8 +396,11 @@
       "section": "5. Calibration Wizard",
       "label": "Progress policy selector works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.004",
@@ -375,8 +408,11 @@
       "section": "5. Calibration Wizard",
       "label": "Start button begins calibration (3 tiles)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.005",
@@ -384,8 +420,11 @@
       "section": "5. Calibration Wizard",
       "label": "Hints appear for current tile class",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.006",
@@ -393,8 +432,11 @@
       "section": "5. Calibration Wizard",
       "label": "Submit gives correct/incorrect feedback",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.007",
@@ -402,8 +444,11 @@
       "section": "5. Calibration Wizard",
       "label": "Next button advances through steps",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.008",
@@ -411,8 +456,11 @@
       "section": "5. Calibration Wizard",
       "label": "Final score displayed (X/3)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.5-calibration-wizard.009",
@@ -420,8 +468,11 @@
       "section": "5. Calibration Wizard",
       "label": "Keyboard: C starts calibration",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.001",
@@ -429,8 +480,11 @@
       "section": "6. Expert Queue",
       "label": "Expert Queue button (review) opens panel",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.002",
@@ -438,8 +492,11 @@
       "section": "6. Expert Queue",
       "label": "Queue shows recent submissions",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.003",
@@ -447,8 +504,11 @@
       "section": "6. Expert Queue",
       "label": "Classical analyzers compute scores (stripe/dipole/ringing)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.004",
@@ -456,8 +516,11 @@
       "section": "6. Expert Queue",
       "label": "Confirm button records expert decision",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.005",
@@ -465,8 +528,11 @@
       "section": "6. Expert Queue",
       "label": "Override button allows corrections",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.006",
@@ -474,8 +540,11 @@
       "section": "6. Expert Queue",
       "label": "Confidence selector (0.6, 0.75, 0.9) works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.6-expert-queue.007",
@@ -483,8 +552,11 @@
       "section": "6. Expert Queue",
       "label": "Expert note field accepts input",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.001",
@@ -648,8 +720,11 @@
       "section": "8. Data Import/Export",
       "label": "Export SBOM button downloads sbom.json",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.006",
@@ -657,8 +732,11 @@
       "section": "8. Data Import/Export",
       "label": "SBOM includes v2 components & licenses",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.007",
@@ -702,8 +780,11 @@
       "section": "9. Built-in Tests",
       "label": "Run Tests button executes test suite",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.002",
@@ -711,8 +792,11 @@
       "section": "9. Built-in Tests",
       "label": "CSV builder test passes",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.003",
@@ -720,8 +804,11 @@
       "section": "9. Built-in Tests",
       "label": "PR-AUC test passes",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.004",
@@ -729,8 +816,11 @@
       "section": "9. Built-in Tests",
       "label": "Tile synth test passes",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.005",
@@ -738,8 +828,11 @@
       "section": "9. Built-in Tests",
       "label": "EMA test passes",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.006",
@@ -747,8 +840,11 @@
       "section": "9. Built-in Tests",
       "label": "Test results display in log area",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.001",
@@ -756,8 +852,11 @@
       "section": "10. UI/UX Polish",
       "label": "Buttons show hover effects (border color change)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.002",
@@ -765,8 +864,11 @@
       "section": "10. UI/UX Polish",
       "label": "Cards show hover effects (shadow lift)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.003",
@@ -774,8 +876,11 @@
       "section": "10. UI/UX Polish",
       "label": "Canvas shows hover zoom effect",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.004",
@@ -783,8 +888,11 @@
       "section": "10. UI/UX Polish",
       "label": "KPI cards animate on hover",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.005",
@@ -792,8 +900,11 @@
       "section": "10. UI/UX Polish",
       "label": "Disabled buttons show reduced opacity",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.006",
@@ -801,8 +912,11 @@
       "section": "10. UI/UX Polish",
       "label": "Details sections expand/collapse smoothly",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.007",
@@ -810,8 +924,11 @@
       "section": "10. UI/UX Polish",
       "label": "Summary text changes color on hover",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.008",
@@ -819,8 +936,11 @@
       "section": "10. UI/UX Polish",
       "label": "Icons display correctly in buttons (check undo settings review link etc.)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.009",
@@ -828,8 +948,11 @@
       "section": "10. UI/UX Polish",
       "label": "Fullscreen button (fullscreen) works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.10-ui-ux-polish.010",
@@ -837,8 +960,11 @@
       "section": "10. UI/UX Polish",
       "label": "Responsive design works on narrow screens",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.001",
@@ -920,7 +1046,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "audio-deterministic"
+      "data_testid": "audio-deterministic",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.bookmark-created",
@@ -956,7 +1085,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "irr-alpha-ok"
+      "data_testid": "irr-alpha-ok",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.truth-hidden-public",
@@ -992,7 +1124,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "sbom-exported"
+      "data_testid": "sbom-exported",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     }
   ]
 }
