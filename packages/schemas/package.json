@@ -1,0 +1,12 @@
+{
+  "name": "@ai-bio-synergy/cosmos-cqa-schemas",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Dependency-free COSMOS-CQA research workflow schemas and contract validators.",
+  "license": "SEE LICENSE IN ../../LICENSE.md",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "sideEffects": false
+}

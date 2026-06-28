@@ -53,3 +53,5 @@ jobs:
           curl --fail --silent --show-error http://127.0.0.1:4173/src/main.js >/dev/null
           curl --fail --silent --show-error http://127.0.0.1:4173/src/contracts/index.js >/dev/null
           curl --fail --silent --show-error http://127.0.0.1:4173/src/feeds/index.js >/dev/null
+          curl --fail --silent --show-error http://127.0.0.1:4173/packages/schemas/src/index.js >/dev/null
+          curl --fail --silent --show-error http://127.0.0.1:4173/packages/core/src/index.js >/dev/null

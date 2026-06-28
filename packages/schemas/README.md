@@ -1,13 +1,27 @@
 # Schemas Package
 
-This directory will contain JSON schemas for public COSMOS-CQA artifacts.
+`@ai-bio-synergy/cosmos-cqa-schemas` is the canonical dependency-free schema and contract-validation surface for COSMOS-CQA research workflow records.
 
-Planned schemas:
+The current entrypoint is `src/index.js`.
 
-- label export;
-- expert adjudication export;
-- tile passport;
-- core pack manifest;
-- validation report;
-- test report.
+## Exports
 
+- `CONTRACT_SCHEMA_VERSION`
+- schema constants for artifact classes, severities, overlays, palettes, expert classes, and checklist states
+- `schemas`
+- `validateContract(name, value)`
+- `assertContract(name, value)`
+- `isValidContract(name, value)`
+
+## Covered Shapes
+
+- label records and label export rows
+- feed tile and expert events
+- bookmark provenance payloads
+- tile passports
+- SBOM references and CycloneDX SBOM exports
+- core pack manifests
+- validation reports
+- legacy checklist target manifests
+
+The browser app re-exports this package through `apps/web/src/contracts/` for compatibility, but new reusable infrastructure should import from this package surface.

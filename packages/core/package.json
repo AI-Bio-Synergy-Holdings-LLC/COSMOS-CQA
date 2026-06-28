@@ -1,0 +1,19 @@
+{
+  "name": "@ai-bio-synergy/cosmos-cqa-core",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Reusable COSMOS-CQA research workflow domain helpers.",
+  "license": "SEE LICENSE IN ../../LICENSE.md",
+  "exports": {
+    ".": "./src/index.js",
+    "./feeds": "./src/feeds/index.js",
+    "./labels": "./src/labels/index.js",
+    "./metrics": "./src/metrics/index.js",
+    "./provenance": "./src/provenance/index.js",
+    "./reports": "./src/reports/index.js",
+    "./sidecars": "./src/sidecars/index.js",
+    "./tile-synthesis": "./src/tile-synthesis/index.js"
+  },
+  "sideEffects": false
+}

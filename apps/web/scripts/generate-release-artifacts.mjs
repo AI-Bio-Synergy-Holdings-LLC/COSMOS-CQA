@@ -1,8 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { createBuildInfo } from "../src/provenance/index.js";
-import { createSbom, createValidationReport } from "../src/reports/index.js";
+import { createBuildInfo } from "../../../packages/core/src/provenance/index.js";
+import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
 
 const releaseId = "v0.1.0-research-alpha";
 const generatedAt = "2026-06-28T07:12:46.000Z";

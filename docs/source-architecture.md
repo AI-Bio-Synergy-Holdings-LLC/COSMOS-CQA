@@ -4,29 +4,34 @@ COSMOS-CQA starts from a monolithic legacy HTML prototype. The maintainable sour
 
 ## Architecture Decision
 
-Use a static browser application built from native ES modules under `apps/web/src/`.
+Use a static browser application built from native ES modules under `apps/web/src/`, with reusable research infrastructure exposed through `packages/schemas/` and `packages/core/`.
 
 This is the highest-leverage first split because it:
 
 - preserves the current static-demo deployment model;
 - avoids adding framework dependencies before schemas and domain boundaries settle;
 - keeps GitHub Pages and local static hosting straightforward;
-- lets domain logic move into testable modules immediately;
+- lets domain logic move into testable package modules immediately;
 - leaves a clean upgrade path to Vite, React, Web Components, or workers later.
 
 ## Module Boundaries
 
-The source split uses these first-class modules:
+The reusable package surfaces are:
 
-- `tile-synthesis`: deterministic synthetic tile generation and pixel helpers;
-- `sidecars`: overlays, audio maps, and sonification playback;
-- `contracts`: schema definitions and dependency-free validation for research workflow records;
-- `feeds`: feed payload parsing, normalization, and contract rejection reporting;
-- `labels`: volunteer label capture, persistence, and CSV export;
-- `metrics`: PR-AUC, precision/recall, EMA, reliability, latency, and KPI helpers;
+- `packages/schemas`: schema definitions, contract versioning, and dependency-free validators;
+- `packages/core`: deterministic domain helpers for feeds, labels, metrics, provenance, reports, sidecars, and tile synthesis.
+
+The browser source uses these first-class app modules:
+
+- `tile-synthesis`: compatibility re-export for package tile helpers;
+- `sidecars`: browser overlays/audio controls plus deterministic audio-map helpers;
+- `contracts`: compatibility re-export for package schemas;
+- `feeds`: compatibility re-export for package feed helpers;
+- `labels`: browser persistence plus package label/CSV helpers;
+- `metrics`: compatibility re-export for package metric helpers;
 - `expert-review`: expert queue scoring, confirm/override, and adjudication persistence;
-- `provenance`: bookmark payloads, build metadata, test bridge events, and replay handles;
-- `reports`: SBOM and validation/export helpers;
+- `provenance`: browser test bridge/clipboard helpers plus package bookmark helpers;
+- `reports`: browser download helpers plus package SBOM/report assembly;
 - `ui`: DOM binding, event wiring, calibration flow, keyboard scope, and view updates.
 
 Shared state and static data live at the app layer only when they coordinate multiple modules.

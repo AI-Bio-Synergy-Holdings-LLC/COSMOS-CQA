@@ -1,8 +1,10 @@
 # contracts
 
-Schema definitions and lightweight validation for COSMOS-CQA workflow records.
+Compatibility re-export for the canonical schema package.
 
-This module owns:
+The maintained schema definitions and lightweight validators live in `packages/schemas/src/`. This app module re-exports that package surface so legacy app-relative imports keep working.
+
+The schema package owns:
 
 - contract schema versioning;
 - label and export row schemas;
@@ -12,4 +14,4 @@ This module owns:
 - SBOM, SBOM reference, validation report, and checklist target schemas;
 - dependency-free validation helpers for browser and Node tests.
 
-Keep producer modules responsible for creating data, and keep this module responsible for deciding whether the data shape is valid.
+Keep producer modules responsible for creating data, and keep the schemas package responsible for deciding whether the data shape is valid.

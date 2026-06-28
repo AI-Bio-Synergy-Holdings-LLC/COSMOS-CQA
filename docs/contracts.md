@@ -2,7 +2,8 @@
 
 COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist target evidence.
 
-The canonical contract implementation lives in `apps/web/src/contracts/`.
+The canonical contract implementation lives in `packages/schemas/src/`.
+The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
 
 ## Contract Version
 

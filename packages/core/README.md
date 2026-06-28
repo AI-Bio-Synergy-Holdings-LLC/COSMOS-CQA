@@ -1,13 +1,17 @@
 # Core Package
 
-This directory will contain reusable COSMOS-CQA domain logic.
+`@ai-bio-synergy/cosmos-cqa-core` is the reusable COSMOS-CQA domain-helper surface.
 
-Planned modules:
+The current entrypoint is `src/index.js`, with submodule entrypoints for:
 
-- artifact taxonomy;
-- label weighting and reliability metrics;
-- deterministic sidecar parameter generation;
-- provenance hashing;
-- report assembly;
-- validation helpers.
+- `feeds`: feed parsing, normalization, and validation helpers
+- `labels`: label export and CSV helpers
+- `metrics`: PR-AUC, reliability, latency, and accessibility helpers
+- `provenance`: build info and bookmark payload helpers
+- `reports`: SBOM and validation report assembly
+- `sidecars`: deterministic audio-map helpers
+- `tile-synthesis`: deterministic synthetic tile records and pixel helpers
 
+Browser-only behavior remains in `apps/web/src/`, including DOM drawing, local storage, clipboard, downloads, Web Audio controls, and UI event wiring.
+
+The package imports schemas from `packages/schemas` and is intended to keep deterministic research workflow logic reusable outside the browser app.

@@ -12,6 +12,7 @@ Current status:
 - Original materials are inventoried in `archive/original-materials/`.
 - Canonical COSMOS v3 legacy browser materials are archived under `archive/original-materials/legacy-v3/`.
 - The maintained browser workbench is split into native ES modules under `apps/web/src/`.
+- Reusable schemas and domain helpers now live under `packages/schemas/` and `packages/core/`.
 - Labels, feed events, provenance/bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist targets have first-pass contracts and contract tests.
 - Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
 - The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with all tracked legacy targets covered by Playwright browser automation.

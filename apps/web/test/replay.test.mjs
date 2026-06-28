@@ -3,16 +3,16 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
-import { buildCSV, labelsToRows } from "../src/labels/index.js";
+import { buildCSV, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   createBookmarkPayload,
   createBuildInfo,
   decodeBookmarkPayload,
   encodeBookmarkPayload,
-} from "../src/provenance/index.js";
-import { createSbom, createValidationReport } from "../src/reports/index.js";
-import { makeAudioMapForTile } from "../src/sidecars/index.js";
-import { createDemoTileRecords } from "../src/tile-synthesis/index.js";
+} from "../../../packages/core/src/provenance/index.js";
+import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
+import { makeAudioMapForTile } from "../../../packages/core/src/sidecars/index.js";
+import { createDemoTileRecords } from "../../../packages/core/src/tile-synthesis/index.js";
 import { formatTileOptionLabel, truthTagDisplay } from "../src/ui/index.js";
 
 const fixtureUrl = new URL("../../../examples/core-pack/replay-fixture.json", import.meta.url);

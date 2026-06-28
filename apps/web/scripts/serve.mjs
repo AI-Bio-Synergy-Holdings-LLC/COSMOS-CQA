@@ -2,7 +2,8 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, normalize, resolve, sep } from "node:path";
 
-const root = resolve(import.meta.dirname, "..");
+const appRoot = resolve(import.meta.dirname, "..");
+const repoRoot = resolve(appRoot, "..", "..");
 const port = Number(process.env.PORT || 4173);
 
 const mime = {
@@ -18,9 +19,12 @@ const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host}`);
     const requested = url.pathname === "/" ? "/index.html" : url.pathname;
+    const servesPackages = requested.startsWith("/packages/");
+    const root = servesPackages ? repoRoot : appRoot;
+    const allowedRoot = servesPackages ? resolve(repoRoot, "packages") : appRoot;
     const filePath = normalize(resolve(root, `.${requested}`));
 
-    if (!filePath.startsWith(root + sep) && filePath !== root) {
+    if (!filePath.startsWith(allowedRoot + sep) && filePath !== allowedRoot) {
       response.writeHead(403);
       response.end("Forbidden");
       return;
@@ -38,4 +42,3 @@ const server = createServer(async (request, response) => {
 server.listen(port, () => {
   console.log(`COSMOS-CQA web app serving at http://localhost:${port}/`);
 });
-

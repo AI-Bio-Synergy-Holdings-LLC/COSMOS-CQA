@@ -3,17 +3,17 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
-import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../src/contracts/index.js";
-import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../src/feeds/index.js";
-import { buildCSV, createVolunteerLabel, labelsToRows } from "../src/labels/index.js";
+import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
+import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
+import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   createBookmarkPayload,
   createBookmarkUrl,
   createBuildInfo,
   decodeBookmarkPayload,
   encodeBookmarkPayload,
-} from "../src/provenance/index.js";
-import { createSbom, createValidationReport } from "../src/reports/index.js";
+} from "../../../packages/core/src/provenance/index.js";
+import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
 
 const legacyChecklistTargets = JSON.parse(
   await readFile(new URL("../../../tests/evidence/legacy-v3-checklist-targets.json", import.meta.url), "utf8"),
@@ -168,6 +168,14 @@ test("label contract rejects invalid classes with pathful errors", () => {
   const result = validateContract("labelRecord", { ...label, clazz: "not-a-class" });
   assert.equal(result.valid, false);
   assert.equal(result.errors[0].path, "labelRecord.clazz");
+});
+
+test("package entrypoints expose shared schema and core surfaces", () => {
+  assert.equal(typeof assertContract, "function");
+  assert.equal(typeof createVolunteerLabel, "function");
+  assert.equal(typeof parseFeedPayload, "function");
+  assert.equal(typeof createBookmarkPayload, "function");
+  assert.equal(typeof createValidationReport, "function");
 });
 
 test("feed parser accepts JSON arrays and normalizes event values", () => {
