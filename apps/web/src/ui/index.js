@@ -1,0 +1,910 @@
+import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
+import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
+import {
+  calculateAccessibilityCoverage,
+  calculateMedianLatency,
+  calculateReliability,
+  computePR,
+  ema,
+  prAUC,
+  recordExpertMetric,
+  recordVolunteerFlag,
+} from "../metrics/index.js";
+import { createBookmarkPayload, createBookmarkUrl, createBuildInfo, notifyTestBridge, writeClipboard } from "../provenance/index.js";
+import { createSbom, downloadCsv, downloadJson } from "../reports/index.js";
+import { createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
+import { synthTile } from "../tile-synthesis/index.js";
+
+const HINTS = {
+  stripe: "Hint: scan-synchronous lines often appear as vertical or horizontal banding; check line energy.",
+  dipole: "Hint: dipole patterns show a left-right or up-down gradient.",
+  ringing: "Hint: ringing appears as concentric ripples around bright structures.",
+  point: "Hint: residual point sources are small bright dots; look for high-frequency peaks.",
+  clean: "Hint: if none of the artifact cues are evident, mark clean.",
+};
+
+export function createCosmosWorkbench({ documentRef = document, windowRef = window, tiles, state, config }) {
+  const dom = bindDom(documentRef);
+  const ctx = dom.tileCanvas.getContext("2d");
+  const build = createBuildInfo(config);
+  let feedWS = null;
+  let feedTimer = null;
+  let charts = { pr: null, live: null, ops: null, conf: null };
+  const liveSeries = [];
+  const calibration = { mode: "wizard", gate: "learning", active: false, tiles: [], index: 0, correct: 0 };
+
+  const audio = createAudioController({
+    state,
+    controls: {
+      playButton: dom.playBtn,
+      progressBar: dom.prog,
+    },
+    getPalette: () => dom.paletteSel.value,
+    setCaption,
+  });
+
+  function setCaption(message) {
+    if (dom.captionsChk.checked) {
+      dom.caption.textContent = message;
+    }
+  }
+
+  function populateTileSelect() {
+    dom.tileSelect.innerHTML = "";
+    tiles.forEach((tile, index) => {
+      const option = documentRef.createElement("option");
+      option.value = String(index);
+      option.textContent = config.dev ? `${tile.meta.tile_id} - ${tile.meta.truth.class}` : tile.meta.tile_id;
+      dom.tileSelect.appendChild(option);
+    });
+  }
+
+  function drawTile(index = state.idx) {
+    const tile = tiles[index];
+    if (!tile) {
+      return;
+    }
+
+    state.idx = index;
+    ctx.clearRect(0, 0, 512, 512);
+    ctx.drawImage(tile.canvas, 0, 0, 512, 512);
+    drawOverlay(ctx, dom.overlaySel.value);
+    dom.tileId.textContent = tile.meta.tile_id;
+    dom.truthTag.textContent = `truth: ${tile.meta.truth.class}`;
+    dom.truthTag.style.display = config.dev ? "" : "none";
+    dom.tileSelect.value = String(index);
+  }
+
+  function updateChart(chartRef, id, configValue) {
+    if (!windowRef.Chart) {
+      return chartRef;
+    }
+
+    if (chartRef) {
+      chartRef.data = configValue.data;
+      chartRef.options = configValue.options || chartRef.options;
+      chartRef.update();
+      return chartRef;
+    }
+
+    return new windowRef.Chart(documentRef.getElementById(id).getContext("2d"), configValue);
+  }
+
+  function updatePRChart() {
+    const { pts } = computePR(state.scores);
+    charts.pr = updateChart(charts.pr, "prChart", {
+      type: "scatter",
+      data: {
+        datasets: [
+          {
+            label: "PR",
+            data: pts.map((point) => ({ x: point.r, y: point.p })),
+            borderColor: "#60a5fa",
+            backgroundColor: "#60a5fa",
+            showLine: true,
+            tension: 0.2,
+          },
+        ],
+      },
+      options: {
+        animation: false,
+        scales: {
+          x: { min: 0, max: 1, title: { display: true, text: "Recall" } },
+          y: { min: 0, max: 1, title: { display: true, text: "Precision" } },
+        },
+      },
+    });
+  }
+
+  function updateOpsChart() {
+    const labels = state.histTime.slice(-100).map((timestamp) => new Date(timestamp).toLocaleTimeString());
+    charts.ops = updateChart(charts.ops, "opsChart", {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Flags/min",
+            data: state.histRate.slice(-100),
+            borderColor: "#60a5fa",
+            backgroundColor: "rgba(96,165,250,0.2)",
+            tension: 0.25,
+          },
+          {
+            label: "Latency (s)",
+            data: state.histLat.slice(-100),
+            borderColor: "#22c55e",
+            backgroundColor: "rgba(34,197,94,0.15)",
+            tension: 0.25,
+            yAxisID: "y1",
+          },
+        ],
+      },
+      options: {
+        animation: false,
+        scales: {
+          y: { beginAtZero: true },
+          y1: { beginAtZero: true, position: "right" },
+        },
+      },
+    });
+  }
+
+  function updateConfChart() {
+    charts.conf = updateChart(charts.conf, "confChart", {
+      type: "bar",
+      data: {
+        labels: ["0.6", "0.75", "0.9"],
+        datasets: [
+          {
+            label: "Expert confidence",
+            data: [state.confEMA.low, state.confEMA.mid, state.confEMA.high],
+            borderColor: "#f59e0b",
+            backgroundColor: "rgba(245,158,11,0.35)",
+          },
+        ],
+      },
+      options: {
+        animation: false,
+        scales: { y: { beginAtZero: true, max: 1 } },
+      },
+    });
+  }
+
+  function updateLiveChart() {
+    const points = liveSeries.slice(-200);
+    charts.live = updateChart(charts.live, "liveChart", {
+      type: "line",
+      data: {
+        labels: points.map((point) => new Date(point.t).toLocaleTimeString()),
+        datasets: [
+          {
+            label: "Residual score",
+            data: points.map((point) => point.v),
+            borderColor: "#e0b35a",
+            backgroundColor: "rgba(224,179,90,0.2)",
+            tension: 0.2,
+          },
+        ],
+      },
+      options: {
+        animation: false,
+        scales: { y: { min: 0, max: 1 } },
+      },
+    });
+  }
+
+  function recalcKPIs(fromCalibration = false) {
+    const pr = computePR(state.scores);
+    dom.kpiPR.textContent = `${pr.p.toFixed(2)} / ${pr.r.toFixed(2)}`;
+    dom.kpiAUC.textContent = pr.auc.toFixed(2);
+
+    updatePRChart();
+    updateOpsChart();
+    updateConfChart();
+
+    const reliability = calculateReliability(state.labels, state.weight);
+    if (reliability) {
+      dom.kpiIRR.textContent = `${reliability.kappa.toFixed(2)} / ${reliability.alpha.toFixed(2)}`;
+    }
+
+    const medianLatency = calculateMedianLatency(state.startTimes);
+    if (medianLatency) {
+      dom.kpiLatency.textContent = `${medianLatency.toFixed(1)}s`;
+    }
+
+    const coverage = calculateAccessibilityCoverage({
+      captions: dom.captionsChk.checked,
+      usedKeyboard: state.usedKeyboard,
+      palette: dom.paletteSel.value,
+    });
+    dom.kpiA11y.textContent = `${Math.round(coverage * 100)}%`;
+    dom.kpiA11y.className = coverage >= 0.95 ? "ok" : coverage >= 0.7 ? "warn" : "bad";
+
+    if (fromCalibration) {
+      setCaption("Calibration complete; reliability weight increased; IRR updated.");
+    }
+  }
+
+  function submitLabel() {
+    const tile = tiles[state.idx];
+    const label = createVolunteerLabel({
+      tile,
+      state,
+      controls: {
+        classSelect: dom.classSel,
+        severitySelect: dom.sevSel,
+        noteInput: dom.note,
+      },
+    });
+
+    state.labels.push(label);
+    saveLabels(state.labels);
+    setCaption(`Submitted: ${label.clazz} (${label.severity}).`);
+
+    const timestamp = Date.now();
+    state.startTimes[tile.meta.tile_id] = timestamp;
+    recordVolunteerFlag(state, timestamp);
+
+    const isResidualTruth = tile.meta.truth && tile.meta.truth.class !== "clean";
+    const residualScore = Math.min(1, Math.max(0, (label.clazz === "clean" ? 0.25 : 0.85) + (Math.random() - 0.5) * 0.2));
+    state.scores.push({ tile_id: tile.meta.tile_id, score: residualScore, truth: isResidualTruth });
+
+    enqueueExpert(state, tile.meta);
+    renderExpertPane();
+
+    if (!state.simDisabled) {
+      simulateExpertDecision(tile.meta);
+    }
+
+    updatePRChart();
+    recalcKPIs(false);
+    return label;
+  }
+
+  function simulateExpertDecision(meta) {
+    const latencySeconds = 2 + Math.random() * 5;
+    const confidence = 0.75;
+
+    setTimeout(() => {
+      const decision = {
+        tile_id: meta.tile_id,
+        decision: "confirm",
+        expert_class: "residual",
+        expert_confidence: confidence,
+        note: "",
+        latency_s: latencySeconds.toFixed(2),
+      };
+      state.expert.push(decision);
+      saveExpertDecisions(state.expert);
+      recordExpertMetric(state, Date.now(), confidence, latencySeconds);
+      recalcKPIs(true);
+    }, Math.round(latencySeconds * 1000));
+  }
+
+  function renderExpertPane() {
+    const recentScores = getRecentScores(state);
+
+    if (!recentScores.length) {
+      dom.expertPane.textContent = "Queue is empty.";
+      return;
+    }
+
+    dom.expertPane.innerHTML = "";
+
+    recentScores.forEach((scoreEntry, index) => {
+      const wrapper = documentRef.createElement("div");
+      wrapper.style.borderTop = "1px solid #24314d";
+      wrapper.style.padding = "8px 0";
+      wrapper.innerHTML = `
+        <div><strong>${scoreEntry.tile_id}</strong> - residual: ${scoreEntry.score.toFixed(2)} - truth residual: ${scoreEntry.truth}</div>
+        <div class="row">
+          <button type="button" data-i="${index}" data-d="confirm">Confirm</button>
+          <button type="button" data-i="${index}" data-d="override">Override</button>
+          <select data-i="${index}" data-c="conf">
+            <option value="0.6">0.6</option>
+            <option value="0.75" selected>0.75</option>
+            <option value="0.9">0.9</option>
+          </select>
+          <input data-i="${index}" data-c="note" placeholder="expert note" class="small">
+        </div>`;
+      dom.expertPane.appendChild(wrapper);
+    });
+
+    dom.expertPane.querySelectorAll("button[data-d]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const localIndex = Number(event.currentTarget.dataset.i);
+        const scoreEntry = recentScores[localIndex];
+        const row = event.currentTarget.closest(".row");
+        const confidence = parseFloat(row.querySelector('select[data-c="conf"]').value || "0.75");
+        const note = row.querySelector('input[data-c="note"]').value || "";
+        const decision = event.currentTarget.dataset.d;
+        const decidedAt = Date.now();
+        const expertDecision = createExpertDecision({
+          scoreEntry,
+          decision,
+          confidence,
+          note,
+          startedAt: state.startTimes[scoreEntry.tile_id],
+          decidedAt,
+        });
+
+        state.expert.push(expertDecision);
+        saveExpertDecisions(state.expert);
+        recordExpertMetric(state, decidedAt, confidence, parseFloat(expertDecision.latency_s));
+        liveSeries.push({ t: decidedAt, v: scoreEntry.score });
+        updateLiveChart();
+        setCaption(`Expert ${expertDecision.expert_class} recorded for ${scoreEntry.tile_id} (conf ${confidence}).`);
+        recalcKPIs();
+      });
+    });
+  }
+
+  function pickGold(count) {
+    return tiles
+      .filter((tile) => tile.meta.truth.class !== "clean")
+      .sort(() => Math.random() - 0.5)
+      .slice(0, count);
+  }
+
+  function updateCalibrationUI() {
+    dom.calibStep.textContent = calibration.active ? `${calibration.index + 1}/3` : "";
+    const explainOk = dom.calibExplain.dataset.ok === "1";
+    dom.nextStep.disabled =
+      !calibration.active ||
+      (calibration.gate === "gated" && !explainOk) ||
+      calibration.index >= calibration.tiles.length - 1;
+
+    const meta = calibration.active ? calibration.tiles[calibration.index].meta : null;
+    dom.calibHint.textContent = meta ? HINTS[meta.truth.class] : "";
+  }
+
+  function startCalibFlow() {
+    calibration.mode = dom.calibMode.value;
+    calibration.gate = dom.gatePolicy.value;
+    calibration.active = true;
+    calibration.tiles = pickGold(3);
+    calibration.index = 0;
+    calibration.correct = 0;
+
+    state.idx = tiles.indexOf(calibration.tiles[0]);
+    drawTile(state.idx);
+    dom.calibExplain.textContent = "Choose class and Submit, then Next.";
+    dom.calibExplain.dataset.ok = "0";
+    updateCalibrationUI();
+  }
+
+  function onCalibSubmit(label) {
+    if (!calibration.active || !label) {
+      return;
+    }
+
+    const truth = calibration.tiles[calibration.index].meta.truth.class;
+    const ok = label.clazz === truth;
+    calibration.correct += ok ? 1 : 0;
+    dom.calibExplain.textContent = ok ? "Correct: class matches expected residual." : `Expected ${truth}. ${HINTS[truth]}`;
+    dom.calibExplain.dataset.ok = ok ? "1" : "0";
+    updateCalibrationUI();
+  }
+
+  function nextCalibStep() {
+    if (!calibration.active) {
+      return;
+    }
+
+    if (calibration.index >= calibration.tiles.length - 1) {
+      calibration.active = false;
+      dom.calibStep.textContent = "Done";
+      dom.calibStatus.textContent = `Score: ${calibration.correct}/3`;
+      return;
+    }
+
+    calibration.index += 1;
+    state.idx = tiles.indexOf(calibration.tiles[calibration.index]);
+    drawTile(state.idx);
+    dom.calibExplain.textContent = "Choose class and Submit, then Next.";
+    dom.calibExplain.dataset.ok = "0";
+    updateCalibrationUI();
+  }
+
+  function processFeedObject(object) {
+    if (!object || !object.type) {
+      return;
+    }
+
+    if (object.type === "tile" && object.png) {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = documentRef.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        canvas.getContext("2d").drawImage(image, 0, 0, 256, 256);
+        tiles.push({
+          meta: {
+            tile_id: object.tile_id || `tile_${Date.now()}`,
+            dataset: object.dataset || "EXT",
+            band: object.band || "T",
+            ra: object.ra || 0,
+            dec: object.dec || 0,
+            truth: { class: "clean", severity: "low" },
+            checksum: object.checksum || "",
+          },
+          canvas,
+        });
+
+        if (object.overlay) {
+          dom.overlaySel.value = object.overlay;
+        }
+
+        populateTileSelect();
+        drawTile(tiles.length - 1);
+      };
+      image.src = object.png;
+      return;
+    }
+
+    if (object.type === "expert" && object.tile_id) {
+      const decidedAt = Date.now();
+      const latency = typeof object.latency_s === "number" ? object.latency_s : parseFloat(object.latency_s || "0");
+      const confidence =
+        typeof object.expert_confidence === "number" ? object.expert_confidence : parseFloat(object.expert_confidence || "0.75");
+      state.expert.push({
+        tile_id: object.tile_id,
+        expert_class: object.expert_class || "residual",
+        expert_confidence: confidence,
+        note: object.note || "",
+        latency_s: latency,
+      });
+      saveExpertDecisions(state.expert);
+      recordExpertMetric(state, decidedAt, confidence, latency);
+      recalcKPIs();
+    }
+  }
+
+  function startWs(url) {
+    try {
+      if (feedWS) {
+        feedWS.close();
+        feedWS = null;
+      }
+
+      state.simDisabled = true;
+      feedWS = new WebSocket(url);
+      feedWS.onopen = () => {
+        dom.feedStatus.textContent = `WS connected: ${url} (sim disabled)`;
+      };
+      feedWS.onmessage = (event) => parseFeedText(event.data);
+      feedWS.onerror = () => {
+        dom.feedStatus.textContent = "WS error";
+      };
+      feedWS.onclose = () => {
+        dom.feedStatus.textContent = "WS closed";
+        feedWS = null;
+      };
+    } catch {
+      dom.feedStatus.textContent = "WS connect failed";
+    }
+  }
+
+  function parseFeedText(text) {
+    try {
+      const object = JSON.parse(text);
+      if (Array.isArray(object)) {
+        object.forEach(processFeedObject);
+      } else {
+        processFeedObject(object);
+      }
+    } catch {
+      text
+        .split("\n")
+        .filter(Boolean)
+        .forEach((line) => {
+          try {
+            processFeedObject(JSON.parse(line));
+          } catch {
+            dom.feedStatus.textContent = "Feed parse error";
+          }
+        });
+    }
+  }
+
+  function startHttp(url) {
+    try {
+      if (feedTimer) {
+        clearInterval(feedTimer);
+        feedTimer = null;
+      }
+
+      state.simDisabled = true;
+      dom.feedStatus.textContent = `HTTP polling: ${url} (sim disabled)`;
+      let lastETag = "";
+
+      feedTimer = setInterval(async () => {
+        try {
+          const response = await fetch(url, {
+            headers: lastETag ? { "If-None-Match": lastETag } : {},
+          });
+          if (response.status === 304) {
+            return;
+          }
+          const text = await response.text();
+          const etag = response.headers.get("ETag");
+          if (etag) {
+            lastETag = etag;
+          }
+          if (text) {
+            parseFeedText(text);
+          }
+        } catch {
+          dom.feedStatus.textContent = "HTTP poll error";
+        }
+      }, 2000);
+    } catch {
+      dom.feedStatus.textContent = "HTTP start failed";
+    }
+  }
+
+  function stopFeed() {
+    if (feedWS) {
+      try {
+        feedWS.close();
+      } catch {
+        // Ignore close errors.
+      }
+      feedWS = null;
+    }
+
+    if (feedTimer) {
+      clearInterval(feedTimer);
+      feedTimer = null;
+    }
+
+    dom.feedStatus.textContent = "Feed stopped (sim enabled)";
+    state.simDisabled = false;
+  }
+
+  function handleFeedUrl() {
+    const url = dom.feedUrl.value.trim();
+    if (!url) {
+      dom.feedStatus.textContent = "Enter a URL";
+      return;
+    }
+
+    if (dom.feedMethod.value === "ws") {
+      startWs(url);
+    } else {
+      startHttp(url);
+    }
+  }
+
+  function handleFileLoad(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      dom.feedStatus.textContent = "No file chosen";
+      return;
+    }
+
+    state.simDisabled = true;
+    const name = file.name.toLowerCase();
+
+    if (!name.endsWith(".json")) {
+      dom.feedStatus.textContent = `Loaded file: ${file.name} (stubbed)`;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const objects = Array.isArray(parsed) ? parsed : [parsed];
+        objects.forEach(processFeedObject);
+        dom.feedStatus.textContent = `Loaded ${objects.length} feed objects from JSON (sim disabled)`;
+      } catch {
+        dom.feedStatus.textContent = "Invalid JSON.";
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function exportLabelsCsv() {
+    const rows = labelsToRows(state.labels, tiles, state.expert);
+    const columns = [
+      "tile_id",
+      "dataset",
+      "volunteer_id",
+      "clazz",
+      "severity",
+      "note",
+      "weight",
+      "ts",
+      "expert_class",
+      "expert_confidence",
+      "expert_latency",
+    ];
+    downloadCsv(buildCSV(rows, columns), "labels.csv");
+    setCaption("CSV exported.");
+  }
+
+  function exportSbom() {
+    downloadJson(createSbom(), "sbom.json");
+    setCaption("SBOM exported.");
+  }
+
+  function runSelfChecks() {
+    dom.testLog.textContent = "Running tests...\n";
+    const tests = [
+      { name: "CSV builder", fn: () => buildCSV([{ a: 1, b: "x" }], ["a", "b"]).includes("1") },
+      {
+        name: "PR-AUC",
+        fn: () => {
+          const auc = prAUC([
+            { thresh: 0.9, p: 1, r: 0.2 },
+            { thresh: 0.5, p: 0.8, r: 0.6 },
+          ]);
+          return auc >= 0 && auc <= 1;
+        },
+      },
+      { name: "Tile synth", fn: () => synthTile({ class: "stripe" }).width === 256 },
+      { name: "EMA", fn: () => Math.abs(ema(0.5, 1, 0.5) - 0.75) < 0.01 },
+    ];
+
+    let pass = 0;
+    for (const test of tests) {
+      try {
+        const ok = test.fn();
+        dom.testLog.textContent += `${ok ? "OK" : "FAIL"} ${test.name}\n`;
+        if (ok) {
+          pass += 1;
+        }
+      } catch {
+        dom.testLog.textContent += `FAIL ${test.name} (error)\n`;
+      }
+    }
+    dom.testLog.textContent += `\n${pass}/${tests.length} passed.`;
+  }
+
+  function createBookmark() {
+    const payload = createBookmarkPayload({
+      tile: tiles[state.idx],
+      overlay: dom.overlaySel.value,
+      palette: dom.paletteSel.value,
+      rate: parseFloat(dom.rateSel.value),
+      loop: state.looping,
+      captions: dom.captionsChk.checked,
+      seed: state.seed,
+    });
+    const url = createBookmarkUrl(payload, windowRef.location);
+    writeClipboard(url).then(() => setCaption("Bookmark URL copied (state encoded)."));
+    notifyTestBridge("bookmark.created", { payload, url });
+  }
+
+  function installKeyboardScope() {
+    windowRef.__HOTKEYS_MASTER__ = true;
+
+    const isTypingTarget = (element) => {
+      if (!element) return false;
+      if (element.isContentEditable) return true;
+      const tag = (element.tagName || "").toUpperCase();
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || element.getAttribute?.("role") === "textbox";
+    };
+
+    const guarded = new Set([" ", "Spacebar", "l", "L", "s", "S", "c", "C", "ArrowLeft", "ArrowRight", "z", "Z"]);
+    windowRef.addEventListener(
+      "keydown",
+      (event) => {
+        const guard = guarded.has(event.key) || (event.ctrlKey && ["z", "Z"].includes(event.key));
+        if (!guard) return;
+        if (!windowRef.__HOTKEYS_MASTER__ || isTypingTarget(event.target)) {
+          event.stopImmediatePropagation();
+        }
+      },
+      true,
+    );
+
+    documentRef.addEventListener("keydown", (event) => {
+      if (isTypingTarget(event.target)) {
+        return;
+      }
+
+      if (event.ctrlKey && event.key === "ArrowLeft") {
+        dom.prevBtn.click();
+        event.preventDefault();
+      } else if (event.ctrlKey && event.key === "ArrowRight") {
+        dom.nextBtn.click();
+        event.preventDefault();
+      } else if (event.ctrlKey && event.key.toLowerCase() === "z") {
+        dom.undoBtn.click();
+        event.preventDefault();
+      } else if (event.key === " ") {
+        dom.playBtn.click();
+        event.preventDefault();
+        state.usedKeyboard = true;
+      } else if (event.key.toLowerCase() === "l") {
+        dom.loopBtn.click();
+        event.preventDefault();
+        state.usedKeyboard = true;
+      } else if (event.key.toLowerCase() === "s") {
+        dom.submitBtn.click();
+        event.preventDefault();
+        state.usedKeyboard = true;
+      } else if (event.key.toLowerCase() === "c") {
+        dom.calibBtn.click();
+        event.preventDefault();
+        state.usedKeyboard = true;
+      }
+    });
+  }
+
+  function addHotkeyToggle() {
+    if (documentRef.getElementById("hotkeyToggle")) {
+      return;
+    }
+
+    const button = documentRef.createElement("button");
+    button.id = "hotkeyToggle";
+    button.type = "button";
+    button.title = "Toggle global keyboard shortcuts";
+    button.className = "pill hotkey-toggle";
+
+    const update = () => {
+      const on = windowRef.__HOTKEYS_MASTER__;
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+      button.textContent = on ? "Hotkeys: ON" : "Hotkeys: OFF";
+      button.style.opacity = on ? "1" : "0.7";
+    };
+
+    button.addEventListener("click", () => {
+      windowRef.__HOTKEYS_MASTER__ = !windowRef.__HOTKEYS_MASTER__;
+      update();
+    });
+
+    documentRef.body.appendChild(button);
+    update();
+  }
+
+  function wireEvents() {
+    dom.prevBtn.addEventListener("click", () => drawTile((state.idx - 1 + tiles.length) % tiles.length));
+    dom.nextBtn.addEventListener("click", () => drawTile((state.idx + 1) % tiles.length));
+    dom.tileSelect.addEventListener("change", (event) => drawTile(Number(event.target.value)));
+    dom.overlaySel.addEventListener("change", () => drawTile(state.idx));
+    dom.paletteSel.addEventListener("change", () => {
+      drawTile(state.idx);
+      recalcKPIs();
+    });
+    dom.fullscreenBtn.addEventListener("click", () => documentRef.documentElement.requestFullscreen?.());
+    dom.playBtn.addEventListener("click", () => {
+      audio.toggle();
+      notifyTestBridge("audio.play", {
+        deterministic: true,
+        preview: makeAudioMapForTile(tiles[state.idx]).slice(0, 5).map((point) => point.freq),
+      });
+    });
+    dom.loopBtn.addEventListener("click", () => {
+      state.looping = !state.looping;
+      dom.loopBtn.textContent = `Loop: ${state.looping ? "on" : "off"}`;
+      dom.loopBtn.setAttribute("aria-pressed", state.looping ? "true" : "false");
+      setCaption(`Loop ${state.looping ? "on" : "off"}.`);
+    });
+    dom.rateSel.addEventListener("change", () => {
+      state.rate = parseFloat(dom.rateSel.value);
+      setCaption(`Rate ${state.rate}x.`);
+    });
+    dom.captionsChk.addEventListener("change", () => {
+      setCaption(dom.captionsChk.checked ? "Captions on." : "");
+      recalcKPIs();
+    });
+    dom.submitBtn.addEventListener("click", () => onCalibSubmit(submitLabel()));
+    dom.undoBtn.addEventListener("click", () => {
+      undoLastLabel(state);
+      setCaption("Undid last label.");
+      recalcKPIs();
+    });
+    dom.calibBtn.addEventListener("click", startCalibFlow);
+    dom.expertBtn.addEventListener("click", () => {
+      dom.expertDetails.open = true;
+      dom.expertDetails.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    dom.bookmarkBtn.addEventListener("click", createBookmark);
+    dom.exportCSV.addEventListener("click", exportLabelsCsv);
+    dom.exportSBOM.addEventListener("click", exportSbom);
+    dom.runTests.addEventListener("click", runSelfChecks);
+    dom.startCalib.addEventListener("click", startCalibFlow);
+    dom.nextStep.addEventListener("click", nextCalibStep);
+    dom.startFeed.addEventListener("click", handleFeedUrl);
+    dom.stopFeed.addEventListener("click", stopFeed);
+    dom.fileInput.addEventListener("change", handleFileLoad);
+    windowRef.addEventListener("hashchange", () => {
+      const ok = /#state=/.test(windowRef.location.hash);
+      notifyTestBridge("bookmark.reload", {
+        ok,
+        preview: makeAudioMapForTile(tiles[state.idx]).slice(0, 5).map((point) => point.freq),
+      });
+    });
+  }
+
+  function init() {
+    windowRef.COSMOS_BUILD = build;
+    windowRef.__COSMOS_DEV__ = config.dev;
+    windowRef.DEMO = tiles;
+    windowRef.state = state;
+
+    populateTileSelect();
+    drawTile(0);
+    renderExpertPane();
+    wireEvents();
+    installKeyboardScope();
+    addHotkeyToggle();
+    recalcKPIs();
+    setCaption("Ready. Use keyboard or controls; captions appear here.");
+
+    notifyTestBridge("build.info", build);
+    notifyTestBridge("truth.visible", {
+      visible: Boolean(dom.truthTag.offsetParent),
+      dev: config.dev,
+    });
+  }
+
+  return {
+    init,
+    drawTile,
+    recalcKPIs,
+    state,
+    tiles,
+  };
+}
+
+function bindDom(documentRef) {
+  const get = (id) => documentRef.getElementById(id);
+
+  return {
+    tileCanvas: get("tileCanvas"),
+    tileSelect: get("tileSelect"),
+    prevBtn: get("prevBtn"),
+    nextBtn: get("nextBtn"),
+    overlaySel: get("overlaySel"),
+    paletteSel: get("paletteSel"),
+    fullscreenBtn: get("fullscreenBtn"),
+    playBtn: get("playBtn"),
+    loopBtn: get("loopBtn"),
+    rateSel: get("rateSel"),
+    captionsChk: get("captionsChk"),
+    classSel: get("classSel"),
+    sevSel: get("sevSel"),
+    note: get("note"),
+    submitBtn: get("submitBtn"),
+    undoBtn: get("undoBtn"),
+    calibBtn: get("calibBtn"),
+    expertBtn: get("expertBtn"),
+    bookmarkBtn: get("bookmarkBtn"),
+    caption: get("caption"),
+    tileId: get("tileId"),
+    truthTag: get("truthTag"),
+    prog: get("prog"),
+    kpiAUC: get("kpiAUC"),
+    kpiPR: get("kpiPR"),
+    kpiIRR: get("kpiIRR"),
+    kpiLatency: get("kpiLatency"),
+    kpiA11y: get("kpiA11y"),
+    calibMode: get("calibMode"),
+    gatePolicy: get("gatePolicy"),
+    startCalib: get("startCalib"),
+    nextStep: get("nextStep"),
+    calibStep: get("calibStep"),
+    calibHint: get("calibHint"),
+    calibExplain: get("calibExplain"),
+    calibStatus: get("calibStatus"),
+    fileInput: get("fileInput"),
+    feedMethod: get("feedMethod"),
+    feedUrl: get("feedUrl"),
+    startFeed: get("startFeed"),
+    stopFeed: get("stopFeed"),
+    feedStatus: get("feedStatus"),
+    exportSBOM: get("exportSBOM"),
+    runTests: get("runTests"),
+    testLog: get("testLog"),
+    exportCSV: get("exportCSV"),
+    expertDetails: get("expertDetails"),
+    expertPane: get("expertPane"),
+  };
+}
+

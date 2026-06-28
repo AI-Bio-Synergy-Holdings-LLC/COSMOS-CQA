@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COSMOS-CQA Research Workbench</title>
+  <link rel="stylesheet" href="./src/styles.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    window.Chart || console.warn("Chart.js CDN failed; charts disabled.");
+  </script>
+</head>
+<body class="app">
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <header class="app-header">
+    <div class="brand">COSMOS-CQA <span class="small">Research Workbench</span></div>
+    <div class="kpis" aria-label="Quality metrics">
+      <div class="kpi">PR-AUC <span id="kpiAUC" class="hl">-</span></div>
+      <div class="kpi">Precision/Recall <span id="kpiPR" class="hl">-</span></div>
+      <div class="kpi">Cohen k / alpha* <span id="kpiIRR" class="hl">-</span> <span class="small">(*approx)</span></div>
+      <div class="kpi">Median latency <span id="kpiLatency" class="hl">-</span></div>
+      <div class="kpi">Accessibility <span id="kpiA11y" class="ok">-</span></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="card" aria-label="Tile viewer with overlays">
+      <h3>Tile Viewer <span id="tileId" class="badge">-</span> <span class="tag" id="truthTag" title="demo truth label for reviewers">truth: -</span></h3>
+      <div class="viewer">
+        <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
+        <div class="controls">
+          <div class="row">
+            <label for="tileSelect">Tile:</label>
+            <select id="tileSelect" aria-label="Choose tile"></select>
+            <button id="prevBtn" type="button" title="Previous tile (Ctrl+Left)">Prev</button>
+            <button id="nextBtn" type="button" title="Next tile (Ctrl+Right)">Next</button>
+            <span class="caption">Keys: <span class="kbd">Space</span> play, <span class="kbd">L</span> loop, <span class="kbd">S</span> submit</span>
+          </div>
+          <div class="row">
+            <label for="overlaySel">Overlay:</label>
+            <select id="overlaySel" aria-label="Overlay type">
+              <option value="none">None</option>
+              <option value="gradient">Gradient (Sobel)</option>
+              <option value="rings">Power rings</option>
+              <option value="wavelet">Wavelet-like</option>
+            </select>
+            <label for="paletteSel">Palette:</label>
+            <select id="paletteSel" aria-label="Color palette">
+              <option value="gray">Gray</option>
+              <option value="viridis" selected>Viridis</option>
+              <option value="cividis">Cividis (color-safe)</option>
+            </select>
+            <button id="fullscreenBtn" type="button" title="Fullscreen">Fullscreen</button>
+          </div>
+          <div class="row">
+            <button id="playBtn" type="button" aria-pressed="false">Play</button>
+            <button id="loopBtn" type="button" aria-pressed="true">Loop: on</button>
+            <label for="rateSel">Rate:</label>
+            <select id="rateSel" aria-label="Playback rate">
+              <option>0.5</option>
+              <option selected>1.0</option>
+              <option>1.5</option>
+              <option>2.0</option>
+            </select>
+            <label><input type="checkbox" id="captionsChk" checked> Captions</label>
+            <div class="progress" aria-hidden="true"><div id="prog" class="bar"></div></div>
+          </div>
+          <div class="dock">
+            <div><strong>Task</strong> <span class="small">(choose class and severity, optional note)</span></div>
+            <div class="grid">
+              <div>
+                <label for="classSel">Class</label>
+                <select id="classSel" aria-label="Artifact class">
+                  <option value="stripe">Stripe</option>
+                  <option value="dipole">Dipole</option>
+                  <option value="ringing">Ringing</option>
+                  <option value="point">Point-source residual</option>
+                  <option value="clean">Clean</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="sevSel">Severity</label>
+                <select id="sevSel" aria-label="Severity">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <label for="note">Note</label>
+            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240">
+            <div class="row">
+              <button id="submitBtn" type="button" class="pill">Submit (S)</button>
+              <button id="undoBtn" type="button" class="pill">Undo (Ctrl+Z)</button>
+              <button id="calibBtn" type="button" class="pill">Calibration (C)</button>
+              <button id="expertBtn" type="button" class="pill">Expert Queue</button>
+              <button id="bookmarkBtn" type="button" class="pill">Bookmark</button>
+            </div>
+          </div>
+          <div id="caption" class="caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
+        </div>
+      </div>
+      <div class="footer small">Provenance: dataset version and checksums encoded in bookmark URL. Color-safe palettes. No strobing. Local-first data.</div>
+    </section>
+
+    <section class="card" aria-label="Panels">
+      <h3>Panels</h3>
+      <div class="sidebar">
+        <details open>
+          <summary><strong>Calibration</strong> <span class="small">wizard plus inline mini-quiz</span></summary>
+          <div class="small">
+            Pick a mode. Both compute reliability; wizard shows hints and explainer.
+            <div class="row panel-row">
+              <label>Mode:
+                <select id="calibMode" aria-label="Calibration mode">
+                  <option value="wizard">Wizard (1/3 to 2/3 to 3/3)</option>
+                  <option value="inline">Inline Mini-Quiz</option>
+                </select>
+              </label>
+              <label>Progress policy:
+                <select id="gatePolicy" aria-label="Progress policy">
+                  <option value="learning">Learning-through-errors (allow Next)</option>
+                  <option value="gated">Gated (require correct to proceed)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <button id="startCalib" type="button" class="pill">Start</button>
+            <button id="nextStep" type="button" class="pill" disabled>Next</button>
+            <span id="calibStep" class="small"></span>
+          </div>
+          <div id="calibHint" class="small callout"></div>
+          <div id="calibExplain" class="small explain"></div>
+          <div id="calibStatus" class="small"></div>
+        </details>
+
+        <details open>
+          <summary><strong>Data Feeds</strong> <span class="small">live ingest</span></summary>
+          <div class="small">
+            Upload a stored tile set or connect to a live endpoint.
+            <br><em>Schema:</em> <code>{ type:"tile", tile_id, dataset, ra, dec, band, overlay, checksum, png }</code>
+            and <code>{ type:"expert", tile_id, expert_class, expert_confidence, latency_s }</code>.
+          </div>
+          <div class="row">
+            <label class="pill">Load dataset <input id="fileInput" type="file" accept=".json,.zip,.png"></label>
+            <select id="feedMethod" aria-label="Feed method">
+              <option value="ws">WebSocket</option>
+              <option value="http">HTTP (poll)</option>
+            </select>
+            <input id="feedUrl" type="text" placeholder="wss://example/ws or https://example/api/stream" class="feed-url">
+            <button id="startFeed" type="button" class="pill">Connect</button>
+            <button id="stopFeed" type="button" class="pill">Stop</button>
+          </div>
+          <div id="feedStatus" class="small"></div>
+        </details>
+
+        <details open>
+          <summary><strong>Compliance and Safety</strong></summary>
+          <div class="small">
+            <ul>
+              <li><strong>SBOM</strong>: CycloneDX JSON export for this demo.</li>
+              <li><strong>License</strong>: Research-only public use; all other rights reserved.</li>
+              <li><strong>Data</strong>: External datasets remain under their own terms.</li>
+              <li><strong>Safety</strong>: Research workbench, not a production decision system.</li>
+            </ul>
+            <button id="exportSBOM" type="button" class="pill">Export SBOM</button>
+          </div>
+        </details>
+
+        <details>
+          <summary><strong>Self-Checks</strong></summary>
+          <div class="small">Run built-in tests to verify core functions.</div>
+          <button id="runTests" type="button" class="pill">Run Tests</button>
+          <pre id="testLog" class="small test-log"></pre>
+        </details>
+
+        <details open>
+          <summary><strong>Live PR Curve</strong> <span class="small">(if Chart.js available)</span></summary>
+          <div class="chartbox"><canvas id="prChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Live Ops Metrics</strong> <span class="small">(EMA smoothed)</span></summary>
+          <div class="chartbox"><canvas id="opsChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Confidence Distribution</strong></summary>
+          <div class="chartbox"><canvas id="confChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Live Graph Feed</strong> <span class="small">(events over time)</span></summary>
+          <div class="chartbox"><canvas id="liveChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Export Data</strong></summary>
+          <div class="export">
+            <button id="exportCSV" type="button" class="pill">Export Labels CSV</button>
+          </div>
+        </details>
+
+        <details id="expertDetails">
+          <summary><strong>Expert Queue</strong></summary>
+          <div id="expertPane" class="expert-pane">Queue is empty.</div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
+

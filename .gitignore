@@ -20,6 +20,8 @@ node_modules/
 dist/
 build/
 coverage/
+playwright-report/
+test-results/
 .next/
 out/
 
@@ -36,4 +38,3 @@ archive/original-materials/raw/
 *.7z
 *.tar
 *.tar.gz
-

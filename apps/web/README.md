@@ -17,17 +17,39 @@ The first canonical import comes from the stable COSMOS v3 public/dev demo after
 
 ## Current Verification
 
-Run the legacy syntax check from the repository root:
+Run checks from the repository root:
 
 ```bash
+npm --prefix apps/web run check:source
 npm --prefix apps/web run check:legacy
+npm --prefix apps/web run check
 ```
 
-This validates JavaScript syntax in the imported v3 HTML files before they are split into maintainable modules.
+`check:source` validates the maintained ES module source. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+
+## Local Development
+
+The maintained source app uses native browser modules, so use a local static server:
+
+```bash
+npm --prefix apps/web run serve
+```
+
+Then open:
+
+```text
+http://localhost:4173/
+```
+
+Use `?dev=1` to show dev-only truth labels:
+
+```text
+http://localhost:4173/?dev=1
+```
 
 ## Migration Target
 
-The long-term source should separate:
+The source now separates:
 
 - `tile-synthesis`
 - `sidecars`
@@ -37,4 +59,3 @@ The long-term source should separate:
 - `provenance`
 - `reports`
 - `ui`
-

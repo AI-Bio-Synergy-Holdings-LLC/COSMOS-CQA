@@ -5,6 +5,7 @@ This directory holds the public research documentation for COSMOS-CQA.
 Core documents:
 
 - `canonical-v3-import.md` records the first stable legacy import.
+- `source-architecture.md` explains the source split architecture and alternatives.
 - `scientific-scope.md` defines the research lane.
 - `claim-boundaries.md` prevents overstatement.
 - `data-governance.md` describes data and provenance handling.

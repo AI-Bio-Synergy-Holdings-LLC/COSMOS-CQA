@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Browser workbench for COSMOS-CQA research workflows.",
   "scripts": {
-    "check:legacy": "node ./scripts/check-legacy-syntax.mjs"
+    "check:legacy": "node ./scripts/check-legacy-syntax.mjs",
+    "check:source": "node ./scripts/check-source-syntax.mjs",
+    "check": "npm run check:source && npm run check:legacy",
+    "serve": "node ./scripts/serve.mjs"
   }
 }
-
