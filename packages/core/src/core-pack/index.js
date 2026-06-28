@@ -79,3 +79,22 @@ export function summarizeCorePackManifest(manifest) {
     diagnostic_ref_count: manifest?.diagnostic_refs?.length || 0,
   };
 }
+
+export function tilePassportToTileMeta(passport) {
+  return {
+    tile_id: passport.tile_id,
+    dataset: passport.dataset,
+    release: passport.release,
+    doi: passport.doi || "",
+    band: passport.band,
+    ra: passport.ra,
+    dec: passport.dec,
+    truth: passport.truth || { class: "clean", severity: "low" },
+    checksum: passport.checksum || "",
+    core_pack_source: passport.provenance?.source || "",
+  };
+}
+
+export function tileMetasFromCorePack(manifest) {
+  return (manifest.tiles || []).map(tilePassportToTileMeta);
+}

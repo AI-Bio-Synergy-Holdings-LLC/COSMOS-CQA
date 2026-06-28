@@ -8,7 +8,7 @@ The current entrypoint is `src/index.js`.
 
 - `CONTRACT_SCHEMA_VERSION`
 - schema constants for artifact classes, severities, overlays, palettes, expert classes, and checklist states
-- schema constants for diagnostic concept status and implementation gates
+- schema constants for diagnostic concept status, implementation gates, and research artifact kinds
 - `schemas`
 - `validateContract(name, value)`
 - `assertContract(name, value)`
@@ -19,6 +19,8 @@ The current entrypoint is `src/index.js`.
 - label records and label export rows
 - feed tile and expert events
 - bookmark provenance payloads
+- provenance hashes
+- research artifact records
 - tile passports
 - diagnostic concepts
 - SBOM references and CycloneDX SBOM exports

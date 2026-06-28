@@ -145,7 +145,7 @@
             and <code>{ type:"expert", tile_id, expert_class, expert_confidence, latency_s }</code>.
           </div>
           <div class="row">
-            <label class="pill">Load dataset <input id="fileInput" type="file" accept=".json,.zip,.png"></label>
+            <label class="pill">Load dataset <input id="fileInput" type="file" accept=".json,.ndjson,application/json"></label>
             <select id="feedMethod" aria-label="Feed method">
               <option value="ws">WebSocket</option>
               <option value="http">HTTP (poll)</option>
@@ -168,6 +168,7 @@
               <li><strong>Safety</strong>: Research workbench, not a production decision system.</li>
             </ul>
             <button id="exportSBOM" type="button" class="pill">Export SBOM</button>
+            <button id="exportReport" type="button" class="pill">Export Validation Report JSON</button>
           </div>
         </details>
 

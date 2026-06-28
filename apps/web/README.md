@@ -33,7 +33,7 @@ npm --prefix apps/web run check:legacy
 npm --prefix apps/web run check
 ```
 
-`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:core-pack` verifies the Core Pack intake lane. `validate:core-pack` validates the sample manifest, local evidence paths, and SBOM checksum. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:core-pack` verifies Core Pack intake, research artifact loading, provenance hashes, SBOM references, and validation report JSON. `validate:core-pack` validates the sample manifest, local evidence paths, and SBOM checksum. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets, including Core Pack sample load and validation-report export. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
 
 Install dependencies and Chromium before running the full browser-backed check locally:
 

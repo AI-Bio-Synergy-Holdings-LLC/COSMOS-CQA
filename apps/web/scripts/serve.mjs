@@ -20,8 +20,9 @@ const server = createServer(async (request, response) => {
     const url = new URL(request.url, `http://${request.headers.host}`);
     const requested = url.pathname === "/" ? "/index.html" : url.pathname;
     const servesPackages = requested.startsWith("/packages/");
-    const root = servesPackages ? repoRoot : appRoot;
-    const allowedRoot = servesPackages ? resolve(repoRoot, "packages") : appRoot;
+    const servesExamples = requested.startsWith("/examples/");
+    const root = servesPackages || servesExamples ? repoRoot : appRoot;
+    const allowedRoot = servesPackages ? resolve(repoRoot, "packages") : servesExamples ? resolve(repoRoot, "examples") : appRoot;
     const filePath = normalize(resolve(root, `.${requested}`));
 
     if (!filePath.startsWith(allowedRoot + sep) && filePath !== allowedRoot) {

@@ -17,9 +17,13 @@ export function createAppState() {
     histTime: [],
     histRate: [],
     histLat: [],
+    feedErrors: [],
+    researchArtifacts: [],
+    corePacks: [],
+    sbomRefs: [],
+    provenanceHashes: [],
     simDisabled: false,
     usedKeyboard: false,
     seed: 12648430,
   };
 }
-

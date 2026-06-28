@@ -9,7 +9,8 @@ The schema package owns:
 - contract schema versioning;
 - label and export row schemas;
 - feed event schemas;
-- provenance bookmark schemas;
+- provenance bookmark and hash schemas;
+- research artifact schemas;
 - tile passport and core pack manifest schemas;
 - SBOM, SBOM reference, validation report, and checklist target schemas;
 - dependency-free validation helpers for browser and Node tests.

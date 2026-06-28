@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist target evidence.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist target evidence.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -22,12 +22,14 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `feedTileEvent`: tile ingest records from upload, HTTP polling, or WebSocket feeds.
 - `feedExpertEvent`: expert adjudication records from upload, HTTP polling, or WebSocket feeds.
 - `bookmarkPayload`: encoded replay/provenance state for shareable bookmarks.
+- `provenanceHash`: SHA-256 subject/value record for imported or exported research artifacts.
+- `researchArtifact`: imported feed, Core Pack, SBOM, or validation-report artifact metadata with source hash and counts.
 - `tilePassport`: tile-level provenance, checksum, truth, coordinate, and sidecar metadata.
 - `diagnosticConcept`: review-gated diagnostic concept metadata with required scientific caveats.
 - `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
 - `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, evidence references, and optional diagnostic concept references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
-- `validationReport`: structured report summary for contract and workflow checks.
+- `validationReport`: structured report JSON with checks, optional research artifacts, SBOM references, and provenance hashes. This is the report artifact lane before any PDF generation.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 
 Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.

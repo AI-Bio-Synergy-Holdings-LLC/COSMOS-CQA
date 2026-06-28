@@ -10,6 +10,7 @@ The current entrypoint is `src/index.js`, with submodule entrypoints for:
 - `labels`: label export and CSV helpers
 - `metrics`: PR-AUC, reliability, latency, and accessibility helpers
 - `provenance`: build info and bookmark payload helpers
+- `research-artifacts`: feed/Core Pack payload classification, hashing, and artifact records
 - `reports`: SBOM and validation report assembly
 - `sidecars`: deterministic audio-map helpers
 - `tile-synthesis`: deterministic synthetic tile records and pixel helpers
