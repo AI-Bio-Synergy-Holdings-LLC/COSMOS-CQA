@@ -1,0 +1,39 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+.cache/
+
+# Dependencies and builds
+node_modules/
+dist/
+build/
+coverage/
+.next/
+out/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Large raw archive dropzone. Keep manifests in Git instead.
+archive/original-materials/raw/
+*.zip
+*.7z
+*.tar
+*.tar.gz
+
