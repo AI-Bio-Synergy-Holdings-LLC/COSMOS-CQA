@@ -20,8 +20,8 @@ import {
   writeClipboard,
 } from "../provenance/index.js";
 import { createSbom, downloadCsv, downloadJson } from "../reports/index.js";
-import { createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
-import { synthTile } from "../tile-synthesis/index.js";
+import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
+import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
 
 const HINTS = {
   stripe: "Hint: scan-synchronous lines often appear as vertical or horizontal banding; check line energy.",
@@ -60,7 +60,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   });
 
   function setCaption(message) {
-    if (dom.captionsChk.checked) {
+    if (dom.captionsChk.checked || message === "") {
       dom.caption.textContent = message;
     }
   }
@@ -84,6 +84,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.idx = index;
     ctx.clearRect(0, 0, 512, 512);
     ctx.drawImage(tile.canvas, 0, 0, 512, 512);
+    applyPalette(ctx, dom.paletteSel.value);
     drawOverlay(ctx, dom.overlaySel.value);
     dom.tileId.textContent = tile.meta.tile_id;
     dom.truthTag.textContent = `truth: ${tile.meta.truth.class}`;
@@ -92,8 +93,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function updateChart(chartRef, id, configValue) {
+    const canvas = documentRef.getElementById(id);
     if (!windowRef.Chart) {
-      return chartRef;
+      return updateFallbackChart(chartRef, canvas, configValue);
     }
 
     if (chartRef) {
@@ -103,7 +105,27 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       return chartRef;
     }
 
-    return new windowRef.Chart(documentRef.getElementById(id).getContext("2d"), configValue);
+    return new windowRef.Chart(canvas.getContext("2d"), configValue);
+  }
+
+  function updateFallbackChart(chartRef, canvas, configValue) {
+    const chart = chartRef?.fallback
+      ? chartRef
+      : {
+          fallback: true,
+          type: configValue.type,
+          data: configValue.data,
+          options: configValue.options || {},
+          update() {
+            drawFallbackChart(canvas, this.type, this.data);
+          },
+        };
+
+    chart.type = configValue.type;
+    chart.data = configValue.data;
+    chart.options = configValue.options || {};
+    chart.update();
+    return chart;
   }
 
   function updatePRChart() {
@@ -479,6 +501,28 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
   }
 
+  function loadPublicSample() {
+    const sampleTiles = createDemoTiles({ count: 4, seed: state.seed + tiles.length + 1 }).map((tile, index) => {
+      const sequence = String(index + 1).padStart(3, "0");
+      return {
+        ...tile,
+        meta: {
+          ...tile.meta,
+          tile_id: `sample_${sequence}`,
+          dataset: "DEMO_PUBLIC_SAMPLE",
+          release: "v0-public-sample",
+          doi: "doi:10.0000/demo-public-sample",
+          checksum: `sha256:public-sample-${sequence}`,
+        },
+      };
+    });
+
+    tiles.push(...sampleTiles);
+    populateTileSelect();
+    drawTile(tiles.length - sampleTiles.length);
+    dom.feedStatus.textContent = "Loaded public sample: 4 demo tiles.";
+  }
+
   function startWs(url) {
     try {
       if (feedWS) {
@@ -734,6 +778,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function installKeyboardScope() {
     windowRef.__HOTKEYS_MASTER__ = true;
 
+    const markKeyboardUsed = () => {
+      const firstUse = !state.usedKeyboard;
+      state.usedKeyboard = true;
+      if (firstUse) {
+        recalcKPIs();
+      }
+    };
+
     const isTypingTarget = (element) => {
       if (!element) return false;
       if (element.isContentEditable) return true;
@@ -759,31 +811,38 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         return;
       }
 
+      if (["Tab", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+        markKeyboardUsed();
+      }
+
       if (event.ctrlKey && event.key === "ArrowLeft") {
+        markKeyboardUsed();
         dom.prevBtn.click();
         event.preventDefault();
       } else if (event.ctrlKey && event.key === "ArrowRight") {
+        markKeyboardUsed();
         dom.nextBtn.click();
         event.preventDefault();
       } else if (event.ctrlKey && event.key.toLowerCase() === "z") {
+        markKeyboardUsed();
         dom.undoBtn.click();
         event.preventDefault();
       } else if (event.key === " ") {
         dom.playBtn.click();
         event.preventDefault();
-        state.usedKeyboard = true;
+        markKeyboardUsed();
       } else if (event.key.toLowerCase() === "l") {
         dom.loopBtn.click();
         event.preventDefault();
-        state.usedKeyboard = true;
+        markKeyboardUsed();
       } else if (event.key.toLowerCase() === "s") {
         dom.submitBtn.click();
         event.preventDefault();
-        state.usedKeyboard = true;
+        markKeyboardUsed();
       } else if (event.key.toLowerCase() === "c") {
         dom.calibBtn.click();
         event.preventDefault();
-        state.usedKeyboard = true;
+        markKeyboardUsed();
       }
     });
   }
@@ -865,6 +924,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.nextStep.addEventListener("click", nextCalibStep);
     dom.startFeed.addEventListener("click", handleFeedUrl);
     dom.stopFeed.addEventListener("click", stopFeed);
+    dom.loadSample.addEventListener("click", loadPublicSample);
     dom.fileInput.addEventListener("change", handleFileLoad);
     windowRef.addEventListener("hashchange", () => restoreBookmarkFromHash({ notifyMissing: true }));
   }
@@ -900,7 +960,72 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     recalcKPIs,
     state,
     tiles,
+    charts,
   };
+}
+
+function drawFallbackChart(canvas, type, data) {
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width || 300;
+  const height = canvas.height || 160;
+  const datasets = data?.datasets || [];
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#0a1020";
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = "#2a395f";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(24, 10);
+  ctx.lineTo(24, height - 20);
+  ctx.lineTo(width - 10, height - 20);
+  ctx.stroke();
+
+  datasets.forEach((dataset, datasetIndex) => {
+    const values = normalizeChartValues(dataset.data || []);
+    const color = dataset.borderColor || dataset.backgroundColor || (datasetIndex ? "#22c55e" : "#60a5fa");
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+
+    if (!values.length) {
+      ctx.fillRect(28 + datasetIndex * 12, height - 28, 8, 8);
+      return;
+    }
+
+    if (type === "bar") {
+      const barWidth = Math.max(8, (width - 44) / values.length - 6);
+      values.forEach((value, index) => {
+        const x = 30 + index * (barWidth + 6);
+        const barHeight = Math.max(3, value * (height - 40));
+        ctx.fillRect(x, height - 20 - barHeight, barWidth, barHeight);
+      });
+      return;
+    }
+
+    ctx.beginPath();
+    values.forEach((value, index) => {
+      const x = 28 + (index / Math.max(1, values.length - 1)) * (width - 44);
+      const y = height - 20 - value * (height - 40);
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+      ctx.fillRect(x - 2, y - 2, 4, 4);
+    });
+    ctx.stroke();
+  });
+}
+
+function normalizeChartValues(values) {
+  const numeric = values.map((value) => {
+    if (typeof value === "number") return value;
+    if (value && typeof value === "object") return Number(value.y ?? value.v ?? 0);
+    return Number(value || 0);
+  });
+  const max = Math.max(1, ...numeric.map((value) => Math.abs(value)));
+  return numeric.map((value) => Math.max(0, Math.min(1, value / max)));
 }
 
 function getEncodedBookmark(hash) {
@@ -957,6 +1082,7 @@ function bindDom(documentRef) {
     feedUrl: get("feedUrl"),
     startFeed: get("startFeed"),
     stopFeed: get("stopFeed"),
+    loadSample: get("loadSample"),
     feedStatus: get("feedStatus"),
     exportSBOM: get("exportSBOM"),
     runTests: get("runTests"),

@@ -31,6 +31,13 @@ const expectedBrowserCoveredTargets = [
   "legacy-v3.manual.1-tile-navigation-display.005",
   "legacy-v3.manual.1-tile-navigation-display.006",
   "legacy-v3.manual.1-tile-navigation-display.007",
+  "legacy-v3.manual.2-overlays-visualization.001",
+  "legacy-v3.manual.2-overlays-visualization.002",
+  "legacy-v3.manual.2-overlays-visualization.003",
+  "legacy-v3.manual.2-overlays-visualization.004",
+  "legacy-v3.manual.2-overlays-visualization.005",
+  "legacy-v3.manual.2-overlays-visualization.006",
+  "legacy-v3.manual.2-overlays-visualization.007",
   "legacy-v3.manual.4-classification-submission.001",
   "legacy-v3.manual.4-classification-submission.002",
   "legacy-v3.manual.4-classification-submission.003",
@@ -39,8 +46,29 @@ const expectedBrowserCoveredTargets = [
   "legacy-v3.manual.4-classification-submission.006",
   "legacy-v3.manual.4-classification-submission.007",
   "legacy-v3.manual.4-classification-submission.008",
+  "legacy-v3.manual.7-live-metrics-charts.001",
+  "legacy-v3.manual.7-live-metrics-charts.002",
+  "legacy-v3.manual.7-live-metrics-charts.003",
+  "legacy-v3.manual.7-live-metrics-charts.004",
+  "legacy-v3.manual.7-live-metrics-charts.005",
+  "legacy-v3.manual.7-live-metrics-charts.006",
+  "legacy-v3.manual.7-live-metrics-charts.007",
+  "legacy-v3.manual.7-live-metrics-charts.008",
+  "legacy-v3.manual.7-live-metrics-charts.009",
   "legacy-v3.manual.8-data-import-export.001",
   "legacy-v3.manual.8-data-import-export.002",
+  "legacy-v3.manual.8-data-import-export.003",
+  "legacy-v3.manual.8-data-import-export.004",
+  "legacy-v3.manual.8-data-import-export.007",
+  "legacy-v3.manual.8-data-import-export.008",
+  "legacy-v3.manual.8-data-import-export.009",
+  "legacy-v3.manual.11-accessibility.001",
+  "legacy-v3.manual.11-accessibility.002",
+  "legacy-v3.manual.11-accessibility.003",
+  "legacy-v3.manual.11-accessibility.004",
+  "legacy-v3.manual.11-accessibility.005",
+  "legacy-v3.manual.11-accessibility.006",
+  "legacy-v3.bridge.a11y-95",
   "legacy-v3.bridge.bookmark-created",
   "legacy-v3.bridge.bookmark-roundtrip",
   "legacy-v3.bridge.truth-hidden-public",
@@ -281,8 +309,8 @@ test("legacy checklist targets are tracked as evidence contract data", () => {
   assert.equal(new Set(legacyChecklistTargets.targets.map((target) => target.id)).size, 93);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual").length, 86);
   assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "bridge").length, 7);
-  assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual" && target.status === "migrated").length, 17);
-  assert.equal(legacyChecklistTargets.targets.filter((target) => target.covered_by?.includes(browserWorkflowSpec)).length, 20);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.mode === "manual" && target.status === "migrated").length, 44);
+  assert.equal(legacyChecklistTargets.targets.filter((target) => target.covered_by?.includes(browserWorkflowSpec)).length, 48);
   for (const targetId of expectedBrowserCoveredTargets) {
     const target = legacyChecklistTargets.targets.find((entry) => entry.id === targetId);
     assert.equal(target?.automation, "automated", targetId);

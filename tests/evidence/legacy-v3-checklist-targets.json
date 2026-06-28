@@ -96,8 +96,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Overlay: None - shows base tile",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.002",
@@ -105,8 +108,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Overlay: Gradient (Sobel) - shows edge detection",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.003",
@@ -114,8 +120,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Overlay: Power-rings - shows circular overlays",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.004",
@@ -123,8 +132,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Overlay: Wavelet-like - shows grid pattern",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.005",
@@ -132,8 +144,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Palette: Gray - monochrome display",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.006",
@@ -141,8 +156,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Palette: Viridis - color gradient",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.2-overlays-visualization.007",
@@ -150,8 +168,11 @@
       "section": "2. Overlays & Visualization",
       "label": "Palette: Cividis - color-safe palette",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.3-audio-sonification.001",
@@ -471,8 +492,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "PR-AUC KPI displays and updates",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.002",
@@ -480,8 +504,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Precision/Recall KPI displays and updates",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.003",
@@ -489,8 +516,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Cohen kappa / Krippendorff's alpha displays",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.004",
@@ -498,8 +528,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Median latency KPI displays",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.005",
@@ -507,8 +540,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Accessibility score displays (percentage)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.006",
@@ -516,8 +552,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "PR Curve chart renders (Chart.js)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.007",
@@ -525,8 +564,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Live Ops Metrics chart updates",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.008",
@@ -534,8 +576,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Confidence Distribution chart shows bars",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.7-live-metrics-charts.009",
@@ -543,8 +588,11 @@
       "section": "7. Live Metrics & Charts",
       "label": "Live Graph Feed chart displays timeline",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.001",
@@ -576,8 +624,11 @@
       "section": "8. Data Import/Export",
       "label": "Export CSV button downloads labels.csv",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.004",
@@ -585,8 +636,11 @@
       "section": "8. Data Import/Export",
       "label": "CSV contains all label fields",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.005",
@@ -612,8 +666,11 @@
       "section": "8. Data Import/Export",
       "label": "File upload input accepts .json files",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.008",
@@ -621,8 +678,11 @@
       "section": "8. Data Import/Export",
       "label": "WebSocket/HTTP feed options available",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.8-data-import-export.009",
@@ -630,8 +690,11 @@
       "section": "8. Data Import/Export",
       "label": "\"Load public sample\" button adds 4 demo tiles",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.9-built-in-tests.001",
@@ -783,8 +846,11 @@
       "section": "11. Accessibility",
       "label": "Skip to main content link present",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.002",
@@ -792,8 +858,11 @@
       "section": "11. Accessibility",
       "label": "ARIA labels on interactive elements",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.003",
@@ -801,8 +870,11 @@
       "section": "11. Accessibility",
       "label": "Focus visible on keyboard navigation",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.004",
@@ -810,8 +882,11 @@
       "section": "11. Accessibility",
       "label": "Captions toggle works",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.005",
@@ -819,8 +894,11 @@
       "section": "11. Accessibility",
       "label": "Color-safe palette option (Cividis)",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.manual.11-accessibility.006",
@@ -828,8 +906,11 @@
       "section": "11. Accessibility",
       "label": "A11y audit runs and updates score",
       "mode": "manual",
-      "automation": "manual",
-      "status": "tracked"
+      "automation": "automated",
+      "status": "migrated",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.audio-deterministic",
@@ -898,7 +979,10 @@
       "mode": "bridge",
       "automation": "automated",
       "status": "migrated",
-      "data_testid": "a11y-95"
+      "data_testid": "a11y-95",
+      "covered_by": [
+        "apps/web/test/browser/workflows.spec.mjs"
+      ]
     },
     {
       "id": "legacy-v3.bridge.sbom-exported",

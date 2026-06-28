@@ -24,7 +24,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <section class="card" aria-label="Tile viewer with overlays">
       <h3>Tile Viewer <span id="tileId" class="badge">-</span> <span class="tag" id="truthTag" title="demo truth label for reviewers">truth: -</span></h3>
       <div class="viewer">
@@ -153,6 +153,7 @@
             <input id="feedUrl" type="text" placeholder="wss://example/ws or https://example/api/stream" class="feed-url">
             <button id="startFeed" type="button" class="pill">Connect</button>
             <button id="stopFeed" type="button" class="pill">Stop</button>
+            <button id="loadSample" type="button" class="pill">Load public sample</button>
           </div>
           <div id="feedStatus" class="small"></div>
         </details>
@@ -215,4 +216,3 @@
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
-

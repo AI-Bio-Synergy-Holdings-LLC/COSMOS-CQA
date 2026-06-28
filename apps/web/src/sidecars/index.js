@@ -1,5 +1,41 @@
 import { getTileGrayscale } from "../tile-synthesis/index.js";
 
+const VIRIDIS_STOPS = [
+  [68, 1, 84],
+  [59, 82, 139],
+  [33, 145, 140],
+  [94, 201, 98],
+  [253, 231, 37],
+];
+
+const CIVIDIS_STOPS = [
+  [0, 34, 78],
+  [39, 79, 137],
+  [89, 117, 139],
+  [151, 151, 119],
+  [254, 232, 56],
+];
+
+export function applyPalette(ctx, palette, { width = 512, height = 512 } = {}) {
+  if (palette === "gray") {
+    return;
+  }
+
+  const stops = palette === "cividis" ? CIVIDIS_STOPS : VIRIDIS_STOPS;
+  const image = ctx.getImageData(0, 0, width, height);
+  const data = image.data;
+
+  for (let index = 0; index < data.length; index += 4) {
+    const value = (data[index] + data[index + 1] + data[index + 2]) / (3 * 255);
+    const [red, green, blue] = samplePalette(stops, value);
+    data[index] = red;
+    data[index + 1] = green;
+    data[index + 2] = blue;
+  }
+
+  ctx.putImageData(image, 0, 0);
+}
+
 export function drawOverlay(ctx, type) {
   if (type === "none") {
     return;
@@ -17,6 +53,16 @@ export function drawOverlay(ctx, type) {
   }
 
   ctx.restore();
+}
+
+function samplePalette(stops, value) {
+  const clamped = Math.max(0, Math.min(1, value));
+  const scaled = clamped * (stops.length - 1);
+  const low = Math.floor(scaled);
+  const high = Math.min(stops.length - 1, low + 1);
+  const ratio = scaled - low;
+
+  return stops[low].map((channel, index) => Math.round(channel + (stops[high][index] - channel) * ratio));
 }
 
 function drawRings(ctx) {
@@ -209,4 +255,3 @@ export function createAudioController({ state, controls, getPalette, setCaption 
 
   return { play, stop, toggle };
 }
-

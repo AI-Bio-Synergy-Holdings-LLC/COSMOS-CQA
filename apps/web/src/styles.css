@@ -284,6 +284,22 @@ details[open] summary {
   width: 1px;
 }
 
+.sr-only:focus,
+.sr-only:focus-visible {
+  background: #0e1528;
+  border: 1px solid #60a5fa;
+  border-radius: 6px;
+  clip: auto;
+  color: var(--text);
+  height: auto;
+  left: 12px;
+  padding: 8px 10px;
+  position: fixed;
+  top: 12px;
+  width: auto;
+  z-index: 10000;
+}
+
 :focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
@@ -341,4 +357,3 @@ details[open] summary {
     width: 100%;
   }
 }
-

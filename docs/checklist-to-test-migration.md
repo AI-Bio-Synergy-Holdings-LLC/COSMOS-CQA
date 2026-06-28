@@ -9,8 +9,8 @@ It is provenance evidence, not the maintained test source.
 - Legacy claimed total: `100`
 - Extracted manual checklist targets: `86`
 - Extracted bridge auto-check targets: `7`
-- Current migrated manual targets: `17`
-- Current browser-covered targets: `20`
+- Current migrated manual targets: `44`
+- Current browser-covered targets: `48`
 - Tracked manifest: `tests/evidence/legacy-v3-checklist-targets.json`
 
 The legacy page displays a `0/100` counter, but the archived HTML contains 93 trackable targets: 86 manual checklist items plus 7 bridge auto-checks. The tracked manifest preserves that discrepancy instead of treating the UI counter as canonical.
@@ -50,7 +50,7 @@ The generator validates the output with the `checklistTestTargets` contract befo
 - Contracts: labels, feeds, bookmarks, reports, SBOM references, tile passports, core pack manifests, and checklist target manifests.
 - Deterministic replay: tile synthesis, sidecars, bookmarks, CSV, reports, and public/dev truth-label policy.
 - Legacy bridge targets: audio determinism, bookmark creation, bookmark round trip, IRR alpha threshold, public truth hiding, accessibility threshold, and SBOM export.
-- Browser workflows: tile navigation, label submit/undo, bookmark creation/reload, and public truth-label hiding.
+- Browser workflows: tile navigation, overlay/palette rendering, label submit/undo, metrics/charts, CSV export, data import/sample load, bookmark creation/reload, accessibility focus/caption checks, and public truth-label hiding.
 
 ## Next Test Targets
 
@@ -58,8 +58,8 @@ The migrated browser targets are covered by `apps/web/test/browser/workflows.spe
 
 The highest leverage manual targets to automate next are:
 
-- overlay and palette rendering state;
-- CSV export download behavior;
-- accessibility focus/caption behavior;
-- chart render/update smoke checks;
-- data import and sample-load workflows.
+- audio sonification controls and deterministic playback bridge coverage;
+- calibration wizard step/score behavior;
+- expert queue confirm/override behavior;
+- SBOM download content checks;
+- remaining UI polish workflows such as fullscreen, disabled states, details toggles, and responsive layout.

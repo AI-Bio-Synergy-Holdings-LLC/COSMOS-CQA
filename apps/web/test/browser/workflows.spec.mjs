@@ -32,6 +32,49 @@ const TRUTH_POLICY_TARGETS = [
   "legacy-v3.bridge.truth-hidden-public",
 ];
 
+const OVERLAY_PALETTE_TARGETS = [
+  "legacy-v3.manual.2-overlays-visualization.001",
+  "legacy-v3.manual.2-overlays-visualization.002",
+  "legacy-v3.manual.2-overlays-visualization.003",
+  "legacy-v3.manual.2-overlays-visualization.004",
+  "legacy-v3.manual.2-overlays-visualization.005",
+  "legacy-v3.manual.2-overlays-visualization.006",
+  "legacy-v3.manual.2-overlays-visualization.007",
+];
+
+const METRICS_CHART_TARGETS = [
+  "legacy-v3.manual.7-live-metrics-charts.001",
+  "legacy-v3.manual.7-live-metrics-charts.002",
+  "legacy-v3.manual.7-live-metrics-charts.003",
+  "legacy-v3.manual.7-live-metrics-charts.004",
+  "legacy-v3.manual.7-live-metrics-charts.005",
+  "legacy-v3.manual.7-live-metrics-charts.006",
+  "legacy-v3.manual.7-live-metrics-charts.007",
+  "legacy-v3.manual.7-live-metrics-charts.008",
+  "legacy-v3.manual.7-live-metrics-charts.009",
+];
+
+const CSV_EXPORT_TARGETS = [
+  "legacy-v3.manual.8-data-import-export.003",
+  "legacy-v3.manual.8-data-import-export.004",
+];
+
+const DATA_IMPORT_TARGETS = [
+  "legacy-v3.manual.8-data-import-export.007",
+  "legacy-v3.manual.8-data-import-export.008",
+  "legacy-v3.manual.8-data-import-export.009",
+];
+
+const ACCESSIBILITY_TARGETS = [
+  "legacy-v3.manual.11-accessibility.001",
+  "legacy-v3.manual.11-accessibility.002",
+  "legacy-v3.manual.11-accessibility.003",
+  "legacy-v3.manual.11-accessibility.004",
+  "legacy-v3.manual.11-accessibility.005",
+  "legacy-v3.manual.11-accessibility.006",
+  "legacy-v3.bridge.a11y-95",
+];
+
 test("migrates tracked tile navigation targets into browser automation", async ({ page }) => {
   annotateTargets(TILE_NAVIGATION_TARGETS);
   await openWorkbench(page);
@@ -147,6 +190,182 @@ test("migrates public truth-label hiding into browser automation", async ({ page
   await expect(page.locator("#tileSelect option").first()).toHaveText("tile_001 - stripe");
 });
 
+test("migrates overlay and palette rendering targets into browser automation", async ({ page }) => {
+  annotateTargets(OVERLAY_PALETTE_TARGETS);
+  await openWorkbench(page);
+
+  await page.locator("#overlaySel").selectOption("none");
+  await page.locator("#paletteSel").selectOption("gray");
+  const grayBase = await canvasSignature(page);
+  expect(grayBase.redGreenDelta).toBeLessThan(2);
+
+  await page.locator("#overlaySel").selectOption("gradient");
+  const gradient = await canvasSignature(page);
+  expect(gradient.hash).not.toBe(grayBase.hash);
+
+  await page.locator("#overlaySel").selectOption("rings");
+  const rings = await canvasSignature(page);
+  expect(rings.hash).not.toBe(grayBase.hash);
+  expect(rings.hash).not.toBe(gradient.hash);
+
+  await page.locator("#overlaySel").selectOption("wavelet");
+  const wavelet = await canvasSignature(page);
+  expect(wavelet.hash).not.toBe(grayBase.hash);
+  expect(wavelet.hash).not.toBe(rings.hash);
+
+  await page.locator("#overlaySel").selectOption("none");
+  await page.locator("#paletteSel").selectOption("viridis");
+  const viridis = await canvasSignature(page);
+  expect(viridis.hash).not.toBe(grayBase.hash);
+  expect(viridis.redGreenDelta).toBeGreaterThan(10);
+
+  await page.locator("#paletteSel").selectOption("cividis");
+  const cividis = await canvasSignature(page);
+  expect(cividis.hash).not.toBe(grayBase.hash);
+  expect(cividis.hash).not.toBe(viridis.hash);
+  await expect(page.locator("#paletteSel")).toHaveValue("cividis");
+});
+
+test("migrates metrics and chart render/update targets into browser automation", async ({ page }) => {
+  annotateTargets(METRICS_CHART_TARGETS);
+  await openWorkbench(page);
+  await page.evaluate(() => {
+    window.COSMOS_CQA_APP.state.simDisabled = true;
+  });
+
+  const initialCharts = await chartSignals(page);
+  expect(initialCharts.prChart.hasSignal).toBe(true);
+  expect(initialCharts.opsChart.hasSignal).toBe(true);
+  expect(initialCharts.confChart.hasSignal).toBe(true);
+
+  for (const [index, clazz] of ["stripe", "clean", "dipole"].entries()) {
+    await page.locator("#tileSelect").selectOption(String(index));
+    await page.locator("#classSel").selectOption(clazz);
+    await page.locator("#submitBtn").click();
+  }
+
+  await expect(page.locator("#kpiAUC")).not.toHaveText("-");
+  await expect(page.locator("#kpiPR")).not.toHaveText("-");
+  await expect(page.locator("#kpiIRR")).not.toHaveText("-");
+  await expect(page.locator("#kpiLatency")).toContainText("s");
+  await blurActiveElement(page);
+  await page.keyboard.press("l");
+  await page.locator("#paletteSel").selectOption("cividis");
+  await expect(page.locator("#kpiA11y")).toHaveText("100%");
+
+  const afterLabels = await chartSignals(page);
+  expect(afterLabels.prChart.hash).not.toBe(initialCharts.prChart.hash);
+  expect(afterLabels.opsChart.hash).not.toBe(initialCharts.opsChart.hash);
+
+  await page.locator("#expertBtn").click();
+  await page.locator("#expertPane button[data-d='confirm']").first().click();
+  await expect.poll(() => chartSignals(page).then((signals) => signals.liveChart.hasSignal)).toBe(true);
+  const afterExpert = await chartSignals(page);
+  expect(afterExpert.confChart.hash).not.toBe(initialCharts.confChart.hash);
+  expect(afterExpert.liveChart.hash).not.toBe(initialCharts.liveChart.hash);
+});
+
+test("migrates CSV export download targets into browser automation", async ({ page }) => {
+  annotateTargets(CSV_EXPORT_TARGETS);
+  await openWorkbench(page);
+  await page.evaluate(() => {
+    window.COSMOS_CQA_APP.state.simDisabled = true;
+  });
+
+  await page.locator("#classSel").selectOption("ringing");
+  await page.locator("#sevSel").selectOption("high");
+  await page.locator("#note").fill("csv export browser test");
+  await page.locator("#submitBtn").click();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportCSV").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("labels.csv");
+  const contents = await download.createReadStream().then(readStreamText);
+
+  expect(contents).toContain("tile_id,dataset,volunteer_id,clazz,severity,note,weight,ts,expert_class,expert_confidence,expert_latency");
+  expect(contents).toContain('"tile_001","DEMO_SIM_T"');
+  expect(contents).toContain('"ringing","high","csv export browser test"');
+  await expect(page.locator("#caption")).toContainText("CSV exported.");
+});
+
+test("migrates data import and public sample targets into browser automation", async ({ page }) => {
+  annotateTargets(DATA_IMPORT_TARGETS);
+  await openWorkbench(page);
+
+  await expect(page.locator("#fileInput")).toHaveAttribute("accept", /json/);
+  await expect(page.locator("#feedMethod option")).toHaveText(["WebSocket", "HTTP (poll)"]);
+
+  const feedPayload = [
+    {
+      type: "tile",
+      tile_id: "external_001",
+      dataset: "EXT_TEST",
+      release: "v-test",
+      doi: "doi:10.0000/ext-test",
+      band: "T",
+      ra: 12.5,
+      dec: -4.25,
+      overlay: "rings",
+      checksum: "sha256:external-001",
+      png: await createPngDataUrl(page),
+    },
+    {
+      type: "expert",
+      tile_id: "external_001",
+      expert_class: "residual",
+      expert_confidence: 0.9,
+      latency_s: 1.25,
+    },
+  ];
+
+  await page.locator("#fileInput").setInputFiles({
+    name: "external-feed.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(feedPayload)),
+  });
+  await expect(page.locator("#feedStatus")).toContainText("Loaded 2 feed object(s) from JSON");
+  await expect(page.locator("#tileId")).toHaveText("external_001");
+  await expect(page.locator("#overlaySel")).toHaveValue("rings");
+  await expect(page.locator("#tileSelect option")).toHaveCount(33);
+
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#feedStatus")).toHaveText("Loaded public sample: 4 demo tiles.");
+  await expect(page.locator("#tileId")).toHaveText("sample_001");
+  await expect(page.locator("#tileSelect option")).toHaveCount(37);
+});
+
+test("migrates accessibility focus, captions, and audit targets into browser automation", async ({ page }) => {
+  annotateTargets(ACCESSIBILITY_TARGETS);
+  await openWorkbench(page);
+
+  const skipLink = page.getByRole("link", { name: "Skip to main content" });
+  await expect(skipLink).toHaveAttribute("href", "#main");
+  await page.keyboard.press("Tab");
+  await expect(skipLink).toBeFocused();
+  await expect(skipLink).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#main$/);
+
+  await expect(page.locator("#tileSelect")).toHaveAccessibleName("Choose tile");
+  await expect(page.locator("#overlaySel")).toHaveAccessibleName("Overlay type");
+  await expect(page.locator("#paletteSel")).toHaveAccessibleName("Color palette");
+  await page.locator("#nextBtn").focus();
+  const focusOutline = await page.locator("#nextBtn").evaluate((element) => getComputedStyle(element).outlineStyle);
+  expect(focusOutline).not.toBe("none");
+
+  await page.locator("#captionsChk").setChecked(false);
+  await page.locator("#loopBtn").click();
+  await expect(page.locator("#caption")).toHaveText("");
+  await page.locator("#captionsChk").setChecked(true);
+  await expect(page.locator("#caption")).toHaveText("Captions on.");
+
+  await page.keyboard.press("l");
+  await page.locator("#paletteSel").selectOption("cividis");
+  await expect(page.locator("#paletteSel")).toHaveValue("cividis");
+  await expect(page.locator("#kpiA11y")).toHaveText("100%");
+});
+
 async function openWorkbench(page, url = "/") {
   await page.goto(url, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
@@ -172,6 +391,64 @@ async function canvasHasSignal(page) {
   });
 }
 
+async function canvasSignature(page) {
+  return page.locator("#tileCanvas").evaluate((canvas) => {
+    const context = canvas.getContext("2d");
+    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+    let hash = 2166136261;
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let samples = 0;
+
+    for (let index = 0; index < data.length; index += 256) {
+      hash ^= data[index] + data[index + 1] * 3 + data[index + 2] * 7 + data[index + 3] * 11;
+      hash = Math.imul(hash, 16777619);
+      red += data[index];
+      green += data[index + 1];
+      blue += data[index + 2];
+      samples += 1;
+    }
+
+    return {
+      hash: String(hash >>> 0),
+      redMean: red / samples,
+      greenMean: green / samples,
+      blueMean: blue / samples,
+      redGreenDelta: Math.abs(red - green) / samples,
+    };
+  });
+}
+
+async function chartSignals(page) {
+  return page.evaluate(() => {
+    const ids = ["prChart", "opsChart", "confChart", "liveChart"];
+    return Object.fromEntries(ids.map((id) => [id, canvasSignal(document.getElementById(id))]));
+
+    function canvasSignal(canvas) {
+      const context = canvas.getContext("2d");
+      const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+      let hash = 2166136261;
+      let activePixels = 0;
+
+      for (let index = 0; index < data.length; index += 16) {
+        const value = data[index] + data[index + 1] + data[index + 2] + data[index + 3];
+        if (value > 0) {
+          activePixels += 1;
+        }
+        hash ^= value;
+        hash = Math.imul(hash, 16777619);
+      }
+
+      return {
+        hash: String(hash >>> 0),
+        activePixels,
+        hasSignal: activePixels > 0,
+      };
+    }
+  });
+}
+
 async function labelCount(page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem("labels") || "[]").length);
 }
@@ -186,6 +463,33 @@ async function blurActiveElement(page) {
 
 async function readClipboard(page) {
   return page.evaluate(() => navigator.clipboard.readText());
+}
+
+async function createPngDataUrl(page) {
+  return page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 8;
+    canvas.height = 8;
+    const context = canvas.getContext("2d");
+    const image = context.createImageData(8, 8);
+    for (let index = 0; index < image.data.length; index += 4) {
+      const value = (index / 4) % 2 === 0 ? 230 : 40;
+      image.data[index] = value;
+      image.data[index + 1] = value;
+      image.data[index + 2] = value;
+      image.data[index + 3] = 255;
+    }
+    context.putImageData(image, 0, 0);
+    return canvas.toDataURL("image/png");
+  });
+}
+
+async function readStreamText(stream) {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 function decodeBookmarkPayload(url) {
