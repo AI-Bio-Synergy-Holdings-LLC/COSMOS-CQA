@@ -334,6 +334,7 @@ a {
 }
 
 .portal-inline-list {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -342,10 +343,18 @@ a {
   padding: 0;
 }
 
+.portal-inline-list li,
+.portal-inline-list li + li {
+  margin-top: 0;
+}
+
 .portal-inline-list a {
+  align-items: center;
   border: 1px solid rgba(170, 183, 183, 0.22);
   border-radius: 7px;
   display: inline-flex;
+  justify-content: center;
+  min-height: 38px;
   padding: 8px 10px;
   text-decoration: none;
 }

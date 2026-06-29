@@ -126,6 +126,33 @@ test("serves public resource pages with canonical metadata and notices", async (
   }
 });
 
+test("keeps public page inline action buttons visually aligned", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+
+  for (const path of ["/releases.html", "/story.html"]) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+    const inlineListRows = await page.locator(".portal-inline-list").evaluateAll((lists) =>
+      lists.map((list) =>
+        [...list.querySelectorAll("a")].map((link) => {
+          const rect = link.getBoundingClientRect();
+          const style = getComputedStyle(link);
+          return {
+            alignItems: style.alignItems,
+            top: Math.round(rect.top),
+          };
+        }),
+      ),
+    );
+
+    for (const row of inlineListRows) {
+      expect(row.length).toBeGreaterThan(1);
+      expect(new Set(row.map((item) => item.alignItems))).toEqual(new Set(["center"]));
+      const tops = row.map((item) => item.top);
+      expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
+    }
+  }
+});
+
 test("keeps the research workbench discoverability metadata aligned with the portal", async ({ page }) => {
   await page.goto("/workbench.html", { waitUntil: "domcontentloaded" });
 
