@@ -50,7 +50,7 @@ npm --prefix apps/web exec -- playwright install chromium
 npm --prefix apps/web run check
 ```
 
-This runs maintained source syntax checks, contract tests, unit domain tests, deterministic replay tests, Playwright domain workflow tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), checklist migration is documented in [docs/checklist-to-test-migration.md](docs/checklist-to-test-migration.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
+This runs repository health checks for governance/release guardrails, maintained source syntax checks, contract tests, unit domain tests, deterministic replay tests, Playwright domain workflow tests, and legacy HTML JavaScript syntax checks. Contract details are documented in [docs/contracts.md](docs/contracts.md), checklist migration is documented in [docs/checklist-to-test-migration.md](docs/checklist-to-test-migration.md), and replay expectations are documented in [docs/reproducibility.md](docs/reproducibility.md).
 
 For local browser review:
 

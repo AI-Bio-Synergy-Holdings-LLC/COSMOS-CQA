@@ -22,6 +22,7 @@ Run checks from the repository root:
 Use Node.js 24 or newer. The repository root `.node-version` pins the maintained CI runtime family.
 
 ```bash
+npm --prefix apps/web run check:repo-health
 npm --prefix apps/web run check:source
 npm --prefix apps/web run test:contracts
 npm --prefix apps/web run test:unit
@@ -33,7 +34,7 @@ npm --prefix apps/web run check:legacy
 npm --prefix apps/web run check
 ```
 
-`check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:core-pack` verifies Core Pack intake, research artifact loading, provenance hashes, SBOM references, and validation report JSON. `validate:core-pack` validates the sample manifest, local evidence paths, and SBOM checksum. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets, including Core Pack sample load and validation-report export. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
+`check:repo-health` validates required governance and release guardrails, including the research-only license, stewardship, CODEOWNERS, security policy, and release checklist. `check:source` validates the maintained ES module source. `test:contracts` verifies labels, feeds, provenance/bookmarks, and reports against the first contract set. `test:unit` covers cheap domain assertions outside the browser. `test:core-pack` verifies Core Pack intake, research artifact loading, provenance hashes, SBOM references, and validation report JSON. `validate:core-pack` validates the sample manifest, local evidence paths, and SBOM checksum. `test:replay` verifies deterministic golden fixtures. `test:browser` runs Playwright domain specs for migrated checklist targets, including Core Pack sample load and validation-report export. `check:legacy` validates JavaScript syntax in the imported v3 HTML files.
 
 Install dependencies and Chromium before running the full browser-backed check locally:
 
