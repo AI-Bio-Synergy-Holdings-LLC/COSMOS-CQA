@@ -30,7 +30,7 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
 - `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, evidence references, and optional diagnostic concept references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
-- `validationReport`: structured report JSON with checks, optional research artifacts, SBOM references, provenance hashes, and caveated diagnostic placeholder results. This is the report artifact lane before any PDF generation.
+- `validationReport`: structured report JSON with research-only license notice, limitations, checks, optional research artifacts, SBOM references, provenance hashes, and caveated diagnostic placeholder results. This is the report artifact lane before any PDF generation.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 - `researchSession`: replayable working-state contract that ties loaded artifacts, selected tiles, labels, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata together.
 - `evidenceBundle`: export-ready wrapper around a research session with steward, research-only license notice, limitations, generated metadata, claim-boundary references, and evidence counts.

@@ -211,6 +211,8 @@ test("report exports satisfy SBOM and validation report contracts", () => {
   });
 
   assertContract("validationReport", report);
+  assert.match(report.license, /Research-only public use/);
+  assert.ok(report.limitations.some((limitation) => limitation.includes("research artifacts")));
   assert.equal(report.summary.label_count, 1);
   assert.equal(report.summary.feed_error_count, 1);
   assert.equal(report.summary.pass_count, 1);

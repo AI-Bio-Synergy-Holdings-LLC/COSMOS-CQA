@@ -279,7 +279,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Labels", String(report.summary.label_count)],
       ["Feed errors", String(report.summary.feed_error_count)],
       ["Checks pass/fail", `${report.summary.pass_count} / ${report.summary.fail_count}`],
-      ["Research license", "Research-only public use; all other rights reserved."],
+      ["Research license", report.license],
     ]);
 
     appendReferenceList(dom.reportChecks, report.checks || [], (check) => [
@@ -412,16 +412,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function validationReportLimitations(report) {
-    const limitations = [
-      {
-        name: "Research-only license",
-        detail: "Public use is limited to research; all other rights and IP remain reserved to AI-Bio Synergy Holdings LLC.",
-      },
-      {
-        name: "No production decision use",
-        detail: "This validation report is a research workbench artifact, not a production decision-system certification.",
-      },
-    ];
+    const limitationNames = ["Research-only license", "Scientific caveats", "External provenance limits"];
+    const limitations = (report.limitations || []).map((detail, index) => ({
+      name: limitationNames[index] || `Report limitation ${index + 1}`,
+      detail,
+    }));
 
     if (!report.artifacts?.length) {
       limitations.push({
@@ -1078,17 +1073,61 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     return result;
   }
 
-  async function loadPublicSample() {
+  async function loadPublicSample({ source = "examples/core-pack/core-pack.manifest.json" } = {}) {
     try {
       const response = await fetch("/examples/core-pack/core-pack.manifest.json");
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       const text = await response.text();
-      await importResearchArtifactText(text, { source: "examples/core-pack/core-pack.manifest.json" });
+      return await importResearchArtifactText(text, { source });
     } catch {
       dom.feedStatus.textContent = "Public sample Core Pack unavailable.";
+      return null;
     }
+  }
+
+  async function startHostedCorePackDemo() {
+    renderDemoModeNotice("Hosted demo:", "loading the public sample Core Pack with public truth-label policy.");
+    setCaption("Hosted demo mode: loading public sample Core Pack.");
+
+    const result = await loadPublicSample();
+    if (!result || result.kind !== "core-pack" || result.errors.length) {
+      renderDemoModeNotice("Hosted demo:", "public sample Core Pack could not be loaded.");
+      notifyTestBridge("hostedDemo.ready", { ok: false, dev: config.dev });
+      return;
+    }
+
+    const report = refreshValidationReportPreview();
+    scrollToDemoSection();
+    renderDemoModeNotice(
+      "Hosted demo ready:",
+      `${result.manifest.manifest_id} loaded. Diagnostics are caveated placeholders; export Validation Report JSON for research evidence.`,
+    );
+    setCaption("Hosted demo ready: sample Core Pack loaded; diagnostics are caveated.");
+    notifyTestBridge("hostedDemo.ready", {
+      ok: true,
+      dev: config.dev,
+      manifest_id: result.manifest.manifest_id,
+      report_id: report?.report_id || "",
+    });
+  }
+
+  function renderDemoModeNotice(label, detail) {
+    if (!dom.demoModeNotice) {
+      return;
+    }
+    dom.demoModeNotice.hidden = false;
+    dom.demoModeNotice.replaceChildren();
+    const strong = documentRef.createElement("strong");
+    strong.textContent = label;
+    dom.demoModeNotice.append(strong, ` ${detail}`);
+  }
+
+  function scrollToDemoSection() {
+    const hashId = windowRef.location.hash && !windowRef.location.hash.startsWith("#state=") ? windowRef.location.hash.slice(1) : "";
+    const target = documentRef.getElementById(hashId || "workspace-core-pack");
+    target?.scrollIntoView({ behavior: "auto", block: "start" });
   }
 
   function startWs(url) {
@@ -1753,7 +1792,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.nextStep.addEventListener("click", nextCalibStep);
     dom.startFeed.addEventListener("click", handleFeedUrl);
     dom.stopFeed.addEventListener("click", stopFeed);
-    dom.loadSample.addEventListener("click", loadPublicSample);
+    dom.loadSample.addEventListener("click", () => {
+      void loadPublicSample();
+    });
     dom.fileInput.addEventListener("change", handleFileLoad);
     windowRef.addEventListener("hashchange", () => restoreBookmarkFromHash({ notifyMissing: true }));
   }
@@ -1775,6 +1816,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     refreshValidationReportPreview();
     if (!restoredBookmark) {
       setCaption("Ready. Use keyboard or controls; captions appear here.");
+    }
+    if (config.hostedCorePackDemo) {
+      void startHostedCorePackDemo();
     }
 
     notifyTestBridge("build.info", build);
@@ -1920,6 +1964,7 @@ function bindDom(documentRef) {
     stopFeed: get("stopFeed"),
     loadSample: get("loadSample"),
     feedStatus: get("feedStatus"),
+    demoModeNotice: get("demoModeNotice"),
     exportSBOM: get("exportSBOM"),
     exportReport: get("exportReport"),
     refreshReportPreview: get("refreshReportPreview"),

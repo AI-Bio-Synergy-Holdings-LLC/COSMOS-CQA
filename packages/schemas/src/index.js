@@ -543,13 +543,19 @@ export const schemas = {
   validationReport: {
     $id: "cosmos-cqa/validation-report.schema.json",
     type: "object",
-    required: ["schema_version", "report_id", "generated_at", "build", "summary", "checks"],
+    required: ["schema_version", "report_id", "generated_at", "build", "license", "limitations", "summary", "checks"],
     additionalProperties: false,
     properties: {
       schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
       report_id: { type: "string", pattern: "^rpt_[A-Za-z0-9._:-]+$" },
       generated_at: { type: "string", format: "date-time" },
       build: { $ref: "buildInfo" },
+      license: { type: "string", minLength: 1, maxLength: 256 },
+      limitations: {
+        type: "array",
+        minItems: 2,
+        items: { type: "string", minLength: 1, maxLength: 512 },
+      },
       summary: {
         type: "object",
         required: ["label_count", "feed_error_count", "pass_count", "fail_count"],

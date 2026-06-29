@@ -18,7 +18,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
-  await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html");
+  await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
@@ -31,7 +31,8 @@ test("hands off from the public portal to the maintained research workbench", as
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
 
   await expect(page.locator("#tileCanvas")).toBeVisible();
-  await expect(page.locator("#tileId")).toHaveText("tile_001");
+  await expect(page.locator("#demoModeNotice")).toContainText("Hosted demo ready");
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
 });
 
 test("keeps the portal usable on narrow screens", async ({ page }) => {

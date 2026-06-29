@@ -63,6 +63,12 @@ The maintained demo workbench is served at:
 http://localhost:4173/workbench.html
 ```
 
+The hosted public demo workflow preloads the sample Core Pack at:
+
+```text
+http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
+```
+
 Use `?dev=1` to show dev-only truth labels:
 
 ```text

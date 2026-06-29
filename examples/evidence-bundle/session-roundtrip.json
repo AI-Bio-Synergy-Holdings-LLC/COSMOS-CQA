@@ -1,7 +1,7 @@
 {
   "schema_version": "cosmos-cqa.session-roundtrip-fixture.v0.1.0",
   "source": "examples/evidence-bundle/research-session.json",
-  "serialized_sha256": "b9a03efbb91319bd7dcb612cd11ee76cded7e3858e2573479edd1b83a945947c",
+  "serialized_sha256": "2d8a9c4a80f62baeed97faac7e6bf1ea5b566b728ce87cb9ef258f7a65d5b48e",
   "reload_plan": {
     "schema_version": "cosmos-cqa.contracts.v0.1.0",
     "session_id": "session_demo-v0.3.0-evidence",

@@ -203,6 +203,12 @@
         "sha": "source-split",
         "dev": false
       },
+      "license": "Research-only public use; all other rights reserved.",
+      "limitations": [
+        "Validation reports are research artifacts, not production decision-system certifications.",
+        "Diagnostic entries may include caveated placeholders and must not be treated as validated scientific results.",
+        "External datasets, SBOM references, and source artifacts remain subject to their own terms and provenance limits."
+      ],
       "summary": {
         "label_count": 1,
         "feed_error_count": 1,
@@ -222,7 +228,7 @@
         }
       ]
     },
-    "validation_report_sha256": "5fa64b7cabd370453d3459d23eac569b877c6311ea4e8a999cba7e2a3d111cb7",
+    "validation_report_sha256": "23669835e8cf049f11f4c6437cf1a6416f6a0a072cc5695329a47bb20067a0be",
     "sbom": {
       "bomFormat": "CycloneDX",
       "specVersion": "1.4",

@@ -200,4 +200,6 @@ test("validation reports carry artifacts, SBOM references, and provenance hashes
   assert.equal(report.provenance_hashes.length, 2);
   assert.equal(report.diagnostics.length, 2);
   assert.equal(report.diagnostics[0].diagnostic_id, "diag_kappa_y_crosscheck");
+  assert.match(report.license, /Research-only public use/);
+  assert.ok(report.limitations.some((limitation) => limitation.includes("validated scientific results")));
 });
