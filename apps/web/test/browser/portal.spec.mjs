@@ -2,6 +2,19 @@ import { expect, test } from "@playwright/test";
 
 import { openWorkbench } from "./fixtures/workbench.mjs";
 
+const publicPages = [
+  { path: "/docs.html", title: /Docs \| COSMOS-CQA/, text: "Research infrastructure docs." },
+  { path: "/releases.html", title: /Releases \| COSMOS-CQA/, text: "Research alpha release evidence." },
+  { path: "/citation.html", title: /Citation \| COSMOS-CQA/, text: "Cite the repository and release evidence." },
+  { path: "/license.html", title: /Research-Only License \| COSMOS-CQA/, text: "Public research use, reserved rights." },
+  { path: "/governance.html", title: /Governance \| COSMOS-CQA/, text: "Stewarded public research infrastructure." },
+  { path: "/ownership-and-use.html", title: /Ownership and Use \| COSMOS-CQA/, text: "Owned and stewarded by AI-Bio Synergy Holdings LLC." },
+  { path: "/story.html", title: /Story Behind the Research \| COSMOS-CQA/, text: "From artifact intuition to public research infrastructure." },
+  { path: "/copyright.html", title: /Copyright Notice \| COSMOS-CQA/, text: "Copyright, notices, and third-party boundaries." },
+  { path: "/user-data.html", title: /User Data Notice \| COSMOS-CQA/, text: "Local-first research workflow data." },
+  { path: "/contact.html", title: /Contact \| COSMOS-CQA/, text: "Developer and public research route." },
+];
+
 test("serves the canonical public portal at the root route", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_PORTAL));
@@ -14,27 +27,117 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const label of ["Demo", "Docs", "Releases", "Citation", "License", "Stewardship"]) {
+  for (const label of ["Demo", "Docs", "Releases", "Story", "Contact"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
   await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
-  await expect(page.getByRole("link", { name: "Quickstart Local run, hosted sample Core Pack workflow, report export, and verification command." })).toHaveAttribute(
-    "href",
-    /docs\/quickstart\.md$/,
-  );
+  await expect(page.getByRole("link", { name: "Docs Quickstart, contracts, evidence bundles, deployment validation, and scope references." })).toHaveAttribute("href", "./docs.html");
   await expect(page.getByRole("link", { name: "Citation CITATION.cff fields, canonical URL, release tag guidance, and citation boundaries." })).toHaveAttribute(
     "href",
-    /docs\/citation\.md$/,
+    "./citation.html",
   );
   await expect(page.getByRole("link", { name: "Release Artifacts Release notes, validation report, SBOM path, known limitations, and evidence checks." })).toHaveAttribute(
     "href",
-    /docs\/releases\/README\.md$/,
+    "./releases.html",
   );
+  await expect(page.getByRole("link", { name: "Story Behind the Research Origin concept, public science references, and the path to a citable research workbench." })).toHaveAttribute("href", "./story.html");
+  await expect(page.getByRole("link", { name: "Contact Developer route for public research questions, accessibility feedback, and issue routing." })).toHaveAttribute("href", "./contact.html");
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
   expect(signature.activePixels).toBeGreaterThan(0);
+
+  const heroTitleBox = await page.locator("#portal-title").boundingBox();
+  const viewportWidth = page.viewportSize().width;
+  expect(heroTitleBox.x + heroTitleBox.width).toBeLessThanOrEqual(viewportWidth);
+  const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+  expect(hasHorizontalOverflow).toBe(false);
+
+  const markerAfterContent = await page.locator(".portal-brand-mark").first().evaluate((element) => getComputedStyle(element, "::after").content);
+  expect(["none", "normal"].includes(markerAfterContent)).toBe(true);
+});
+
+test("publishes SEO, social preview, and structured metadata", async ({ page, request }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("meta[name='description']")).toHaveAttribute(
+    "content",
+    "COSMOS-CQA is a research-only public portal and browser workbench for cosmology artifact quality assurance evidence, provenance, and replay.",
+  );
+  await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", "index,follow");
+  await expect(page.locator("meta[name='theme-color']")).toHaveAttribute("content", "#090d10");
+  await expect(page.locator("link[rel='icon']")).toHaveAttribute("href", "./assets/favicon.svg");
+  await expect(page.locator("link[rel='sitemap']")).toHaveAttribute("href", "https://cosmos-cqa.org/sitemap.xml");
+  await expect(page.locator("meta[property='og:title']")).toHaveAttribute("content", "COSMOS-CQA Public Research Portal");
+  await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+  await expect(page.locator("meta[property='og:image:width']")).toHaveAttribute("content", "1200");
+  await expect(page.locator("meta[property='og:image:height']")).toHaveAttribute("content", "630");
+  await expect(page.locator("meta[name='twitter:card']")).toHaveAttribute("content", "summary_large_image");
+  await expect(page.locator("meta[name='twitter:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+
+  const structuredData = JSON.parse(await page.locator("script[type='application/ld+json']").textContent());
+  expect(structuredData["@context"]).toBe("https://schema.org");
+  expect(structuredData["@graph"].some((item) => item["@type"] === "SoftwareSourceCode" && item.name === "COSMOS-CQA")).toBe(true);
+
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toContain("Sitemap: https://cosmos-cqa.org/sitemap.xml");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.ok()).toBe(true);
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("https://cosmos-cqa.org/workbench.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
+
+  const previewSource = await request.get("/social-preview.html");
+  expect(previewSource.ok()).toBe(true);
+  expect(await previewSource.text()).toContain("portalSignalCanvas");
+
+  const favicon = await request.get("/assets/favicon.svg");
+  expect(favicon.ok()).toBe(true);
+  expect(await favicon.text()).not.toContain('cx="44"');
+
+  const preview = await request.get("/assets/social-preview.png");
+  expect(preview.ok()).toBe(true);
+  expect((await preview.body()).byteLength).toBeGreaterThan(10_000);
+});
+
+test("serves public resource pages with canonical metadata and notices", async ({ page }) => {
+  for (const publicPage of publicPages) {
+    await page.goto(publicPage.path, { waitUntil: "domcontentloaded" });
+    await expect(page).toHaveTitle(publicPage.title);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(publicPage.text);
+    await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", `https://cosmos-cqa.org${publicPage.path}`);
+    await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+    await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
+  }
+
+  await page.goto("/contact.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "cosmos-cqa-developer@ai-biosynergyholdings.com" })).toHaveAttribute(
+    "href",
+    /mailto:cosmos-cqa-developer@ai-biosynergyholdings\.com/,
+  );
+
+  await page.goto("/story.html", { waitUntil: "domcontentloaded" });
+  for (const source of ["ESA Planck Legacy Archive", "NASA LAMBDA WMAP data products", "Dark Energy Survey Data Release 2", "Galaxy Zoo / Zooniverse"]) {
+    await expect(page.getByRole("link", { name: source })).toBeVisible();
+  }
+});
+
+test("keeps the research workbench discoverability metadata aligned with the portal", async ({ page }) => {
+  await page.goto("/workbench.html", { waitUntil: "domcontentloaded" });
+
+  await expect(page).toHaveTitle("COSMOS-CQA Research Workbench");
+  await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/workbench.html");
+  await expect(page.locator("meta[name='description']")).toHaveAttribute(
+    "content",
+    /Core Pack intake, tile review, evidence bundles, provenance hashes, validation reports, and deterministic replay/,
+  );
+  await expect(page.locator("meta[property='og:url']")).toHaveAttribute("content", "https://cosmos-cqa.org/workbench.html");
+  await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+  await expect(page.locator("meta[name='twitter:card']")).toHaveAttribute("content", "summary_large_image");
 });
 
 test("hands off from the public portal to the maintained research workbench", async ({ page }) => {

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-import { cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(appRoot, "..", "..");
 const artifactRoot = path.resolve(repoRoot, process.env.COSMOS_CQA_PAGES_ARTIFACT_ROOT || "apps/web/dist-pages");
-const siteFiles = ["index.html", "workbench.html", "CNAME", "src"];
+const topLevelHtmlFiles = (await readdir(appRoot)).filter((entry) => entry.endsWith(".html"));
+const siteFiles = [...topLevelHtmlFiles, "CNAME", "robots.txt", "sitemap.xml", "src", "assets"];
 const sharedStaticRoots = ["packages", "examples"];
 
 await rm(artifactRoot, { recursive: true, force: true });

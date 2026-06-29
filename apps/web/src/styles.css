@@ -76,17 +76,6 @@ body {
   width: 34px;
 }
 
-.brand-mark::after {
-  background: var(--accent);
-  border-radius: 50%;
-  content: "";
-  height: 5px;
-  position: absolute;
-  right: 3px;
-  top: 6px;
-  width: 5px;
-}
-
 .brand {
   color: var(--text);
   font-size: 16px;

@@ -8,6 +8,19 @@ https://cosmos-cqa.org
 
 The portal is the root static page in `apps/web/index.html`. The maintained research workbench is served from `apps/web/workbench.html`.
 
+Public resource pages are served as top-level static HTML files:
+
+- `docs.html`
+- `releases.html`
+- `citation.html`
+- `license.html`
+- `governance.html`
+- `ownership-and-use.html`
+- `story.html`
+- `copyright.html`
+- `user-data.html`
+- `contact.html`
+
 The hosted public demo path is:
 
 ```text
@@ -31,14 +44,19 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 
 ## Required Navigation
 
-The first public scaffold exposes:
+The public scaffold exposes:
 
 - Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
-- Docs: repository `docs/`, starting with `docs/quickstart.md`
-- Releases: GitHub Releases and `docs/releases/README.md`
-- Citation: `docs/citation.md` and `CITATION.cff`
-- License: `LICENSE.md`
-- Stewardship: the portal stewardship section plus governance and ownership documents
+- Docs: `./docs.html`
+- Releases: `./releases.html`
+- Citation: `./citation.html`
+- License: `./license.html`
+- Governance: `./governance.html`
+- Ownership and use: `./ownership-and-use.html`
+- Story behind the research: `./story.html`
+- Copyright notice: `./copyright.html`
+- User data notice: `./user-data.html`
+- Contact: `./contact.html`
 
 ## Local Verification
 
@@ -56,6 +74,14 @@ http://localhost:4173/
 
 The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo sample loading, and validation report JSON export.
 
+## SEO, Social Preview, Accessibility, and Usability Baseline
+
+The public portal publishes crawl metadata, social preview metadata, structured data, `robots.txt`, and `sitemap.xml` for the canonical domain.
+
+The social preview PNG is generated from `apps/web/social-preview.html`, which reuses the portal `portal-hero-canvas` rendering and dotless portal brand mark.
+
+The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
+
 Run the public portal release/deployment validation with:
 
 ```bash
@@ -68,7 +94,7 @@ For served-route validation, start the local static server and run:
 $env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web run check:portal-deploy
 ```
 
-This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
+This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, public resource pages, notices, contact routing, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
 
 Prepare the GitHub Pages artifact locally with:
 
