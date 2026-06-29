@@ -226,14 +226,40 @@
 
       <section id="workspace-provenance" class="card inspector-panel" aria-labelledby="provenance-title">
         <div class="panel-header compact">
-          <h2 id="provenance-title">Provenance</h2>
-          <span class="panel-status">Replayable</span>
+          <h2 id="provenance-title">Evidence Workspace</h2>
+          <span class="panel-status">Inspectable</span>
         </div>
-        <ul class="provenance-list small">
-          <li>Dataset version and checksums are encoded in bookmark URLs.</li>
-          <li>Color-safe palettes and caption controls are available for review workflows.</li>
-          <li>External datasets remain under their own terms.</li>
-        </ul>
+        <div id="evidenceWorkspaceStatus" class="small inspector-status">No imported or exported evidence artifacts yet.</div>
+        <div class="evidence-workspace" aria-label="Evidence workspace">
+          <div>
+            <div class="group-title explorer-title">Evidence Summary</div>
+            <div id="evidenceSummary" class="metadata-panel"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Artifacts</div>
+            <div id="evidenceArtifacts" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Provenance Hashes</div>
+            <div id="evidenceProvenanceHashes" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="evidenceSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Loaded Core Packs</div>
+            <div id="evidenceCorePacks" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostics</div>
+            <div id="evidenceDiagnostics" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Validation Checks</div>
+            <div id="evidenceValidationChecks" class="reference-list"></div>
+          </div>
+        </div>
       </section>
 
       <section id="workspace-reports" class="card inspector-panel" aria-labelledby="reports-title">

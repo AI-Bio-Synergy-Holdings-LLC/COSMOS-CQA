@@ -264,6 +264,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (!report) {
       dom.reportViewerStatus.textContent = "Validation report preview has not been generated.";
       appendEmptyState(dom.reportSummary, "Refresh the preview to inspect the validation report before export.");
+      renderEvidenceWorkspace();
       return;
     }
 
@@ -303,6 +304,99 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       limitation.name,
       limitation.detail,
     ]);
+    renderEvidenceWorkspace();
+  }
+
+  function renderEvidenceWorkspace() {
+    if (
+      !dom.evidenceWorkspaceStatus ||
+      !dom.evidenceSummary ||
+      !dom.evidenceArtifacts ||
+      !dom.evidenceProvenanceHashes ||
+      !dom.evidenceSbomRefs ||
+      !dom.evidenceCorePacks ||
+      !dom.evidenceDiagnostics ||
+      !dom.evidenceValidationChecks
+    ) {
+      return;
+    }
+
+    clearEvidenceWorkspace();
+
+    const report = state.validationReportPreview;
+    const hasEvidence = Boolean(
+      state.researchArtifacts.length ||
+        state.provenanceHashes.length ||
+        state.sbomRefs.length ||
+        state.corePacks.length ||
+        state.diagnostics.length,
+    );
+
+    dom.evidenceWorkspaceStatus.textContent = hasEvidence
+      ? `Evidence workspace has ${state.researchArtifacts.length} artifact(s), ${state.provenanceHashes.length} provenance hash(es), ${state.sbomRefs.length} SBOM reference(s), and ${state.diagnostics.length} diagnostic record(s).`
+      : "No imported or exported evidence artifacts yet. Load a Core Pack, import a feed, export an SBOM, or import a research session.";
+
+    appendMetadataGrid(dom.evidenceSummary, [
+      ["Artifacts", String(state.researchArtifacts.length)],
+      ["Provenance hashes", String(state.provenanceHashes.length)],
+      ["SBOM refs", String(state.sbomRefs.length)],
+      ["Core Packs", String(state.corePacks.length)],
+      ["Diagnostics", String(state.diagnostics.length)],
+      ["Validation report", report?.report_id || "preview not generated"],
+      ["Validation checks", hasEvidence && report?.checks ? String(report.checks.length) : "0"],
+    ]);
+
+    appendReferenceList(dom.evidenceArtifacts, state.researchArtifacts, (artifact) => [
+      artifact.artifact_id,
+      [
+        `kind=${artifact.kind}`,
+        `source=${artifact.source}`,
+        `hash=${artifact.source_sha256}`,
+        `records=${artifact.record_count}`,
+        `errors=${artifact.error_count}`,
+        `imported=${formatDate(artifact.imported_at)}`,
+        artifact.manifest_id ? `Core Pack=${artifact.manifest_id}` : "",
+        report?.report_id ? `report=${report.report_id}` : "",
+      ]
+        .filter(Boolean)
+        .join("; "),
+    ]);
+    appendReferenceList(dom.evidenceProvenanceHashes, state.provenanceHashes, (hash) => [
+      hash.subject,
+      `${hash.algorithm}: ${hash.value}; generated=${formatDate(hash.generated_at)}${report?.report_id ? `; report=${report.report_id}` : ""}`,
+    ]);
+    appendReferenceList(dom.evidenceSbomRefs, state.sbomRefs, (ref) => [
+      ref.sbom_id,
+      `${ref.format} ${ref.spec_version}; path=${ref.path}; checksum=${ref.checksum}; generated=${formatDate(ref.generated_at)}${
+        report?.report_id ? `; report=${report.report_id}` : ""
+      }`,
+    ]);
+    appendReferenceList(dom.evidenceCorePacks, state.corePacks, (corePack) => [
+      corePack.manifest_id,
+      `${corePack.name || "Core Pack"} ${corePack.version || ""}; steward=${corePack.steward || "n/a"}; tiles=${
+        corePack.tile_count
+      }; evidence_refs=${corePack.evidence_ref_count}; sbom_refs=${corePack.sbom_ref_count}; diagnostics=${
+        corePack.diagnostic_ref_count
+      }`,
+    ]);
+    appendReferenceList(dom.evidenceDiagnostics, state.diagnostics, (diagnostic) => [
+      `${diagnostic.name} [${diagnostic.status}]`,
+      `${diagnostic.implementation_state}; ${diagnostic.caveat}`,
+    ]);
+    appendReferenceList(dom.evidenceValidationChecks, hasEvidence && report?.checks ? report.checks : [], (check) => [
+      `${check.name} [${check.status}]`,
+      `${check.detail || "No detail recorded."}${report?.report_id ? ` Report: ${report.report_id}.` : ""}`,
+    ]);
+  }
+
+  function clearEvidenceWorkspace() {
+    dom.evidenceSummary.replaceChildren();
+    dom.evidenceArtifacts.replaceChildren();
+    dom.evidenceProvenanceHashes.replaceChildren();
+    dom.evidenceSbomRefs.replaceChildren();
+    dom.evidenceCorePacks.replaceChildren();
+    dom.evidenceDiagnostics.replaceChildren();
+    dom.evidenceValidationChecks.replaceChildren();
   }
 
   function clearValidationReportPreview() {
@@ -1828,6 +1922,14 @@ function bindDom(documentRef) {
     reportSbomRefs: get("reportSbomRefs"),
     reportProvenanceHashes: get("reportProvenanceHashes"),
     reportLimitations: get("reportLimitations"),
+    evidenceWorkspaceStatus: get("evidenceWorkspaceStatus"),
+    evidenceSummary: get("evidenceSummary"),
+    evidenceArtifacts: get("evidenceArtifacts"),
+    evidenceProvenanceHashes: get("evidenceProvenanceHashes"),
+    evidenceSbomRefs: get("evidenceSbomRefs"),
+    evidenceCorePacks: get("evidenceCorePacks"),
+    evidenceDiagnostics: get("evidenceDiagnostics"),
+    evidenceValidationChecks: get("evidenceValidationChecks"),
   };
 }
 
