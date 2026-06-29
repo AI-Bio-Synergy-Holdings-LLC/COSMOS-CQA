@@ -348,6 +348,15 @@
           </div>
         </details>
 
+        <details open>
+          <summary><strong>Session Evidence</strong></summary>
+          <div class="export session-actions">
+            <button id="exportSession" type="button" class="pill">Export Session JSON</button>
+            <label class="pill file-pill">Import Session <input id="sessionInput" type="file" accept=".json,application/json"></label>
+          </div>
+          <div id="sessionStatus" class="small inspector-status">No research session imported.</div>
+        </details>
+
         <details>
           <summary><strong>Self-Checks</strong></summary>
           <div class="small">Run built-in tests to verify core functions.</div>

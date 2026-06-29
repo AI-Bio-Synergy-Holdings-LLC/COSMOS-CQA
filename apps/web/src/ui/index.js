@@ -22,8 +22,14 @@ import {
   sha256Text,
   writeClipboard,
 } from "../provenance/index.js";
+import {
+  createResearchSession,
+  createResearchSessionReloadPlan,
+  serializeResearchSession,
+  validateResearchSessionJson,
+} from "../evidence/index.js";
 import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
-import { createSbom, createSbomReference, createValidationReport, downloadCsv, downloadJson } from "../reports/index.js";
+import { createSbom, createSbomReference, createValidationReport, downloadBlob, downloadCsv, downloadJson } from "../reports/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
 
@@ -1126,6 +1132,174 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     setCaption("CSV exported.");
   }
 
+  function buildResearchSession({ generatedAt = new Date().toISOString() } = {}) {
+    const sessionId = state.researchSessionId || `session_${safeId(generatedAt)}`;
+    const createdAt = state.researchSessionCreatedAt || generatedAt;
+    const report = refreshValidationReportPreview({
+      generatedAt,
+      reportId: `rpt_${safeId(sessionId)}`,
+    });
+
+    state.researchSessionId = sessionId;
+    state.researchSessionCreatedAt = createdAt;
+
+    return createResearchSession({
+      sessionId,
+      createdAt,
+      updatedAt: generatedAt,
+      build,
+      artifacts: state.researchArtifacts,
+      selectedTiles: [createSelectedTileSnapshot({ generatedAt })],
+      labels: state.labels,
+      diagnostics: state.diagnostics,
+      reports: report ? [report] : [],
+      provenanceHashes: state.provenanceHashes,
+      sbomRefs: state.sbomRefs,
+    });
+  }
+
+  function createSelectedTileSnapshot({ generatedAt }) {
+    const tile = tiles[state.idx];
+    const snapshot = {
+      tile_id: tile.meta.tile_id,
+      dataset: tile.meta.dataset || "unknown",
+      checksum: tile.meta.checksum || "",
+      selected_at: generatedAt,
+      overlay: dom.overlaySel.value,
+      palette: dom.paletteSel.value,
+      review_state: "selected",
+    };
+
+    const manifestId = tile.corePackManifestId || findLoadedPassport(tile.meta.tile_id)?.manifest_id || state.currentCorePackId;
+    if (manifestId) {
+      snapshot.manifest_id = manifestId;
+    }
+
+    return snapshot;
+  }
+
+  function exportResearchSession() {
+    const session = buildResearchSession();
+    const contents = serializeResearchSession(session);
+    downloadBlob({
+      contents,
+      type: "application/json",
+      filename: "cosmos-cqa-session.json",
+    });
+    renderSessionStatus(`Exported ${session.session_id}: ${session.labels.length} label(s), ${session.reports.length} report(s).`);
+    setCaption("Research session JSON exported.");
+    notifyTestBridge("researchSession.exported", { session, contents });
+  }
+
+  function handleSessionImport(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      renderSessionStatus("No session file chosen.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => importResearchSessionText(String(reader.result || ""), { source: `file:${file.name}` });
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
+  function importResearchSessionText(text, { source = "inline" } = {}) {
+    const result = validateResearchSessionJson(text);
+    if (!result.valid) {
+      const message = result.errors[0] || "Invalid research session.";
+      renderSessionStatus(`Session rejected: ${message}`);
+      setCaption("Session import rejected; current state preserved.");
+      notifyTestBridge("researchSession.imported", { ok: false, source, error: message });
+      return { ok: false, error: message };
+    }
+
+    const plan = createResearchSessionReloadPlan(result.session);
+    applyResearchSession(result.session, plan);
+    notifyTestBridge("researchSession.imported", { ok: true, source, session: result.session, plan });
+    return { ok: true, session: result.session, plan };
+  }
+
+  function applyResearchSession(session, plan = createResearchSessionReloadPlan(session)) {
+    state.researchSessionId = session.session_id;
+    state.researchSessionCreatedAt = session.created_at;
+    state.labels = cloneJson(session.labels);
+    state.expert = [];
+    state.scores = scoresFromLabels(state.labels);
+    state.feedErrors = [];
+    state.researchArtifacts = cloneJson(session.artifacts);
+    state.diagnostics = cloneJson(session.diagnostics);
+    state.validationReportPreview = cloneJson(session.reports.at(-1) || null);
+    state.provenanceHashes = cloneJson(session.provenance_hashes);
+    state.sbomRefs = cloneJson(session.sbom_refs);
+    const sessionManifestIds = new Set(session.artifacts.map((artifact) => artifact.manifest_id).filter(Boolean));
+    state.corePackManifests = state.corePackManifests.filter((manifest) => sessionManifestIds.has(manifest.manifest_id));
+    state.corePacks = state.corePacks.filter((corePack) => sessionManifestIds.has(corePack.manifest_id));
+    state.currentCorePackId = plan.selected_tile_manifest_id || sessionManifestIds.values().next().value || "";
+
+    saveLabels(state.labels);
+    saveExpertDecisions(state.expert);
+
+    setControlValue(dom.overlaySel, plan.overlay);
+    setControlValue(dom.paletteSel, plan.palette);
+
+    const selectedTileIndex = findReloadTileIndex(plan);
+    if (selectedTileIndex >= 0) {
+      drawTile(selectedTileIndex);
+    } else {
+      drawTile(state.idx);
+    }
+
+    renderExpertPane();
+    renderDiagnostics();
+    renderValidationReportPreview();
+    recalcKPIs();
+
+    const restoredTile = selectedTileIndex >= 0 ? plan.selected_tile_id : "source artifact required";
+    renderSessionStatus(
+      `Imported ${session.session_id}: ${plan.summary.label_count} label(s), ${plan.summary.diagnostic_count} diagnostic(s), ${plan.summary.report_count} report(s). Selected tile: ${restoredTile}.`,
+    );
+    setCaption(selectedTileIndex >= 0 ? "Research session imported and restored." : "Research session imported; selected source tile is not loaded.");
+  }
+
+  function findReloadTileIndex(plan) {
+    if (!plan.selected_tile_id) {
+      return -1;
+    }
+
+    const strictMatch = tiles.findIndex(
+      (tile) => tile.meta.tile_id === plan.selected_tile_id && (!plan.selected_tile_checksum || tile.meta.checksum === plan.selected_tile_checksum),
+    );
+    if (strictMatch >= 0) {
+      return strictMatch;
+    }
+    return tiles.findIndex((tile) => tile.meta.tile_id === plan.selected_tile_id);
+  }
+
+  function scoresFromLabels(labels) {
+    return labels.map((label) => ({
+      tile_id: label.tile_id,
+      score: label.clazz === "clean" ? 0.25 : 0.85,
+      truth: Boolean(label._truth && label._truth.class !== "clean"),
+    }));
+  }
+
+  function setControlValue(control, value) {
+    if (!value) {
+      return;
+    }
+    const match = Array.from(control.options).some((option) => option.value === value);
+    if (match) {
+      control.value = value;
+    }
+  }
+
+  function renderSessionStatus(message) {
+    if (dom.sessionStatus) {
+      dom.sessionStatus.textContent = message;
+    }
+  }
+
   async function exportSbom() {
     const generatedAt = new Date().toISOString();
     const sbom = createSbom({ generatedAt });
@@ -1445,6 +1619,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     });
     dom.bookmarkBtn.addEventListener("click", createBookmark);
     dom.exportCSV.addEventListener("click", exportLabelsCsv);
+    dom.exportSession.addEventListener("click", exportResearchSession);
+    dom.sessionInput.addEventListener("change", handleSessionImport);
     dom.exportSBOM.addEventListener("click", exportSbom);
     dom.exportReport.addEventListener("click", exportValidationReport);
     dom.refreshReportPreview.addEventListener("click", () => {
@@ -1495,6 +1671,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state,
     tiles,
     charts,
+    exportResearchSession,
+    importResearchSessionText,
+    buildResearchSession,
   };
 }
 
@@ -1624,6 +1803,9 @@ function bindDom(documentRef) {
     runTests: get("runTests"),
     testLog: get("testLog"),
     exportCSV: get("exportCSV"),
+    exportSession: get("exportSession"),
+    sessionInput: get("sessionInput"),
+    sessionStatus: get("sessionStatus"),
     expertDetails: get("expertDetails"),
     expertPane: get("expertPane"),
     diagnosticSummary: get("diagnosticSummary"),
@@ -1656,4 +1838,12 @@ function upsertByKey(items, key, value) {
   } else {
     items.push(value);
   }
+}
+
+function safeId(value) {
+  return String(value).replace(/[^A-Za-z0-9._:-]+/g, "_");
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
 }

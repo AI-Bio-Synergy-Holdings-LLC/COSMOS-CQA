@@ -5,6 +5,7 @@ import {
   annotateTargets,
   createPngDataUrl,
   disableSimulation,
+  labelCount,
   openWorkbench,
   readStreamText,
 } from "./fixtures/workbench.mjs";
@@ -81,4 +82,86 @@ test("migrates data import and public sample targets into browser automation", a
   await expect(page.locator("#diagnosticList")).toContainText("E/B residual review placeholder");
   await expect(page.locator("#diagnosticList")).toContainText("not a validated");
   await expect(page.locator("#diagnosticList")).toContainText("must not be used");
+});
+
+test("saves imports and deterministically reloads research sessions", async ({ page }) => {
+  await openWorkbench(page);
+  await disableSimulation(page);
+
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await page.locator("#overlaySel").selectOption("gradient");
+  await page.locator("#paletteSel").selectOption("cividis");
+  await page.locator("#classSel").selectOption("stripe");
+  await page.locator("#sevSel").selectOption("medium");
+  await page.locator("#note").fill("session roundtrip browser test");
+  await page.locator("#submitBtn").click();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportSession").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("cosmos-cqa-session.json");
+  const contents = await download.createReadStream().then(readStreamText);
+  const exportedSession = JSON.parse(contents);
+
+  expect(exportedSession.schema_version).toBe("cosmos-cqa.contracts.v0.1.0");
+  expect(exportedSession.selected_tiles[0]).toMatchObject({
+    tile_id: "demo_corepack_tile_001",
+    overlay: "gradient",
+    palette: "cividis",
+  });
+  expect(exportedSession.labels).toHaveLength(1);
+  expect(exportedSession.artifacts).toHaveLength(1);
+  expect(exportedSession.diagnostics).toHaveLength(2);
+  expect(exportedSession.reports).toHaveLength(1);
+  await expect(page.locator("#sessionStatus")).toContainText("Exported");
+
+  await page.evaluate(() => localStorage.clear());
+  await openWorkbench(page);
+  await disableSimulation(page);
+  expect(await labelCount(page)).toBe(0);
+
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await page.locator("#nextBtn").click();
+  await page.locator("#overlaySel").selectOption("none");
+  await page.locator("#paletteSel").selectOption("gray");
+
+  await page.locator("#sessionInput").setInputFiles({
+    name: "cosmos-cqa-session.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(contents),
+  });
+
+  await expect(page.locator("#sessionStatus")).toContainText(`Imported ${exportedSession.session_id}`);
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#overlaySel")).toHaveValue("gradient");
+  await expect(page.locator("#paletteSel")).toHaveValue("cividis");
+  await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
+  await expect(page.locator("#reportViewerStatus")).toContainText(exportedSession.reports[0].report_id);
+  await expect(page.locator("#caption")).toContainText("Research session imported and restored.");
+  expect(await labelCount(page)).toBe(1);
+
+  const restoredState = await page.evaluate(() => ({
+    artifactCount: window.COSMOS_CQA_APP.state.researchArtifacts.length,
+    labelNote: window.COSMOS_CQA_APP.state.labels[0].note,
+    diagnosticCount: window.COSMOS_CQA_APP.state.diagnostics.length,
+    reportId: window.COSMOS_CQA_APP.state.validationReportPreview.report_id,
+  }));
+  expect(restoredState).toEqual({
+    artifactCount: 1,
+    labelNote: "session roundtrip browser test",
+    diagnosticCount: 2,
+    reportId: exportedSession.reports[0].report_id,
+  });
+
+  await page.locator("#sessionInput").setInputFiles({
+    name: "bad-session.json",
+    mimeType: "application/json",
+    buffer: Buffer.from('{"schema_version":"cosmos-cqa.contracts.v0.1.0"}'),
+  });
+
+  await expect(page.locator("#sessionStatus")).toContainText("Session rejected");
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  expect(await labelCount(page)).toBe(1);
 });
