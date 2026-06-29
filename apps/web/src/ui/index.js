@@ -1,7 +1,7 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
 import { summarizeCorePackManifest, tilePassportToTileMeta } from "../core-pack/index.js";
 import { createDiagnosticPlaceholders } from "../diagnostics/index.js";
-import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
+import { buildCSV, createVolunteerLabel, labelsToRows, removeObservationForLabel, saveLabels, saveObservations, undoLastLabel } from "../labels/index.js";
 import {
   calculateAccessibilityCoverage,
   calculateMedianLatency,
@@ -32,6 +32,7 @@ import {
 } from "../evidence/index.js";
 import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
 import { createSbom, createSbomReference, createValidationReport, downloadBlob, downloadCsv, downloadJson } from "../reports/index.js";
+import { createTileObservation, getTileObservationZone, roundObservationCoordinate } from "../observations/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
 
@@ -105,6 +106,120 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.tileSelect.value = String(index);
     renderTilePassport(tile);
     renderCorePackExplorer();
+    renderObservationOverlay();
+    updateObservationSubmissionState();
+  }
+
+  function handleObservationPointer(event) {
+    const rect = dom.tileCanvas.getBoundingClientRect();
+    pinObservationTarget({
+      xNorm: (event.clientX - rect.left) / rect.width,
+      yNorm: (event.clientY - rect.top) / rect.height,
+    });
+  }
+
+  function pinObservationTarget({ xNorm, yNorm }) {
+    if (state.pendingObservation) {
+      setCaption("Submit or clear the current observation target before pinning another tile sector.");
+      dom.note.focus();
+      return;
+    }
+
+    const tile = tiles[state.idx];
+    const x = roundObservationCoordinate(xNorm);
+    const y = roundObservationCoordinate(yNorm);
+    const zone = getTileObservationZone({ xNorm: x, yNorm: y });
+    state.pendingObservation = {
+      tile_id: tile.meta.tile_id,
+      dataset: tile.meta.dataset || "unknown",
+      checksum: tile.meta.checksum || "",
+      x_norm: x,
+      y_norm: y,
+      ...zone,
+    };
+
+    renderObservationOverlay();
+    updateObservationSubmissionState();
+    setCaption(`Observation target pinned in ${zone.zone_label}. Add a note, then submit.`);
+    dom.note.focus();
+    notifyTestBridge("tileObservation.pinned", { pendingObservation: state.pendingObservation });
+  }
+
+  function clearPendingObservation({ announce = true } = {}) {
+    state.pendingObservation = null;
+    renderObservationOverlay();
+    updateObservationSubmissionState();
+    if (announce) {
+      setCaption("Observation target cleared.");
+    }
+  }
+
+  function renderObservationOverlay() {
+    if (!dom.tileObservationMarkers || !dom.tileObservationStatus) {
+      return;
+    }
+
+    const tile = tiles[state.idx];
+    dom.tileObservationMarkers.replaceChildren();
+    const submitted = state.observations.filter((observation) => observation.tile_id === tile.meta.tile_id);
+    for (const observation of submitted) {
+      appendObservationMarker(observation, "submitted");
+    }
+
+    if (state.pendingObservation?.tile_id === tile.meta.tile_id) {
+      appendObservationMarker(state.pendingObservation, "pending");
+    }
+
+    if (state.pendingObservation?.tile_id === tile.meta.tile_id) {
+      dom.tileObservationStatus.textContent = `Pinned ${state.pendingObservation.zone_label}; enter a note before submitting this observation.`;
+      dom.clearObservationBtn.hidden = false;
+    } else if (state.pendingObservation) {
+      dom.tileObservationStatus.textContent = `Pending observation target remains on ${state.pendingObservation.tile_id}; return to that tile or clear the target before tagging another sector.`;
+      dom.clearObservationBtn.hidden = false;
+    } else if (submitted.length) {
+      dom.tileObservationStatus.textContent = `${submitted.length} submitted observation target(s) pinned on this tile. Click another sector to start a new observation.`;
+      dom.clearObservationBtn.hidden = true;
+    } else {
+      dom.tileObservationStatus.textContent = "Click a tile sector to pin an observation target before submitting a spatial note.";
+      dom.clearObservationBtn.hidden = true;
+    }
+  }
+
+  function appendObservationMarker(observation, status) {
+    const marker = documentRef.createElement("span");
+    marker.className = `observation-marker ${status}`;
+    marker.style.setProperty("--x", String(observation.x_norm));
+    marker.style.setProperty("--y", String(observation.y_norm));
+    marker.title = `${status === "pending" ? "Pending" : "Submitted"} observation: ${observation.zone_label}`;
+    dom.tileObservationMarkers.appendChild(marker);
+  }
+
+  function updateObservationSubmissionState() {
+    const pending = Boolean(state.pendingObservation);
+    const hasNote = Boolean(dom.note.value.trim());
+    dom.submitBtn.disabled = pending && !hasNote;
+    dom.submitBtn.title = pending && !hasNote ? "Enter a note before submitting this pinned observation." : "Submit label";
+  }
+
+  function createObservationForLabel({ tile, label }) {
+    if (!state.pendingObservation) {
+      return null;
+    }
+
+    const observation = createTileObservation({
+      tile,
+      label,
+      target: state.pendingObservation,
+      overlay: dom.overlaySel.value,
+      palette: dom.paletteSel.value,
+      generatedAt: label.ts,
+    });
+
+    state.observations.push(observation);
+    saveObservations(state.observations);
+    state.pendingObservation = null;
+    renderObservationOverlay();
+    return observation;
   }
 
   function renderTilePassport(tile = tiles[state.idx]) {
@@ -315,6 +430,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       !dom.evidenceWorkspaceStatus ||
       !dom.evidenceSummary ||
       !dom.evidenceArtifacts ||
+      !dom.evidenceObservations ||
       !dom.evidenceProvenanceHashes ||
       !dom.evidenceSbomRefs ||
       !dom.evidenceCorePacks ||
@@ -332,15 +448,17 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         state.provenanceHashes.length ||
         state.sbomRefs.length ||
         state.corePacks.length ||
+        state.observations.length ||
         state.diagnostics.length,
     );
 
     dom.evidenceWorkspaceStatus.textContent = hasEvidence
-      ? `Evidence workspace has ${state.researchArtifacts.length} artifact(s), ${state.provenanceHashes.length} provenance hash(es), ${state.sbomRefs.length} SBOM reference(s), and ${state.diagnostics.length} diagnostic record(s).`
+      ? `Evidence workspace has ${state.researchArtifacts.length} artifact(s), ${state.observations.length} tile observation(s), ${state.provenanceHashes.length} provenance hash(es), ${state.sbomRefs.length} SBOM reference(s), and ${state.diagnostics.length} diagnostic record(s).`
       : "No imported or exported evidence artifacts yet. Load a Core Pack, import a feed, export an SBOM, or import a research session.";
 
     appendMetadataGrid(dom.evidenceSummary, [
       ["Artifacts", String(state.researchArtifacts.length)],
+      ["Tile observations", String(state.observations.length)],
       ["Provenance hashes", String(state.provenanceHashes.length)],
       ["SBOM refs", String(state.sbomRefs.length)],
       ["Core Packs", String(state.corePacks.length)],
@@ -363,6 +481,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ]
         .filter(Boolean)
         .join("; "),
+    ]);
+    appendReferenceList(dom.evidenceObservations, state.observations, (observation) => [
+      `${observation.observation_id} -> ${observation.label_id}`,
+      `tile=${observation.tile_id}; zone=${observation.zone_label}; x=${observation.x_norm}; y=${observation.y_norm}; class=${observation.clazz}; severity=${observation.severity}`,
     ]);
     appendReferenceList(dom.evidenceProvenanceHashes, state.provenanceHashes, (hash) => [
       hash.subject,
@@ -395,6 +517,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function clearEvidenceWorkspace() {
     dom.evidenceSummary.replaceChildren();
     dom.evidenceArtifacts.replaceChildren();
+    dom.evidenceObservations.replaceChildren();
     dom.evidenceProvenanceHashes.replaceChildren();
     dom.evidenceSbomRefs.replaceChildren();
     dom.evidenceCorePacks.replaceChildren();
@@ -732,6 +855,17 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
   function submitLabel() {
     const tile = tiles[state.idx];
+    if (state.pendingObservation && state.pendingObservation.tile_id !== tile.meta.tile_id) {
+      setCaption(`Return to ${state.pendingObservation.tile_id} or clear the pending observation target before submitting.`);
+      return null;
+    }
+    if (state.pendingObservation && !dom.note.value.trim()) {
+      updateObservationSubmissionState();
+      setCaption("Add a note before submitting the pinned observation target.");
+      dom.note.focus();
+      return null;
+    }
+
     const label = createVolunteerLabel({
       tile,
       state,
@@ -741,10 +875,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         noteInput: dom.note,
       },
     });
+    const observation = createObservationForLabel({ tile, label });
 
     state.labels.push(label);
     saveLabels(state.labels);
-    setCaption(`Submitted: ${label.clazz} (${label.severity}).`);
+    setCaption(observation ? `Submitted: ${label.clazz} (${label.severity}) at ${observation.zone_label}.` : `Submitted: ${label.clazz} (${label.severity}).`);
 
     const timestamp = Date.now();
     state.startTimes[tile.meta.tile_id] = timestamp;
@@ -764,6 +899,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     updatePRChart();
     recalcKPIs(false);
     refreshValidationReportPreview();
+    notifyTestBridge("tileObservation.submitted", { label, observation });
     return label;
   }
 
@@ -1253,7 +1389,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function exportLabelsCsv() {
-    const rows = labelsToRows(state.labels, tiles, state.expert);
+    const rows = labelsToRows(state.labels, tiles, state.expert, state.observations);
     const columns = [
       "tile_id",
       "dataset",
@@ -1266,6 +1402,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       "expert_class",
       "expert_confidence",
       "expert_latency",
+      "observation_id",
+      "observation_zone_id",
+      "observation_zone_label",
+      "observation_x_norm",
+      "observation_y_norm",
     ];
     downloadCsv(buildCSV(rows, columns), "labels.csv");
     setCaption("CSV exported.");
@@ -1290,6 +1431,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       artifacts: state.researchArtifacts,
       selectedTiles: [createSelectedTileSnapshot({ generatedAt })],
       labels: state.labels,
+      observations: state.observations,
       diagnostics: state.diagnostics,
       reports: report ? [report] : [],
       provenanceHashes: state.provenanceHashes,
@@ -1325,7 +1467,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       type: "application/json",
       filename: "cosmos-cqa-session.json",
     });
-    renderSessionStatus(`Exported ${session.session_id}: ${session.labels.length} label(s), ${session.reports.length} report(s).`);
+    renderSessionStatus(`Exported ${session.session_id}: ${session.labels.length} label(s), ${state.observations.length} observation(s), ${session.reports.length} report(s).`);
     setCaption("Research session JSON exported.");
     notifyTestBridge("researchSession.exported", { session, contents });
   }
@@ -1387,6 +1529,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.researchSessionId = session.session_id;
     state.researchSessionCreatedAt = session.created_at;
     state.labels = cloneJson(session.labels);
+    state.observations = cloneJson(session.observations || []);
+    state.pendingObservation = null;
     state.expert = [];
     state.scores = scoresFromLabels(state.labels);
     state.feedErrors = [];
@@ -1401,6 +1545,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.currentCorePackId = plan.selected_tile_manifest_id || sessionManifestIds.values().next().value || "";
 
     saveLabels(state.labels);
+    saveObservations(state.observations);
     saveExpertDecisions(state.expert);
 
     setControlValue(dom.overlaySel, plan.overlay);
@@ -1420,7 +1565,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     const restoredTile = selectedTileIndex >= 0 ? plan.selected_tile_id : "source artifact required";
     renderSessionStatus(
-      `Imported ${session.session_id}: ${plan.summary.label_count} label(s), ${plan.summary.diagnostic_count} diagnostic(s), ${plan.summary.report_count} report(s). Selected tile: ${restoredTile}.`,
+      `Imported ${session.session_id}: ${plan.summary.label_count} label(s), ${plan.summary.observation_count || 0} observation(s), ${plan.summary.diagnostic_count} diagnostic(s), ${plan.summary.report_count} report(s). Selected tile: ${restoredTile}.`,
     );
     setCaption(selectedTileIndex >= 0 ? "Research session imported and restored." : "Research session imported; selected source tile is not loaded.");
   }
@@ -1499,12 +1644,20 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     const hasSbomRefs = state.sbomRefs.length > 0;
     const hasHashes = state.provenanceHashes.length > 0;
     const hasDiagnostics = state.diagnostics.length > 0;
+    const hasObservations = state.observations.length > 0;
 
     return [
       {
         name: "label records",
         status: "pass",
         detail: `${state.labels.length} label record(s) available for validation report export.`,
+      },
+      {
+        name: "tile observation targets",
+        status: hasObservations ? "pass" : "warn",
+        detail: hasObservations
+          ? `${state.observations.length} linked tile observation target(s) include normalized coordinates and notes.`
+          : "No tile observation targets are linked to labels in this session.",
       },
       {
         name: "feed and Core Pack imports",
@@ -1768,9 +1921,22 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       setCaption(dom.captionsChk.checked ? "Captions on." : "");
       recalcKPIs();
     });
+    dom.tileCanvas.addEventListener("click", handleObservationPointer);
+    dom.tileObservationOverlay.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        pinObservationTarget({ xNorm: 0.5, yNorm: 0.5 });
+      }
+    });
+    dom.clearObservationBtn.addEventListener("click", () => clearPendingObservation());
+    dom.note.addEventListener("input", updateObservationSubmissionState);
     dom.submitBtn.addEventListener("click", () => onCalibSubmit(submitLabel()));
     dom.undoBtn.addEventListener("click", () => {
-      undoLastLabel(state);
+      const removedLabel = undoLastLabel(state);
+      if (removedLabel) {
+        removeObservationForLabel(state, removedLabel.label_id);
+      }
+      renderObservationOverlay();
       setCaption("Undid last label.");
       recalcKPIs();
       refreshValidationReportPreview();
@@ -1926,6 +2092,10 @@ function bindDom(documentRef) {
 
   return {
     tileCanvas: get("tileCanvas"),
+    tileObservationOverlay: get("tileObservationOverlay"),
+    tileObservationMarkers: get("tileObservationMarkers"),
+    tileObservationStatus: get("tileObservationStatus"),
+    clearObservationBtn: get("clearObservationBtn"),
     tileSelect: get("tileSelect"),
     prevBtn: get("prevBtn"),
     nextBtn: get("nextBtn"),
@@ -2004,6 +2174,7 @@ function bindDom(documentRef) {
     evidenceWorkspaceStatus: get("evidenceWorkspaceStatus"),
     evidenceSummary: get("evidenceSummary"),
     evidenceArtifacts: get("evidenceArtifacts"),
+    evidenceObservations: get("evidenceObservations"),
     evidenceProvenanceHashes: get("evidenceProvenanceHashes"),
     evidenceSbomRefs: get("evidenceSbomRefs"),
     evidenceCorePacks: get("evidenceCorePacks"),

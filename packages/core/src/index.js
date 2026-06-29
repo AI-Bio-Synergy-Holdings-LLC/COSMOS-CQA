@@ -4,6 +4,7 @@ export * from "./evidence/index.js";
 export * from "./feeds/index.js";
 export * from "./labels/index.js";
 export * from "./metrics/index.js";
+export * from "./observations/index.js";
 export * from "./provenance/index.js";
 export * from "./research-artifacts/index.js";
 export * from "./reports/index.js";

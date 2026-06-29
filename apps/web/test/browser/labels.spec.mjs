@@ -5,8 +5,10 @@ import {
   annotateTargets,
   blurActiveElement,
   disableSimulation,
+  firstStoredObservation,
   firstStoredLabel,
   labelCount,
+  observationCount,
   openWorkbench,
 } from "./fixtures/workbench.mjs";
 
@@ -81,4 +83,51 @@ test("migrates expert queue targets into browser automation", async ({ page }) =
     expert_confidence: 0.6,
     note: "override clean",
   });
+});
+
+test("pins tile observation targets and requires notes before synced submission", async ({ page }) => {
+  await openWorkbench(page);
+  await disableSimulation(page);
+
+  const canvas = page.locator("#tileCanvas");
+  const box = await canvas.boundingBox();
+  await canvas.click({ position: { x: box.width * 0.42, y: box.height * 0.21 } });
+
+  await expect(page.locator("#tileObservationStatus")).toContainText("Pinned top center");
+  await expect(page.locator("#clearObservationBtn")).toBeVisible();
+  await expect(page.locator("#submitBtn")).toBeDisabled();
+  await expect(page.locator(".observation-marker.pending")).toHaveCount(1);
+
+  await page.locator("#note").fill("faint vertical band in top center zone; visible with gradient overlay");
+  await expect(page.locator("#submitBtn")).toBeEnabled();
+  await page.locator("#classSel").selectOption("stripe");
+  await page.locator("#sevSel").selectOption("medium");
+  await page.locator("#submitBtn").click();
+
+  await expect(page.locator("#caption")).toContainText("Submitted: stripe (medium) at top center.");
+  await expect.poll(() => labelCount(page)).toBe(1);
+  await expect.poll(() => observationCount(page)).toBe(1);
+  await expect(page.locator(".observation-marker.submitted")).toHaveCount(1);
+  await expect(page.locator(".observation-marker.pending")).toHaveCount(0);
+
+  const label = await firstStoredLabel(page);
+  const observation = await firstStoredObservation(page);
+  expect(observation).toMatchObject({
+    label_id: label.label_id,
+    tile_id: "tile_001",
+    zone_id: "r1c2",
+    zone_label: "top center",
+    clazz: "stripe",
+    severity: "medium",
+  });
+  expect(observation.x_norm).toBeGreaterThan(0.4);
+  expect(observation.x_norm).toBeLessThan(0.44);
+  expect(observation.y_norm).toBeGreaterThan(0.19);
+  expect(observation.y_norm).toBeLessThan(0.23);
+  expect(observation.note).toContain("top center zone");
+
+  await page.locator("#undoBtn").click();
+  await expect.poll(() => labelCount(page)).toBe(0);
+  await expect.poll(() => observationCount(page)).toBe(0);
+  await expect(page.locator(".observation-marker.submitted")).toHaveCount(0);
 });

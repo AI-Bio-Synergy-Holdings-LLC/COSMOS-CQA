@@ -19,7 +19,7 @@ This is the highest-leverage first split because it:
 The reusable package surfaces are:
 
 - `packages/schemas`: schema definitions, contract versioning, and dependency-free validators;
-- `packages/core`: deterministic domain helpers for feeds, labels, metrics, provenance, reports, sidecars, and tile synthesis.
+- `packages/core`: deterministic domain helpers for feeds, labels, tile observations, metrics, provenance, reports, sidecars, and tile synthesis.
 
 The browser source uses these first-class app modules:
 
@@ -28,6 +28,7 @@ The browser source uses these first-class app modules:
 - `contracts`: compatibility re-export for package schemas;
 - `feeds`: compatibility re-export for package feed helpers;
 - `labels`: browser persistence plus package label/CSV helpers;
+- `observations`: spatial tile-observation coordinate and zone helpers;
 - `metrics`: compatibility re-export for package metric helpers;
 - `expert-review`: expert queue scoring, confirm/override, and adjudication persistence;
 - `provenance`: browser test bridge/clipboard helpers plus package bookmark helpers;

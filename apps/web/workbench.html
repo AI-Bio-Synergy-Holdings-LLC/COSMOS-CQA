@@ -95,7 +95,21 @@
       </div>
       <div class="viewer">
         <div class="tile-stage">
-          <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
+          <div class="tile-canvas-wrap">
+            <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
+            <div id="tileObservationOverlay" class="tile-observation-overlay" role="button" tabindex="0" aria-label="Pin an observation target on the tile">
+              <div class="zone-map" aria-hidden="true">
+                <span>top left</span><span>top center</span><span>top right</span>
+                <span>middle left</span><span>middle center</span><span>middle right</span>
+                <span>bottom left</span><span>bottom center</span><span>bottom right</span>
+              </div>
+              <div id="tileObservationMarkers" class="tile-observation-markers" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="tile-observation-toolbar">
+            <span id="tileObservationStatus" class="caption">Click a tile sector to pin an observation target before submitting a spatial note.</span>
+            <button id="clearObservationBtn" type="button" class="pill compact-pill" hidden>Clear target</button>
+          </div>
         </div>
         <div class="controls" aria-label="Tile review controls">
           <section class="control-group" aria-label="Tile navigation">
@@ -171,7 +185,8 @@
               </div>
             </div>
             <label for="note">Note</label>
-            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240">
+            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240" aria-describedby="noteTips tileObservationStatus">
+            <p id="noteTips" class="note-tips">Tip: describe what you see, where it appears, and why it matters. Example: "faint vertical band in top-left zone; more visible with gradient overlay."</p>
             <div class="command-grid">
               <button id="submitBtn" type="button" class="pill primary-action"><span class="cmd-icon" aria-hidden="true">&#10003;</span> Submit (S)</button>
               <button id="undoBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#8630;</span> Undo (Ctrl+Z)</button>
@@ -265,6 +280,10 @@
           <div>
             <div class="group-title explorer-title">Artifacts</div>
             <div id="evidenceArtifacts" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Tile Observations</div>
+            <div id="evidenceObservations" class="reference-list"></div>
           </div>
           <div>
             <div class="group-title explorer-title">Provenance Hashes</div>
