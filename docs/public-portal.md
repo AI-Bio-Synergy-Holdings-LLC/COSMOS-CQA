@@ -12,6 +12,7 @@ Public resource pages are served as top-level static HTML files:
 
 - `docs.html`
 - `demo-workbook.html`
+- `research-experiment.html`
 - `releases.html`
 - `citation.html`
 - `license.html`
@@ -49,6 +50,7 @@ The public scaffold exposes:
 
 - Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
 - Workbook: `./demo-workbook.html`
+- Research experiment: `./research-experiment.html`
 - Docs: `./docs.html`
 - Releases: `./releases.html`
 - Citation: `./citation.html`
