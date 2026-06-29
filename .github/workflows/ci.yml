@@ -32,7 +32,7 @@ jobs:
       - name: Install Chromium for browser workflow tests
         run: npm --prefix apps/web exec -- playwright install --with-deps chromium
 
-      - name: Run web source, contract, browser, and legacy checks
+      - name: Run repository health, web source, contract, browser, and legacy checks
         run: npm --prefix apps/web run check
 
       - name: Check whitespace hygiene

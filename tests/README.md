@@ -4,6 +4,7 @@ This directory will contain automated and manual verification assets.
 
 Initial test targets:
 
+- repository health and governance guardrails;
 - schema validation;
 - deterministic replay;
 - public build truth-label hiding;
@@ -14,3 +15,7 @@ Initial test targets:
 Evidence target manifests:
 
 - `evidence/legacy-v3-checklist-targets.json` tracks the 86 manual checklist items and 7 bridge auto-checks extracted from the archived legacy v3 checklist. The current browser migration covers all 93 tracked targets through domain specs under `apps/web/test/browser/`.
+
+Repository health:
+
+- `npm --prefix apps/web run check:repo-health` verifies required governance and release files remain present and keep durable research-only, stewardship, CODEOWNERS, security, and release-checklist language.
