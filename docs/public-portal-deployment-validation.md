@@ -20,6 +20,9 @@ Without a server, the command checks repository files and release artifacts:
 - public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, safety, copyright, user data, and contact are present;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
+- `docs/project-notes.md` records the completed PR #51 safety review trail and current public-surface hardening lane;
+- `apps/web/user-data.html` describes local-first browser state, public GitHub reporting, contact email, and third-party hosting/CDN boundaries;
+- safety and accessibility issue templates exist and warn against sharing sensitive data in public reports;
 - `docs/releases/README.md` links release notes, validation report JSON, SBOM JSON, known limitations, and verification commands;
 - published release validation JSON records a non-dev public build, passing checks, the canonical public URL, research-only license notice, and SBOM artifact;
 - published SBOM JSON is parseable CycloneDX with components.
@@ -41,6 +44,7 @@ The HTTP mode checks:
 - sample Core Pack manifest is reachable;
 - shared `packages/schemas` and `packages/core` browser entrypoints are reachable.
 - optional audio sonification remains user initiated, loop-off by default, visibly caveated, bounded by shared sidecar constants, and described without therapeutic, medical, diagnostic, or scientific-result claims.
+- public data-use copy remains local-first, non-confidential, and explicit that GitHub issues and pull requests are public by default.
 
 ## GitHub Pages Deployment
 
@@ -78,7 +82,7 @@ Pushes to `main` also run the GitHub Pages deployment workflow. The deployment w
 
 This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, or OSI open-source status.
 
-The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation. The public copyright and user data notices are static public pages, not legal advice or a substitute for counsel review.
+The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation. The public copyright, safety, and user data notices are static public pages, not legal advice or a substitute for counsel review.
 
 ## Release Responsibility
 

@@ -10,10 +10,18 @@ COSMOS-CQA should prefer manifests, checksums, derived synthetic examples, small
 - Keep volunteer identifiers hashed or synthetic.
 - Avoid personally identifying information.
 - Store reproducibility parameters in machine-readable manifests.
+- Route public reports through non-confidential GitHub issue templates or contact email summaries.
+- Prefer synthetic examples, public references, and redacted screenshots in public reports.
 
 ## Third-Party Data
 
 NASA, ESA, DES, ACT, Planck, WMAP, and other external datasets remain subject to their own terms. COSMOS-CQA documentation and examples must clearly distinguish project code from external data rights.
+
+## Public Reporting Data
+
+GitHub issues, pull requests, and public discussion surfaces are public by default. Reports about safety, accessibility, bugs, schemas, or data/provenance should not include restricted datasets, personal data, personal health information, regulated data, credentials, private keys, confidential screenshots, private source code, or third-party materials that cannot be shared.
+
+The hosted portal is static and local-first. Imported files, labels, bookmarks, exported reports, sessions, CSVs, SBOMs, and evidence bundles are handled in the user's browser environment unless the user shares them through GitHub, email, or another external service.
 
 ## Evidence Artifacts
 

@@ -49,9 +49,15 @@ async function validateStaticContract() {
   const sitemap = await readText("apps/web/sitemap.xml");
   const citation = await readText("CITATION.cff");
   const quickstart = await readText("docs/quickstart.md");
+  const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
   const publicSafetyDoc = await readText("docs/public-safety.md");
+  const dataGovernanceDoc = await readText("docs/data-governance.md");
+  const userDataPage = await readText("apps/web/user-data.html");
+  const issueTemplateConfig = await readText(".github/ISSUE_TEMPLATE/config.yml");
+  const safetyIssueTemplate = await readText(".github/ISSUE_TEMPLATE/safety_report.md");
+  const accessibilityIssueTemplate = await readText(".github/ISSUE_TEMPLATE/accessibility_report.md");
   const domainDoc = await readText("docs/domain-identity.md");
   const pagesWorkflow = await readText(".github/workflows/pages.yml");
   const artifactPrepScript = await readText("apps/web/scripts/prepare-pages-artifact.mjs");
@@ -151,6 +157,15 @@ async function validateStaticContract() {
     "not an OSI open-source release",
   ]);
 
+  requirePhrases("docs/project-notes.md", projectNotes, [
+    "Project Notes",
+    "PR #51",
+    "Harden public audio safety boundaries",
+    "GitHub Pages deployment for PR #51 completed successfully",
+    "privacy and user-data wording",
+    "safety and accessibility issue-reporting templates",
+  ]);
+
   requirePhrases("docs/public-portal.md", publicPortalDoc, [
     canonicalUrl.slice(0, -1),
     "apps/web/CNAME",
@@ -204,6 +219,46 @@ async function validateStaticContract() {
     "not legal, medical, audiology, or regulatory advice",
     "therapeutic sound",
     "diagnostic",
+    "repository issue templates",
+    "personal health information",
+  ]);
+
+  requirePhrases("docs/data-governance.md", dataGovernanceDoc, [
+    "Public Reporting Data",
+    "GitHub issues, pull requests, and public discussion surfaces are public by default",
+    "restricted datasets",
+    "local-first",
+    "Imported files, labels, bookmarks, exported reports",
+  ]);
+
+  requirePhrases("apps/web/user-data.html", userDataPage, [
+    "not a substitute for counsel-reviewed privacy terms",
+    "No account system",
+    "Local imports and exports",
+    "GitHub issues and public reports",
+    "Operational logs and third-party routes",
+    "Issue Templates",
+    "Do not submit restricted datasets",
+  ]);
+
+  requirePhrases(".github/ISSUE_TEMPLATE/config.yml", issueTemplateConfig, [
+    "Public Safety And Use Boundaries",
+    "User Data Notice",
+    "cosmos-cqa.org/user-data.html",
+  ]);
+
+  requirePhrases(".github/ISSUE_TEMPLATE/safety_report.md", safetyIssueTemplate, [
+    "Safety report",
+    "Audio sonification",
+    "Sensitive Information Guardrail",
+    "medical/audiology advice",
+  ]);
+
+  requirePhrases(".github/ISSUE_TEMPLATE/accessibility_report.md", accessibilityIssueTemplate, [
+    "Accessibility report",
+    "Assistive technology",
+    "Screenshots Or Recordings",
+    "regulated data",
   ]);
 
   requirePhrases("docs/domain-identity.md", domainDoc, [

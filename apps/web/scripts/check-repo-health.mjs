@@ -85,6 +85,11 @@ const guardrails = [
     phrases: ["License, notice, citation, and ownership docs", "SBOM", "known limitations"],
   },
   {
+    path: "docs/project-notes.md",
+    label: "project notes",
+    phrases: ["PR #51", "live portal validation", "privacy and user-data wording"],
+  },
+  {
     path: "docs/quickstart.md",
     label: "public quickstart",
     phrases: [
@@ -118,6 +123,16 @@ const guardrails = [
       "COSMOS-CQA Research-Only Public License",
       "AI-Bio Synergy Holdings LLC",
     ],
+  },
+  {
+    path: ".github/ISSUE_TEMPLATE/safety_report.md",
+    label: "safety issue template",
+    phrases: ["Safety report", "Audio sonification", "Sensitive Information Guardrail"],
+  },
+  {
+    path: ".github/ISSUE_TEMPLATE/accessibility_report.md",
+    label: "accessibility issue template",
+    phrases: ["Accessibility report", "Assistive technology", "Screenshots Or Recordings"],
   },
 ];
 

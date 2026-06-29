@@ -3,3 +3,9 @@ contact_links:
   - name: COSMOS-CQA Research-Only License
     url: https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/LICENSE.md
     about: Review public research-only use terms before proposing data, deployment, or reuse changes.
+  - name: Public Safety And Use Boundaries
+    url: https://cosmos-cqa.org/safety.html
+    about: Review audio, visual, and public-use safety boundaries before filing a safety report.
+  - name: User Data Notice
+    url: https://cosmos-cqa.org/user-data.html
+    about: Review local-first data behavior and public reporting guardrails before sharing examples.
