@@ -84,6 +84,41 @@ const guardrails = [
     label: "release checklist",
     phrases: ["License, notice, citation, and ownership docs", "SBOM", "known limitations"],
   },
+  {
+    path: "docs/quickstart.md",
+    label: "public quickstart",
+    phrases: [
+      "sample Core Pack workflow",
+      "Export Validation Report JSON",
+      "npm --prefix apps/web run check",
+      "COSMOS-CQA Research-Only Public License",
+      "not an OSI open-source release",
+      "AI-Bio Synergy Holdings LLC",
+    ],
+  },
+  {
+    path: "docs/citation.md",
+    label: "citation guide",
+    phrases: [
+      "CITATION.cff",
+      "https://cosmos-cqa.org",
+      "LicenseRef-COSMOS-CQA-Research-Only",
+      "not an OSI open-source release",
+      "AI-Bio Synergy Holdings LLC",
+    ],
+  },
+  {
+    path: "docs/releases/README.md",
+    label: "release artifact index",
+    phrases: [
+      "Release Artifact Index",
+      "v0.1.0-research-alpha-validation-report.json",
+      "v0.1.0-research-alpha-sbom.json",
+      "known limitations",
+      "COSMOS-CQA Research-Only Public License",
+      "AI-Bio Synergy Holdings LLC",
+    ],
+  },
 ];
 
 const failures = [];

@@ -20,6 +20,18 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
 
   await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
+  await expect(page.getByRole("link", { name: "Quickstart Local run, hosted sample Core Pack workflow, report export, and verification command." })).toHaveAttribute(
+    "href",
+    /docs\/quickstart\.md$/,
+  );
+  await expect(page.getByRole("link", { name: "Citation CITATION.cff fields, canonical URL, release tag guidance, and citation boundaries." })).toHaveAttribute(
+    "href",
+    /docs\/citation\.md$/,
+  );
+  await expect(page.getByRole("link", { name: "Release Artifacts Release notes, validation report, SBOM path, known limitations, and evidence checks." })).toHaveAttribute(
+    "href",
+    /docs\/releases\/README\.md$/,
+  );
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
   expect(signature.activePixels).toBeGreaterThan(0);
