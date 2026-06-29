@@ -592,6 +592,131 @@ export const schemas = {
       },
     },
   },
+
+  researchSession: {
+    $id: "cosmos-cqa/research-session.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "session_id",
+      "created_at",
+      "updated_at",
+      "build",
+      "artifacts",
+      "selected_tiles",
+      "labels",
+      "diagnostics",
+      "reports",
+      "provenance_hashes",
+      "sbom_refs",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      session_id: { type: "string", pattern: "^session_[A-Za-z0-9._:-]+$" },
+      created_at: { type: "string", format: "date-time" },
+      updated_at: { type: "string", format: "date-time" },
+      build: { $ref: "buildInfo" },
+      artifacts: {
+        type: "array",
+        items: { $ref: "researchArtifact" },
+      },
+      selected_tiles: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["tile_id", "dataset", "checksum"],
+          additionalProperties: false,
+          properties: {
+            tile_id: { type: "string", minLength: 1, maxLength: 128, pattern: idPattern },
+            dataset: { type: "string", minLength: 1, maxLength: 128 },
+            checksum: { type: "string", pattern: checksumPattern },
+            manifest_id: { type: "string", pattern: "^corepack_[A-Za-z0-9._:-]+$" },
+            selected_at: { type: "string", format: "date-time" },
+            overlay: { type: "string", enum: OVERLAY_TYPES },
+            palette: { type: "string", enum: PALETTES },
+            review_state: { type: "string", minLength: 1, maxLength: 128 },
+          },
+        },
+      },
+      labels: {
+        type: "array",
+        items: { $ref: "labelRecord" },
+      },
+      diagnostics: {
+        type: "array",
+        items: { $ref: "diagnosticResult" },
+      },
+      reports: {
+        type: "array",
+        items: { $ref: "validationReport" },
+      },
+      provenance_hashes: {
+        type: "array",
+        items: { $ref: "provenanceHash" },
+      },
+      sbom_refs: {
+        type: "array",
+        items: { $ref: "sbomReference" },
+      },
+    },
+  },
+
+  evidenceBundle: {
+    $id: "cosmos-cqa/evidence-bundle.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "bundle_id",
+      "generated_at",
+      "steward",
+      "license",
+      "limitations",
+      "session",
+      "summary",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      bundle_id: { type: "string", pattern: "^bundle_[A-Za-z0-9._:-]+$" },
+      generated_at: { type: "string", format: "date-time" },
+      steward: { type: "string", minLength: 1, maxLength: 256 },
+      license: { type: "string", minLength: 1, maxLength: 256 },
+      limitations: {
+        type: "array",
+        minItems: 1,
+        items: { type: "string", minLength: 1, maxLength: 1000 },
+      },
+      intended_use: { type: "string", minLength: 1, maxLength: 512 },
+      claim_boundary_refs: {
+        type: "array",
+        items: { type: "string", minLength: 1, maxLength: 2048 },
+      },
+      session: { $ref: "researchSession" },
+      summary: {
+        type: "object",
+        required: [
+          "artifact_count",
+          "selected_tile_count",
+          "label_count",
+          "diagnostic_count",
+          "report_count",
+          "provenance_hash_count",
+          "sbom_ref_count",
+        ],
+        additionalProperties: false,
+        properties: {
+          artifact_count: { type: "integer", minimum: 0 },
+          selected_tile_count: { type: "integer", minimum: 0 },
+          label_count: { type: "integer", minimum: 0 },
+          diagnostic_count: { type: "integer", minimum: 0 },
+          report_count: { type: "integer", minimum: 0 },
+          provenance_hash_count: { type: "integer", minimum: 0 },
+          sbom_ref_count: { type: "integer", minimum: 0 },
+        },
+      },
+    },
+  },
 };
 
 export function validateContract(name, value) {

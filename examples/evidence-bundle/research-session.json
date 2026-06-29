@@ -1,0 +1,121 @@
+{
+  "schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "session_id": "session_demo-v0.3.0-evidence",
+  "created_at": "2026-06-29T00:00:00.000Z",
+  "updated_at": "2026-06-29T00:00:00.000Z",
+  "build": {
+    "version": "v0.3.0-contract-fixture",
+    "sha": "fixture",
+    "dev": false
+  },
+  "artifacts": [
+    {
+      "artifact_id": "artifact_core-pack_fixture-corepack",
+      "kind": "core-pack",
+      "source": "examples/core-pack/core-pack.manifest.json",
+      "source_sha256": "sha256:fixture-corepack",
+      "record_count": 2,
+      "error_count": 0,
+      "imported_at": "2026-06-29T00:00:00.000Z",
+      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "notes": "Synthetic Core Pack fixture loaded through the evidence workspace contract lane."
+    }
+  ],
+  "selected_tiles": [
+    {
+      "tile_id": "demo_corepack_tile_001",
+      "dataset": "DEMO_SIM_T",
+      "checksum": "sha256:demo-corepack-tile-001",
+      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "selected_at": "2026-06-29T00:00:00.000Z",
+      "overlay": "none",
+      "palette": "viridis",
+      "review_state": "selected"
+    }
+  ],
+  "labels": [],
+  "diagnostics": [],
+  "reports": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "report_id": "rpt_demo-v0.3.0-evidence",
+      "generated_at": "2026-06-29T00:00:00.000Z",
+      "build": {
+        "version": "v0.3.0-contract-fixture",
+        "sha": "fixture",
+        "dev": false
+      },
+      "summary": {
+        "label_count": 0,
+        "feed_error_count": 0,
+        "pass_count": 2,
+        "fail_count": 0
+      },
+      "checks": [
+        {
+          "name": "Core Pack manifest",
+          "status": "pass",
+          "detail": "Fixture Core Pack manifest loaded."
+        },
+        {
+          "name": "report JSON",
+          "status": "pass",
+          "detail": "Validation report JSON generated before any PDF workflow."
+        }
+      ],
+      "artifacts": [
+        {
+          "artifact_id": "artifact_core-pack_fixture-corepack",
+          "kind": "core-pack",
+          "source": "examples/core-pack/core-pack.manifest.json",
+          "source_sha256": "sha256:fixture-corepack",
+          "record_count": 2,
+          "error_count": 0,
+          "imported_at": "2026-06-29T00:00:00.000Z",
+          "manifest_id": "corepack_demo-v0.1.0-intake",
+          "notes": "Synthetic Core Pack fixture loaded through the evidence workspace contract lane."
+        }
+      ],
+      "sbom_refs": [
+        {
+          "schema_version": "cosmos-cqa.contracts.v0.1.0",
+          "sbom_id": "sbom_v0.1.0-research-alpha",
+          "format": "CycloneDX",
+          "spec_version": "1.4",
+          "path": "docs/releases/v0.1.0-research-alpha-sbom.json",
+          "checksum": "sha256:fixture-sbom",
+          "generated_at": "2026-06-29T00:00:00.000Z",
+          "component_name": "COSMOS-CQA Research Workbench"
+        }
+      ],
+      "provenance_hashes": [
+        {
+          "subject": "examples/core-pack/core-pack.manifest.json",
+          "algorithm": "sha256",
+          "value": "sha256:fixture-corepack",
+          "generated_at": "2026-06-29T00:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "provenance_hashes": [
+    {
+      "subject": "examples/core-pack/core-pack.manifest.json",
+      "algorithm": "sha256",
+      "value": "sha256:fixture-corepack",
+      "generated_at": "2026-06-29T00:00:00.000Z"
+    }
+  ],
+  "sbom_refs": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "sbom_id": "sbom_v0.1.0-research-alpha",
+      "format": "CycloneDX",
+      "spec_version": "1.4",
+      "path": "docs/releases/v0.1.0-research-alpha-sbom.json",
+      "checksum": "sha256:fixture-sbom",
+      "generated_at": "2026-06-29T00:00:00.000Z",
+      "component_name": "COSMOS-CQA Research Workbench"
+    }
+  ]
+}
