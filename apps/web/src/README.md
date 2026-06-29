@@ -10,6 +10,7 @@ The browser app keeps these module boundaries:
 - `sidecars`: browser overlays/audio controls plus deterministic audio helpers from `packages/core`;
 - `core-pack`: compatibility re-export for Core Pack intake helpers from `packages/core`;
 - `contracts`: compatibility re-export for `packages/schemas`;
+- `diagnostics`: compatibility re-export for caveated diagnostic placeholder helpers from `packages/core`;
 - `feeds`: compatibility re-export for feed helpers from `packages/core`;
 - `labels`: browser storage helpers plus label export helpers from `packages/core`;
 - `metrics`: compatibility re-export for metric helpers from `packages/core`;

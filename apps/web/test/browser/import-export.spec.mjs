@@ -75,4 +75,10 @@ test("migrates data import and public sample targets into browser automation", a
   await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_demo-v0.1.0-intake: 2 tile passport(s).");
   await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
   await expect(page.locator("#tileSelect option")).toHaveCount(35);
+  await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
+  await expect(page.locator("#diagnosticSummary")).toContainText("Not validated scientific results");
+  await expect(page.locator("#diagnosticList")).toContainText("Kappa-y cross-correlation review placeholder");
+  await expect(page.locator("#diagnosticList")).toContainText("E/B residual review placeholder");
+  await expect(page.locator("#diagnosticList")).toContainText("not a validated");
+  await expect(page.locator("#diagnosticList")).toContainText("must not be used");
 });
