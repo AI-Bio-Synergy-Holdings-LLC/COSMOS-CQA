@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import { openWorkbench } from "./fixtures/workbench.mjs";
 
 const publicPages = [
+  { path: "/demo-workbook.html", title: /Demo Workbook \| COSMOS-CQA/, text: "Demo workbook for the public Core Pack workflow." },
   { path: "/docs.html", title: /Docs \| COSMOS-CQA/, text: "Research infrastructure docs." },
   { path: "/releases.html", title: /Releases \| COSMOS-CQA/, text: "Research alpha release evidence." },
   { path: "/citation.html", title: /Citation \| COSMOS-CQA/, text: "Cite the repository and release evidence." },
@@ -27,13 +28,18 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const label of ["Demo", "Docs", "Releases", "Story", "Contact"]) {
+  for (const label of ["Demo", "Workbook", "Docs", "Releases", "Story", "Contact"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
   await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
+  await expect(nav.getByRole("link", { name: /^Workbook$/ })).toHaveAttribute("href", "./demo-workbook.html");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
   await expect(page.getByRole("link", { name: "Docs Quickstart, contracts, evidence bundles, deployment validation, and scope references." })).toHaveAttribute("href", "./docs.html");
+  await expect(page.getByRole("link", { name: "Demo Workbook Step-by-step public walkthrough for the sample Core Pack workflow and evidence exports." })).toHaveAttribute(
+    "href",
+    "./demo-workbook.html",
+  );
   await expect(page.getByRole("link", { name: "Citation CITATION.cff fields, canonical URL, release tag guidance, and citation boundaries." })).toHaveAttribute(
     "href",
     "./citation.html",
@@ -88,6 +94,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   expect(sitemap.ok()).toBe(true);
   const sitemapText = await sitemap.text();
   expect(sitemapText).toContain("https://cosmos-cqa.org/workbench.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/demo-workbook.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
 
@@ -124,6 +131,10 @@ test("serves public resource pages with canonical metadata and notices", async (
   for (const source of ["ESA Planck Legacy Archive", "NASA LAMBDA WMAP data products", "Dark Energy Survey Data Release 2", "Galaxy Zoo / Zooniverse"]) {
     await expect(page.getByRole("link", { name: source })).toBeVisible();
   }
+
+  await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
+  await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();
 });
 
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {

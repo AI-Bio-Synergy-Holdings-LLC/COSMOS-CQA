@@ -36,12 +36,19 @@ http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
 
 The hosted demo path auto-loads `examples/core-pack/core-pack.manifest.json`, keeps public truth labels hidden by default, and prepares the validation report preview.
 
+The public workbook for the hosted sample workflow is served at:
+
+```text
+https://cosmos-cqa.org/demo-workbook.html
+```
+
 ## Sample Core Pack Workflow
 
 1. Open the hosted sample Core Pack workflow.
 2. Confirm the banner says the hosted demo is ready.
 3. Inspect the Core Pack Intake panel, tile passports, diagnostic caveats, evidence workspace, and report preview.
 4. Keep public mode active for public review. Use `?dev=1` only for explicit local dev review.
+5. Use the demo workbook to record manifest ids, tile passport ids, evidence exports, known limitations, and any visual/accessibility issues found during review.
 
 ## Report Export
 

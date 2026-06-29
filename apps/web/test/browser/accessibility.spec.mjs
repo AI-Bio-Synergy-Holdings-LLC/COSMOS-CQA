@@ -28,8 +28,9 @@ test("exposes the redesigned research workbench shell and default public workspa
 test("keeps the research console hierarchy and responsive visual system coherent", async ({ page }) => {
   await openWorkbench(page);
 
-  await expect.poll(() => cssValue(page.locator(".research-shell"), "gridTemplateAreas")).toContain("rail main inspector");
-  await expect.poll(() => cssValue(page.locator(".viewer"), "flexDirection")).toBe("row");
+  await expect.poll(() => cssValue(page.locator(".research-shell"), "gridTemplateAreas")).toContain("rail main");
+  await expect.poll(() => cssValue(page.locator(".research-shell"), "gridTemplateAreas")).toContain("rail inspector");
+  await expect.poll(() => cssValue(page.locator(".viewer"), "display")).toBe("grid");
 
   const shellBackground = await cssValue(page.locator("body"), "backgroundImage");
   const railBackground = await cssValue(page.locator(".workflow-rail"), "backgroundColor");
@@ -44,6 +45,11 @@ test("keeps the research console hierarchy and responsive visual system coherent
   expect(Math.abs(tileBox.width - tileBox.height)).toBeLessThan(2);
   expect(controlsBox.width).toBeGreaterThan(280);
   expect(inspectorBox.width).toBeGreaterThan(300);
+
+  await page.setViewportSize({ width: 1500, height: 900 });
+  await openWorkbench(page);
+  await expect.poll(() => cssValue(page.locator(".research-shell"), "gridTemplateAreas")).toContain("rail main inspector");
+  await expect.poll(() => cssValue(page.locator(".viewer"), "display")).toBe("grid");
 
   await page.setViewportSize({ width: 390, height: 800 });
   await openWorkbench(page);

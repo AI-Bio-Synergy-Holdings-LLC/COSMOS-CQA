@@ -10,6 +10,9 @@ test("hosted demo path preloads the sample Core Pack with public boundaries", as
   await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_demo-v0.1.0-intake: 2 tile passport(s).");
   await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
   await expect(page.locator("#truthTag")).toBeHidden();
+  await expect(page.locator("#truthTag")).toHaveText("");
+  await expect(page.locator("body")).not.toContainText("truth: stripe");
+  await expect(page.locator("#demoModeNotice").getByRole("link", { name: "Demo Workbook" })).toBeVisible();
   await expect(page.locator("#tileSelect option:checked")).toHaveText("demo_corepack_tile_001");
   await expect(page.locator("#tilePassportDetails")).toContainText("Public truth labels hidden");
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");

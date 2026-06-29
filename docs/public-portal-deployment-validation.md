@@ -17,7 +17,7 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/CNAME` contains only `cosmos-cqa.org`;
 - `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public research-only copy, license boundaries, GitHub release links, release artifact index links, and the hosted demo route;
 - `apps/web/workbench.html` includes canonical URL metadata and social preview metadata;
-- public resource pages for docs, releases, citation, license, governance, ownership and use, story, copyright, user data, and contact are present;
+- public resource pages for docs, workbook, releases, citation, license, governance, ownership and use, story, copyright, user data, and contact are present;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
 - `docs/releases/README.md` links release notes, validation report JSON, SBOM JSON, known limitations, and verification commands;

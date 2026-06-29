@@ -11,6 +11,7 @@ The portal is the root static page in `apps/web/index.html`. The maintained rese
 Public resource pages are served as top-level static HTML files:
 
 - `docs.html`
+- `demo-workbook.html`
 - `releases.html`
 - `citation.html`
 - `license.html`
@@ -47,6 +48,7 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 The public scaffold exposes:
 
 - Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
+- Workbook: `./demo-workbook.html`
 - Docs: `./docs.html`
 - Releases: `./releases.html`
 - Citation: `./citation.html`

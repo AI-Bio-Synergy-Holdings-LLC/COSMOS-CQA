@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo Workbook | COSMOS-CQA</title>
+  <meta name="description" content="COSMOS-CQA hosted demo workbook with a practical walkthrough for the public sample Core Pack workflow, validation report export, provenance review, and research-only boundaries.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://cosmos-cqa.org/demo-workbook.html">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="COSMOS-CQA Demo Workbook">
+  <meta property="og:description" content="Step-by-step public walkthrough for the COSMOS-CQA hosted sample Core Pack workflow.">
+  <meta property="og:url" content="https://cosmos-cqa.org/demo-workbook.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://cosmos-cqa.org/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="./src/portal.css">
+</head>
+<body class="portal">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="portal-header" aria-label="COSMOS-CQA public portal">
+    <a class="portal-brand" href="./" aria-label="COSMOS-CQA home"><span class="portal-brand-mark" aria-hidden="true"></span><span><strong>COSMOS-CQA</strong><small>Public Research Portal</small></span></a>
+    <nav class="portal-nav" aria-label="Primary">
+      <a href="./workbench.html?demo=core-pack#workspace-core-pack">Demo</a>
+      <a href="./demo-workbook.html">Workbook</a>
+      <a href="./docs.html">Docs</a>
+      <a href="./releases.html">Releases</a>
+      <a href="./story.html">Story</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+  </header>
+  <main id="main" class="portal-page-main" tabindex="-1">
+    <section class="portal-page-hero workbook-hero">
+      <p class="portal-kicker">Hosted demo manual</p>
+      <h1>Demo workbook for the public Core Pack workflow.</h1>
+      <p>Use this workbook to review the sample workbench as research infrastructure: inspect the Core Pack, exercise tile labeling, export evidence, and stay inside the public claim boundary.</p>
+      <div class="portal-actions">
+        <a class="portal-action primary" href="./workbench.html?demo=core-pack#workspace-core-pack">Open Demo Workbench</a>
+        <a class="portal-action" href="https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/docs/demo-workbook.md">Repository Workbook</a>
+      </div>
+    </section>
+
+    <section class="portal-page-content">
+      <div class="portal-page-section">
+        <h2>Before you begin</h2>
+        <div class="notice-grid">
+          <article class="portal-tile">
+            <h3>Research-only boundary</h3>
+            <p>The hosted demo is not a production decision system and does not publish validated cosmology diagnostics.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Public label policy</h3>
+            <p>Public truth labels remain hidden in the visible workflow and public DOM text. Dev truth review is only for explicit local development mode.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Local-first data</h3>
+            <p>The static portal has no account system. Downloads, bookmarks, and imports stay in the browser session unless you share them.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Evidence focus</h3>
+            <p>Use exports to inspect contracts, provenance hashes, SBOM references, known limitations, and deterministic replay surfaces.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>Twenty-minute walkthrough</h2>
+        <ol class="workbook-steps">
+          <li><strong>Open the hosted demo.</strong> Confirm the banner reports that the sample Core Pack is ready.</li>
+          <li><strong>Inspect Core Pack intake.</strong> Review manifest summary, tile passports, evidence references, SBOM references, and diagnostic references.</li>
+          <li><strong>Review the first tile.</strong> Change overlay and palette once, then confirm the caption and tile passport remain readable.</li>
+          <li><strong>Submit and undo a label.</strong> Add a brief note, submit a label, then undo it to confirm the session can recover from review mistakes.</li>
+          <li><strong>Create a bookmark.</strong> Use the bookmark control, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.</li>
+          <li><strong>Check diagnostic caveats.</strong> Read placeholder status and limitations before treating any diagnostic surface as evidence.</li>
+          <li><strong>Refresh report preview.</strong> Use the Reports panel to regenerate the validation preview before export.</li>
+          <li><strong>Export evidence.</strong> Download SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.</li>
+        </ol>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>What to record during review</h2>
+        <div class="portal-page-grid">
+          <article class="portal-link-card">
+            <strong>Workflow state</strong>
+            <span>Demo URL, browser, viewport size, timestamp, and whether public mode or dev mode was active.</span>
+          </article>
+          <article class="portal-link-card">
+            <strong>Core Pack evidence</strong>
+            <span>Manifest id, tile passport ids, evidence reference paths, SBOM reference ids, and provenance hash subjects.</span>
+          </article>
+          <article class="portal-link-card">
+            <strong>Interaction evidence</strong>
+            <span>Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.</span>
+          </article>
+          <article class="portal-link-card">
+            <strong>Boundary notes</strong>
+            <span>Known limitations, diagnostic caveats, public truth-label hiding, and any accessibility or visual issues observed.</span>
+          </article>
+        </div>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>Local verification commands</h2>
+        <pre class="command-panel" aria-label="Local verification commands"><code>npm --prefix apps/web run test:browser -- test/browser/hosted-demo.spec.mjs
+npm --prefix apps/web run test:browser -- test/browser/portal.spec.mjs
+npm --prefix apps/web run check:portal-deploy
+npm --prefix apps/web run check</code></pre>
+        <p>The focused hosted-demo test verifies public boundaries and evidence export behavior. The portal test verifies public pages, metadata, handoff, and responsive usability.</p>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>Review outcome</h2>
+        <p>A completed workbook pass should leave you with a validation report JSON, optional SBOM JSON, optional session/evidence bundle JSON, and a short note describing any visual, accessibility, or research-boundary concerns. File implementation bugs as GitHub issues and route public research questions through the contact page.</p>
+        <ul class="portal-inline-list">
+          <li><a href="./contact.html">Contact</a></li>
+          <li><a href="./license.html">License</a></li>
+          <li><a href="./user-data.html">User Data Notice</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer class="portal-footer">
+    <span>Copyright (c) AI-Bio Synergy Holdings LLC. All rights reserved.</span>
+    <span><a href="./copyright.html">Copyright</a> | <a href="./user-data.html">User Data</a> | <a href="./license.html">License</a> | <a href="./contact.html">Contact</a></span>
+  </footer>
+</body>
+</html>

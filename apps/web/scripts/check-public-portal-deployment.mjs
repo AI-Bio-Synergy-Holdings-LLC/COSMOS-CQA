@@ -11,6 +11,7 @@ const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.0-research-alpha";
 const publicPagePaths = [
+  "demo-workbook.html",
   "docs.html",
   "releases.html",
   "citation.html",
@@ -85,6 +86,7 @@ async function validateStaticContract() {
     "COSMOS-CQA Research-Only Public License",
     owner,
     "./docs.html",
+    "./demo-workbook.html",
     "./releases.html",
     "./story.html",
     "./contact.html",
@@ -116,6 +118,7 @@ async function validateStaticContract() {
     "<urlset",
     `<loc>${canonicalUrl}</loc>`,
     `<loc>${canonicalUrl}workbench.html</loc>`,
+    `<loc>${canonicalUrl}demo-workbook.html</loc>`,
     `<loc>${canonicalUrl}docs.html</loc>`,
     `<loc>${canonicalUrl}releases.html</loc>`,
     `<loc>${canonicalUrl}story.html</loc>`,
@@ -130,6 +133,7 @@ async function validateStaticContract() {
 
   requirePhrases("docs/quickstart.md", quickstart, [
     "https://cosmos-cqa.org",
+    "demo workbook",
     "sample Core Pack workflow",
     "Export Validation Report JSON",
     "npm --prefix apps/web run check",
@@ -150,6 +154,7 @@ async function validateStaticContract() {
     "SEO, social preview, accessibility, and usability baseline",
     "copyright",
     "user data",
+    "demo-workbook.html",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -277,7 +282,13 @@ async function validateHttpSurface() {
     {
       path: "/sitemap.xml",
       label: "sitemap",
-      phrases: [canonicalUrl, `${canonicalUrl}workbench.html`, `${canonicalUrl}story.html`, `${canonicalUrl}contact.html`],
+      phrases: [
+        canonicalUrl,
+        `${canonicalUrl}workbench.html`,
+        `${canonicalUrl}demo-workbook.html`,
+        `${canonicalUrl}story.html`,
+        `${canonicalUrl}contact.html`,
+      ],
     },
     {
       path: "/assets/favicon.svg",
