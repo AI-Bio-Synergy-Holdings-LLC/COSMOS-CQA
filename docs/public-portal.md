@@ -56,6 +56,12 @@ http://localhost:4173/
 
 The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo sample loading, and validation report JSON export.
 
+## SEO, Social Preview, Accessibility, and Usability Baseline
+
+The public portal publishes crawl metadata, social preview metadata, structured data, `robots.txt`, and `sitemap.xml` for the canonical domain.
+
+The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
+
 Run the public portal release/deployment validation with:
 
 ```bash

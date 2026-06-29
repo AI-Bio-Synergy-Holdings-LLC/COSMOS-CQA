@@ -120,6 +120,8 @@ a {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: flex-end;
+  max-width: min(760px, 100%);
+  min-width: 0;
 }
 
 .portal-nav a,
@@ -173,7 +175,7 @@ a {
 }
 
 .portal-hero-content {
-  max-width: 830px;
+  max-width: min(830px, 100%);
   position: relative;
   z-index: 1;
 }
@@ -188,10 +190,11 @@ a {
 }
 
 .portal-hero h1 {
-  font-size: clamp(48px, 9vw, 118px);
+  font-size: clamp(44px, 7vw, 92px);
   font-weight: 900;
   line-height: 0.92;
   margin-top: 12px;
+  max-width: 100%;
 }
 
 .portal-lede {

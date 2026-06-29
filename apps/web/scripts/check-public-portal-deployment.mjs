@@ -28,7 +28,10 @@ if (failures.length > 0) {
 
 async function validateStaticContract() {
   const portalHtml = await readText("apps/web/index.html");
+  const workbenchHtml = await readText("apps/web/workbench.html");
   const cname = (await readText("apps/web/CNAME")).trim();
+  const robots = await readText("apps/web/robots.txt");
+  const sitemap = await readText("apps/web/sitemap.xml");
   const citation = await readText("CITATION.cff");
   const quickstart = await readText("docs/quickstart.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
@@ -42,11 +45,25 @@ async function validateStaticContract() {
   const sbom = JSON.parse(await readText(`docs/releases/${releaseId}-sbom.json`));
 
   assert(cname === canonicalHost, "apps/web/CNAME must contain only the canonical public domain.");
+  await requireReadable("apps/web/assets/favicon.svg");
+  await requireReadable("apps/web/assets/social-preview.svg");
+  await requireReadable("apps/web/assets/social-preview.png");
 
   requirePhrases("apps/web/index.html", portalHtml, [
     "<title>COSMOS-CQA Public Research Portal</title>",
+    `<meta name="description" content="COSMOS-CQA is a research-only public portal and browser workbench for cosmology artifact quality assurance evidence, provenance, and replay.">`,
+    `<meta name="author" content="${owner}">`,
     `<link rel="canonical" href="${canonicalUrl}">`,
+    `<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">`,
+    `<link rel="sitemap" type="application/xml" title="Sitemap" href="${canonicalUrl}sitemap.xml">`,
+    `<meta property="og:site_name" content="COSMOS-CQA">`,
+    `<meta property="og:title" content="COSMOS-CQA Public Research Portal">`,
     `<meta property="og:url" content="${canonicalUrl}">`,
+    `<meta property="og:image" content="${canonicalUrl}assets/social-preview.png">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:image" content="${canonicalUrl}assets/social-preview.png">`,
+    `"@type": "SoftwareSourceCode"`,
+    `"codeRepository": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"`,
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
@@ -55,6 +72,29 @@ async function validateStaticContract() {
     "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/releases",
     "docs/releases/README.md",
     "./workbench.html?demo=core-pack#workspace-core-pack",
+  ]);
+
+  requirePhrases("apps/web/workbench.html", workbenchHtml, [
+    "<title>COSMOS-CQA Research Workbench</title>",
+    `<link rel="canonical" href="${canonicalUrl}workbench.html">`,
+    `<meta property="og:url" content="${canonicalUrl}workbench.html">`,
+    `<meta property="og:image" content="${canonicalUrl}assets/social-preview.png">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    "Core Pack intake",
+    "deterministic replay",
+    owner,
+  ]);
+
+  requirePhrases("apps/web/robots.txt", robots, [
+    "User-agent: *",
+    "Allow: /",
+    `Sitemap: ${canonicalUrl}sitemap.xml`,
+  ]);
+
+  requirePhrases("apps/web/sitemap.xml", sitemap, [
+    "<urlset",
+    `<loc>${canonicalUrl}</loc>`,
+    `<loc>${canonicalUrl}workbench.html</loc>`,
   ]);
 
   requirePhrases("CITATION.cff", citation, [
@@ -82,11 +122,16 @@ async function validateStaticContract() {
     "COSMOS_CQA_STATIC_ROOT",
     "http://127.0.0.1:4173",
     "public portal release/deployment validation",
+    "SEO, social preview, accessibility, and usability baseline",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
     "Public Portal Release/Deployment Validation",
     "canonical URL metadata",
+    "social preview metadata",
+    "robots.txt",
+    "sitemap.xml",
+    "structured data",
     "research-only license notice",
     "release artifact links",
     "SBOM",
@@ -129,6 +174,9 @@ async function validateStaticContract() {
     "index.html",
     "workbench.html",
     "CNAME",
+    "robots.txt",
+    "sitemap.xml",
+    "assets",
     "packages",
     "examples",
     ".nojekyll",
@@ -195,6 +243,31 @@ async function validateHttpSurface() {
       phrases: [canonicalHost],
     },
     {
+      path: "/robots.txt",
+      label: "robots file",
+      phrases: [`Sitemap: ${canonicalUrl}sitemap.xml`],
+    },
+    {
+      path: "/sitemap.xml",
+      label: "sitemap",
+      phrases: [canonicalUrl, `${canonicalUrl}workbench.html`],
+    },
+    {
+      path: "/assets/favicon.svg",
+      label: "favicon asset",
+      phrases: ["COSMOS-CQA mark"],
+    },
+    {
+      path: "/assets/social-preview.svg",
+      label: "social preview source",
+      phrases: ["COSMOS-CQA social preview", "Research-only public portal"],
+    },
+    {
+      path: "/assets/social-preview.png",
+      label: "social preview image",
+      minBytes: 10_000,
+    },
+    {
       path: "/src/portal.js",
       label: "portal module",
       phrases: ["COSMOS_CQA_PORTAL"],
@@ -242,8 +315,16 @@ async function validateHttpRoute(baseUrl, route) {
     return;
   }
 
+  if (route.minBytes) {
+    const body = await response.arrayBuffer();
+    if (body.byteLength < route.minBytes) {
+      failures.push(`${route.label}: expected at least ${route.minBytes} bytes for ${url}, got ${body.byteLength}`);
+    }
+    return;
+  }
+
   const body = await response.text();
-  requirePhrases(`${route.label} (${route.path})`, body, route.phrases);
+  requirePhrases(`${route.label} (${route.path})`, body, route.phrases || []);
 }
 
 function requirePhrases(label, text, phrases) {

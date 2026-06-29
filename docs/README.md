@@ -2,6 +2,13 @@
 
 This directory holds the public research documentation for COSMOS-CQA.
 
+Start with:
+
+- `quickstart.md` for local use and hosted demo workflow.
+- `public-portal.md` for the canonical public site and deployment surface.
+- `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
+- `contracts.md` for research workflow contracts.
+
 Core documents:
 
 - `canonical-v3-import.md` records the first stable legacy import.
