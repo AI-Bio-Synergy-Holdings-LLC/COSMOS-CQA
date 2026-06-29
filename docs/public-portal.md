@@ -32,9 +32,9 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 The first public scaffold exposes:
 
 - Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
-- Docs: repository `docs/`
-- Releases: GitHub Releases
-- Citation: `CITATION.cff`
+- Docs: repository `docs/`, starting with `docs/quickstart.md`
+- Releases: GitHub Releases and `docs/releases/README.md`
+- Citation: `docs/citation.md` and `CITATION.cff`
 - License: `LICENSE.md`
 - Stewardship: the portal stewardship section plus governance and ownership documents
 

@@ -9,6 +9,7 @@ Core documents:
 - `contracts.md` defines the first data contract set.
 - `core-pack-intake.md` defines the safe Core Pack intake lane before diagnostic import.
 - `core-pack-import-checklist.md` defines provenance, rights, scientific, and engineering gates for Core Pack imports.
+- `citation.md` mirrors `CITATION.cff` for public research citation.
 - `diagnostic-concepts.md` records documentation-only diagnostic concepts, deterministic placeholder outputs, and caveats.
 - `source-architecture.md` explains the source split architecture and alternatives.
 - `scientific-scope.md` defines the research lane.
@@ -17,7 +18,8 @@ Core documents:
 - `domain-identity.md` records the canonical public URL and redirect-domain policy.
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.
 - `public-portal.md` defines the canonical website scaffold and public copy boundaries.
+- `quickstart.md` defines the public local run, hosted demo, report export, and verification path.
 - `reproducibility.md` defines deterministic replay expectations.
 - `roadmap.md` outlines the rework path.
 - `release-checklist.md` defines what must ship with public releases.
-- `releases/` stores release-note source documents.
+- `releases/` stores release-note source documents, validation reports, SBOMs, and the release artifact index.

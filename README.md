@@ -68,6 +68,8 @@ The public portal is served at `http://localhost:4173/`; the research workbench 
 
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
+Public quickstart, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
+
 ## Naming
 
 Public project name: `COSMOS-CQA`
