@@ -20,6 +20,8 @@ export function createAppState() {
     feedErrors: [],
     researchArtifacts: [],
     corePacks: [],
+    corePackManifests: [],
+    currentCorePackId: "",
     diagnostics: [],
     sbomRefs: [],
     provenanceHashes: [],
