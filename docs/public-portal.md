@@ -20,6 +20,7 @@ Public resource pages are served as top-level static HTML files:
 - `ownership-and-use.html`
 - `story.html`
 - `safety.html`
+- `security.html`
 - `copyright.html`
 - `user-data.html`
 - `contact.html`
@@ -60,6 +61,7 @@ The public scaffold exposes:
 - Ownership and use: `./ownership-and-use.html`
 - Story behind the research: `./story.html`
 - Safety and use boundaries: `./safety.html`
+- Security and disclosure: `./security.html`
 - Copyright notice: `./copyright.html`
 - User data notice: `./user-data.html`
 - Contact: `./contact.html`
@@ -92,6 +94,8 @@ The public safety note is maintained in `docs/public-safety.md` and mirrored by 
 
 The user data notice is maintained in `apps/web/user-data.html` with companion data governance in `docs/data-governance.md`. It describes the static local-first browser posture, public GitHub issue/reporting boundaries, contact email routing, external service logs, and non-confidential reporting guardrails.
 
+The security and disclosure route is maintained in `SECURITY.md`, `docs/security-disclosure.md`, and `apps/web/security.html`. It separates private vulnerability reports from non-sensitive public safety/accessibility reports and warns against sharing exploit details, credentials, personal health information, regulated data, restricted datasets, or private screenshots in public GitHub surfaces.
+
 Run the public portal release/deployment validation with:
 
 ```bash
@@ -104,7 +108,7 @@ For served-route validation, start the local static server and run:
 $env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web run check:portal-deploy
 ```
 
-This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, public resource pages, safety notices, contact routing, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
+This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, public resource pages, safety notices, security disclosure routing, contact routing, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
 
 Prepare the GitHub Pages artifact locally with:
 

@@ -34,6 +34,8 @@ The visual workbench should also avoid implying safety certification. The projec
 
 Safety and accessibility reports should use the repository issue templates when the report can be public and non-confidential. Reports must not include personal health information, regulated data, restricted datasets, credentials, private keys, confidential screenshots, private source code, or medical/audiology advice.
 
+Security vulnerabilities or sensitive safety details should follow the private disclosure route in `SECURITY.md` and `docs/security-disclosure.md` rather than public issue templates.
+
 ## Claim Boundaries
 
 Do not claim that the sonic loop:
@@ -55,7 +57,7 @@ The safety boundary should be protected by:
 - unit tests for shared audio limits and deterministic audio maps;
 - browser tests for no autoplay, loop-off default, visible safety notice, stop behavior, and bounded mock audio parameters;
 - portal tests for the public safety page and cross-links;
-- deployment validation requiring `safety.html`, `docs/public-safety.md`, and safety-page sitemap coverage.
+- deployment validation requiring `safety.html`, `docs/public-safety.md`, private disclosure routing, and safety-page sitemap coverage.
 
 ## Reference Anchors
 

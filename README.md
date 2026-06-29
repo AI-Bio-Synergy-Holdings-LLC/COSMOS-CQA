@@ -21,6 +21,7 @@ Current status:
 - A Core Pack intake lane now validates a sample manifest, evidence/SBOM references, and documentation-only diagnostic concepts before any CSSFP prototype repair or import.
 - Browser import/export paths now classify feed and Core Pack JSON as research artifacts, retain SHA-256 provenance hashes, and export validation report JSON before any PDF workflow.
 - Public safety boundaries now cover optional audio sonification, loop-off defaults, bounded playback parameters, visible stop behavior, and non-diagnostic/non-therapeutic claim limits.
+- Public trust operations now route private vulnerabilities, public safety reports, accessibility reports, and data-handling concerns through maintained disclosure surfaces.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use
@@ -69,7 +70,7 @@ The public portal is served at `http://localhost:4173/`; the research workbench 
 
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
-Public quickstart, safety, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
+Public quickstart, safety, disclosure, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/security-disclosure.md](docs/security-disclosure.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
 
 ## Naming
 
@@ -93,4 +94,4 @@ This is a research-source license, not an OSI open-source license.
 
 ## Stewardship
 
-COSMOS-CQA is owned and stewarded by AI-Bio Synergy Holdings LLC. See [OWNERSHIP_AND_USE.md](OWNERSHIP_AND_USE.md), [GOVERNANCE.md](GOVERNANCE.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
+COSMOS-CQA is owned and stewarded by AI-Bio Synergy Holdings LLC. See [OWNERSHIP_AND_USE.md](OWNERSHIP_AND_USE.md), [GOVERNANCE.md](GOVERNANCE.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [SECURITY.md](SECURITY.md).

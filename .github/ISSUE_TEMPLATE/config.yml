@@ -9,3 +9,6 @@ contact_links:
   - name: User Data Notice
     url: https://cosmos-cqa.org/user-data.html
     about: Review local-first data behavior and public reporting guardrails before sharing examples.
+  - name: Private Vulnerability And Disclosure Policy
+    url: https://cosmos-cqa.org/security.html
+    about: Do not file public vulnerability reports or sensitive safety details; review private and public reporting lanes first.

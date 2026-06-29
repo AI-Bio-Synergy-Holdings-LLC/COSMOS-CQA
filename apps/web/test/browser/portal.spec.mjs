@@ -13,6 +13,7 @@ const publicPages = [
   { path: "/ownership-and-use.html", title: /Ownership and Use \| COSMOS-CQA/, text: "Owned and stewarded by AI-Bio Synergy Holdings LLC." },
   { path: "/story.html", title: /Story Behind the Research \| COSMOS-CQA/, text: "From artifact intuition to public research infrastructure." },
   { path: "/safety.html", title: /Safety and Use Boundaries \| COSMOS-CQA/, text: "Safety boundaries for public research use." },
+  { path: "/security.html", title: /Security and Disclosure \| COSMOS-CQA/, text: "Security and responsible disclosure." },
   { path: "/copyright.html", title: /Copyright Notice \| COSMOS-CQA/, text: "Copyright, notices, and third-party boundaries." },
   { path: "/user-data.html", title: /User Data Notice \| COSMOS-CQA/, text: "Local-first research workflow data." },
   { path: "/contact.html", title: /Contact \| COSMOS-CQA/, text: "Developer and public research route." },
@@ -57,6 +58,10 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   );
   await expect(page.getByRole("link", { name: "Story Behind the Research Origin concept, public science references, and the path to a citable research workbench." })).toHaveAttribute("href", "./story.html");
   await expect(page.getByRole("link", { name: "Safety and Use Boundaries Audio sonification limits, visual review cautions, local-first data, and public non-claims." })).toHaveAttribute("href", "./safety.html");
+  await expect(page.getByRole("link", { name: "Security and Disclosure Private vulnerability route, public safety and accessibility reporting lanes, and data-sharing guardrails." })).toHaveAttribute(
+    "href",
+    "./security.html",
+  );
   await expect(page.getByRole("link", { name: "Contact Developer route for public research questions, accessibility feedback, and issue routing." })).toHaveAttribute("href", "./contact.html");
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
@@ -106,6 +111,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   expect(sitemapText).toContain("https://cosmos-cqa.org/research-experiment.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/safety.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/security.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
 
   const previewSource = await request.get("/social-preview.html");
@@ -141,6 +147,8 @@ test("serves public resource pages with canonical metadata and notices", async (
     "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/issues/new/choose",
   );
   await expect(page.getByText("Safety or audio/visual use-boundary concerns")).toBeVisible();
+  await expect(page.getByText("Security disclosure questions")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
 
   await page.goto("/story.html", { waitUntil: "domcontentloaded" });
   for (const source of ["ESA Planck Legacy Archive", "NASA LAMBDA WMAP data products", "Dark Energy Survey Data Release 2", "Galaxy Zoo / Zooniverse"]) {
@@ -169,6 +177,16 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("Browser code cannot control device or headphone volume.")).toBeVisible();
   await expect(page.getByText("not a medical, therapeutic, diagnostic")).toBeVisible();
   await expect(page.getByText("repository issue templates without sharing sensitive data")).toBeVisible();
+  await expect(page.getByText("Use the security route for private vulnerabilities.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
+
+  await page.goto("/security.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Choose the right reporting lane")).toBeVisible();
+  await expect(page.getByText("Do not file public issues for vulnerabilities")).toBeVisible();
+  await expect(page.getByText("What not to share publicly")).toBeVisible();
+  await expect(page.getByText("COSMOS-CQA is not a production service")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Email Private Report" })).toHaveAttribute("href", /mailto:cosmos-cqa-developer@ai-biosynergyholdings\.com/);
+  await expect(page.getByRole("link", { name: "Repository Security Policy" })).toHaveAttribute("href", /SECURITY\.md/);
 
   await page.goto("/user-data.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("not a substitute for counsel-reviewed privacy terms")).toBeVisible();
@@ -179,6 +197,7 @@ test("serves public resource pages with canonical metadata and notices", async (
     "href",
     "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/issues/new/choose",
   );
+  await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
 });
 
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {
