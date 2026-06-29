@@ -1,5 +1,5 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
-import { tileMetasFromCorePack } from "../core-pack/index.js";
+import { summarizeCorePackManifest, tilePassportToTileMeta } from "../core-pack/index.js";
 import { createDiagnosticPlaceholders } from "../diagnostics/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
 import {
@@ -94,6 +94,233 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.truthTag.textContent = `truth: ${tile.meta.truth.class}`;
     dom.truthTag.style.display = truthTagDisplay(config);
     dom.tileSelect.value = String(index);
+    renderTilePassport(tile);
+    renderCorePackExplorer();
+  }
+
+  function renderTilePassport(tile = tiles[state.idx]) {
+    if (!dom.tilePassportDetails || !dom.tilePassportProvenance || !dom.tilePassportSidecars) {
+      return;
+    }
+
+    dom.tilePassportDetails.replaceChildren();
+    dom.tilePassportProvenance.replaceChildren();
+    dom.tilePassportSidecars.replaceChildren();
+
+    if (!tile) {
+      dom.tilePassportStatus.textContent = "No tile";
+      appendEmptyState(dom.tilePassportDetails, "No selected tile is available for passport inspection.");
+      return;
+    }
+
+    const passport = tile.passport || findLoadedPassport(tile.meta.tile_id);
+    const meta = tile.meta;
+    dom.tilePassportStatus.textContent = passport ? "Core Pack passport" : "Tile metadata";
+
+    appendMetadataGrid(dom.tilePassportDetails, [
+      ["Tile ID", meta.tile_id],
+      ["Dataset", meta.dataset || "n/a"],
+      ["Release", meta.release || "n/a"],
+      ["Band", meta.band || "n/a"],
+      ["Coordinates", formatCoordinates(meta.ra, meta.dec)],
+      ["Checksum", meta.checksum || "not recorded"],
+      ["Truth policy", formatTruthPolicy(passport, meta)],
+    ]);
+
+    if (passport?.provenance) {
+      appendMetadataGrid(dom.tilePassportProvenance, [
+        ["Provenance source", passport.provenance.source],
+        ["Source URL", passport.provenance.source_url || "n/a"],
+        ["Archive path", passport.provenance.archive_path || "n/a"],
+        ["Generated", formatDate(passport.provenance.generated_at)],
+        ["Notes", passport.provenance.notes || "n/a"],
+      ]);
+    } else {
+      appendEmptyState(dom.tilePassportProvenance, "No Core Pack provenance is loaded for this tile.");
+    }
+
+    if (passport?.sidecars) {
+      appendMetadataGrid(dom.tilePassportSidecars, [
+        ["Audio map", passport.sidecars.audio_map],
+        ["Overlay modes", formatList(passport.sidecars.overlay_modes)],
+        ["Palette modes", formatList(passport.sidecars.palette_modes)],
+        ["Metrics", formatList(passport.sidecars.metrics)],
+      ]);
+    } else {
+      appendMetadataGrid(dom.tilePassportSidecars, [
+        ["Overlay modes", "Current workbench controls"],
+        ["Palette modes", "Current workbench controls"],
+        ["Audio map", "Generated from selected tile sidecar"],
+      ]);
+    }
+  }
+
+  function renderCorePackExplorer({ errors = [] } = {}) {
+    if (
+      !dom.corePackExplorerStatus ||
+      !dom.corePackManifestSummary ||
+      !dom.corePackTileList ||
+      !dom.corePackEvidenceRefs ||
+      !dom.corePackSbomRefs ||
+      !dom.corePackDiagnosticRefs
+    ) {
+      return;
+    }
+
+    clearCorePackExplorer();
+
+    if (errors.length) {
+      dom.corePackExplorerStatus.className = "small empty-state error-state";
+      dom.corePackExplorerStatus.textContent = `Core Pack rejected: ${errors[0]}`;
+      return;
+    }
+
+    const manifest = getCurrentCorePackManifest();
+    if (!manifest) {
+      dom.corePackExplorerStatus.className = "small empty-state";
+      dom.corePackExplorerStatus.textContent =
+        "No Core Pack manifest loaded. Load the public sample or upload a validated Core Pack manifest to inspect evidence.";
+      return;
+    }
+
+    const summary = summarizeCorePackManifest(manifest);
+    dom.corePackExplorerStatus.className = "small inspector-status";
+    dom.corePackExplorerStatus.textContent = `${manifest.manifest_id} loaded from a schema-validated Core Pack manifest.`;
+    appendMetadataGrid(dom.corePackManifestSummary, [
+      ["Manifest ID", manifest.manifest_id],
+      ["Name", manifest.name],
+      ["Version", manifest.version],
+      ["Generated", formatDate(manifest.generated_at)],
+      ["Steward", manifest.steward],
+      ["License", manifest.license],
+      ["Tile count", String(summary.tile_count)],
+      ["Evidence refs", String(summary.evidence_ref_count)],
+      ["SBOM refs", String(summary.sbom_ref_count)],
+      ["Diagnostic refs", String(summary.diagnostic_ref_count)],
+    ]);
+
+    renderCorePackTileList(manifest);
+    appendReferenceList(dom.corePackEvidenceRefs, manifest.evidence_refs || [], (ref) => [ref.kind, ref.path]);
+    appendReferenceList(dom.corePackSbomRefs, manifest.sbom_refs || [], (ref) => [
+      ref.sbom_id,
+      `${ref.format} ${ref.spec_version}; ${ref.path}; ${ref.checksum}`,
+    ]);
+    appendReferenceList(dom.corePackDiagnosticRefs, manifest.diagnostic_refs || [], (ref) => [
+      ref.name,
+      `${ref.status}; ${ref.implementation_state}; ${ref.allowed_use}`,
+    ]);
+    notifyTestBridge("corePack.explorer.rendered", { manifest_id: manifest.manifest_id, summary });
+  }
+
+  function clearCorePackExplorer() {
+    dom.corePackManifestSummary.replaceChildren();
+    dom.corePackTileList.replaceChildren();
+    dom.corePackEvidenceRefs.replaceChildren();
+    dom.corePackSbomRefs.replaceChildren();
+    dom.corePackDiagnosticRefs.replaceChildren();
+  }
+
+  function renderCorePackTileList(manifest) {
+    const selectedTileId = tiles[state.idx]?.meta?.tile_id;
+    for (const passport of manifest.tiles || []) {
+      const button = documentRef.createElement("button");
+      button.type = "button";
+      button.className = passport.tile_id === selectedTileId ? "tile-passport-button active" : "tile-passport-button";
+      button.textContent = `${passport.tile_id} · ${passport.dataset} · ${passport.band}`;
+      button.addEventListener("click", () => {
+        const tileIndex = tiles.findIndex((tile) => tile.meta.tile_id === passport.tile_id);
+        if (tileIndex >= 0) {
+          drawTile(tileIndex);
+          setCaption(`Inspecting Core Pack passport ${passport.tile_id}.`);
+        }
+      });
+      dom.corePackTileList.appendChild(button);
+    }
+  }
+
+  function findLoadedPassport(tileId) {
+    for (const manifest of state.corePackManifests) {
+      const passport = (manifest.tiles || []).find((entry) => entry.tile_id === tileId);
+      if (passport) {
+        return passport;
+      }
+    }
+    return null;
+  }
+
+  function getCurrentCorePackManifest() {
+    if (state.currentCorePackId) {
+      return state.corePackManifests.find((manifest) => manifest.manifest_id === state.currentCorePackId) || null;
+    }
+    return state.corePackManifests[state.corePackManifests.length - 1] || null;
+  }
+
+  function formatTruthPolicy(passport, meta) {
+    const truth = passport ? passport.truth : meta?.truth;
+    if (!truth) {
+      return "No truth record in passport.";
+    }
+    if (config.dev) {
+      return `Dev truth visible: ${truth.class} / ${truth.severity}`;
+    }
+    return "Public truth labels hidden; truth metadata retained for validation only.";
+  }
+
+  function formatCoordinates(ra, dec) {
+    if (typeof ra !== "number" || typeof dec !== "number") {
+      return "n/a";
+    }
+    return `RA ${ra.toFixed(3)}, Dec ${dec.toFixed(3)}`;
+  }
+
+  function formatDate(value) {
+    return value && !Number.isNaN(Date.parse(value)) ? new Date(value).toISOString() : value || "n/a";
+  }
+
+  function formatList(values) {
+    return Array.isArray(values) && values.length ? values.join(", ") : "n/a";
+  }
+
+  function appendMetadataGrid(container, entries) {
+    const list = documentRef.createElement("dl");
+    list.className = "metadata-grid";
+    for (const [term, value] of entries) {
+      const row = documentRef.createElement("div");
+      const dt = documentRef.createElement("dt");
+      const dd = documentRef.createElement("dd");
+      dt.textContent = term;
+      dd.textContent = value || "n/a";
+      row.append(dt, dd);
+      list.appendChild(row);
+    }
+    container.appendChild(list);
+  }
+
+  function appendReferenceList(container, refs, formatRef) {
+    if (!refs.length) {
+      appendEmptyState(container, "No references declared.");
+      return;
+    }
+
+    for (const ref of refs) {
+      const [title, detail] = formatRef(ref);
+      const item = documentRef.createElement("div");
+      item.className = "reference-item";
+      const heading = documentRef.createElement("strong");
+      const body = documentRef.createElement("div");
+      heading.textContent = title || "reference";
+      body.className = "small";
+      body.textContent = detail || "n/a";
+      item.append(heading, body);
+      container.appendChild(item);
+    }
+  }
+
+  function appendEmptyState(container, message) {
+    const empty = documentRef.createElement("div");
+    empty.className = "small empty-state";
+    empty.textContent = message;
+    container.appendChild(empty);
   }
 
   function updateChart(chartRef, id, configValue) {
@@ -503,18 +730,30 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function processCorePackManifest(manifest) {
-    const corePackTiles = tileMetasFromCorePack(manifest).map((meta) => ({
-      meta,
-      canvas: synthTile(meta.truth || { class: "clean", severity: "low" }),
-    }));
+    const corePackTiles = manifest.tiles.map((passport) => {
+      const meta = tilePassportToTileMeta(passport);
+      return {
+        meta,
+        passport,
+        corePackManifestId: manifest.manifest_id,
+        canvas: synthTile(meta.truth || { class: "clean", severity: "low" }),
+      };
+    });
 
     tiles.push(...corePackTiles);
     populateTileSelect();
     drawTile(tiles.length - corePackTiles.length);
+    state.currentCorePackId = manifest.manifest_id;
+    upsertByKey(state.corePackManifests, "manifest_id", manifest);
     upsertByKey(state.corePacks, "manifest_id", {
       manifest_id: manifest.manifest_id,
       name: manifest.name,
+      version: manifest.version,
+      steward: manifest.steward,
+      license: manifest.license,
       tile_count: manifest.tiles.length,
+      evidence_ref_count: manifest.evidence_refs?.length || 0,
+      sbom_ref_count: manifest.sbom_refs?.length || 0,
       diagnostic_ref_count: manifest.diagnostic_refs?.length || 0,
     });
 
@@ -523,6 +762,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
 
     state.diagnostics = createDiagnosticPlaceholders({ manifest });
+    renderCorePackExplorer();
     renderDiagnostics();
   }
 
@@ -577,6 +817,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (result.kind === "core-pack") {
       if (result.errors.length) {
         dom.feedStatus.textContent = `Core Pack rejected ${result.errors.length} intake check(s): ${result.errors[0].message}`;
+        renderCorePackExplorer({ errors: result.errors.map((error) => error.message) });
         return result;
       }
 
@@ -1249,6 +1490,16 @@ function bindDom(documentRef) {
     expertPane: get("expertPane"),
     diagnosticSummary: get("diagnosticSummary"),
     diagnosticList: get("diagnosticList"),
+    tilePassportStatus: get("tilePassportStatus"),
+    tilePassportDetails: get("tilePassportDetails"),
+    tilePassportProvenance: get("tilePassportProvenance"),
+    tilePassportSidecars: get("tilePassportSidecars"),
+    corePackExplorerStatus: get("corePackExplorerStatus"),
+    corePackManifestSummary: get("corePackManifestSummary"),
+    corePackTileList: get("corePackTileList"),
+    corePackEvidenceRefs: get("corePackEvidenceRefs"),
+    corePackSbomRefs: get("corePackSbomRefs"),
+    corePackDiagnosticRefs: get("corePackDiagnosticRefs"),
   };
 }
 

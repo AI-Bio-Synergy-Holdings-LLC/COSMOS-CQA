@@ -162,14 +162,11 @@
       <section class="card inspector-panel" aria-labelledby="tile-passport-title">
         <div class="panel-header compact">
           <h2 id="tile-passport-title">Tile Passport</h2>
-          <span class="panel-status">Current tile</span>
+          <span id="tilePassportStatus" class="panel-status">Current tile</span>
         </div>
-        <dl class="metadata-grid">
-          <div><dt>Dataset</dt><dd>Demo CMB / weak-lensing</dd></div>
-          <div><dt>Review mode</dt><dd>Public truth labels hidden</dd></div>
-          <div><dt>Bookmark state</dt><dd>Tile, overlay, palette, rate, captions</dd></div>
-          <div><dt>Stewardship</dt><dd>AI-Bio Synergy Holdings LLC</dd></div>
-        </dl>
+        <div id="tilePassportDetails" class="metadata-panel"></div>
+        <div id="tilePassportProvenance" class="metadata-panel divided"></div>
+        <div id="tilePassportSidecars" class="metadata-panel divided"></div>
       </section>
 
       <section id="workspace-core-pack" class="card inspector-panel" aria-labelledby="core-pack-title">
@@ -196,6 +193,26 @@
           </div>
         </div>
         <div id="feedStatus" class="small inspector-status"></div>
+        <div class="explorer-panel" aria-label="Core Pack explorer">
+          <div id="corePackExplorerStatus" class="small empty-state">No Core Pack manifest loaded. Load the public sample or upload a validated Core Pack manifest to inspect evidence.</div>
+          <div id="corePackManifestSummary" class="metadata-panel"></div>
+          <div>
+            <div class="group-title explorer-title">Tile Passports</div>
+            <div id="corePackTileList" class="tile-passport-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Evidence References</div>
+            <div id="corePackEvidenceRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="corePackSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostic References</div>
+            <div id="corePackDiagnosticRefs" class="reference-list"></div>
+          </div>
+        </div>
       </section>
 
       <section id="workspace-diagnostics" class="card inspector-panel" aria-labelledby="diagnostics-title">
