@@ -6,6 +6,8 @@ import { annotateTargets, openWorkbench, readStreamText } from "./fixtures/workb
 test("migrates SBOM download targets into browser automation", async ({ page }) => {
   annotateTargets(SBOM_TARGETS);
   await openWorkbench(page);
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
 
   const downloadPromise = page.waitForEvent("download");
   await page.locator("#exportSBOM").click();
@@ -45,6 +47,31 @@ test("migrates SBOM download targets into browser automation", async ({ page }) 
       expect.objectContaining({
         subject: "download:sbom.json",
         value: expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
+      }),
+    ]),
+  );
+  expect(report.diagnostics).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        diagnostic_id: "diag_kappa_y_crosscheck",
+        status: "placeholder",
+        caveat: expect.stringContaining("not a validated cosmology diagnostic"),
+        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack manifest")]),
+      }),
+      expect.objectContaining({
+        diagnostic_id: "diag_eb_residual_placeholder",
+        status: "placeholder",
+        caveat: expect.stringContaining("not a validated weak-lensing diagnostic"),
+        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack manifest")]),
+      }),
+    ]),
+  );
+  expect(report.checks).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: "diagnostic placeholders",
+        status: "pass",
+        detail: expect.stringContaining("not scientific results"),
       }),
     ]),
   );

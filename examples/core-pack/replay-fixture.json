@@ -135,6 +135,64 @@
     "csv": "tile_id,dataset,volunteer_id,clazz,severity,note,weight,ts,expert_class,expert_confidence,expert_latency\n\"tile_001\",\"DEMO_SIM_T\",\"vol_replay\",\"stripe\",\"medium\",\"golden replay label\",\"0.85\",\"2026-06-28T00:00:00.000Z\",\"residual\",\"0.9\",\"1.25\"\n",
     "csv_sha256": "057dfd231febd5dcac0fab8c90289786931e23edec98a0fbbedfd18c1228a3ef"
   },
+  "core_pack": {
+    "manifest_id": "corepack_demo-v0.1.0-intake",
+    "validation_summary": {
+      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "tile_count": 2,
+      "sbom_ref_count": 1,
+      "evidence_ref_count": 5,
+      "diagnostic_ref_count": 2
+    }
+  },
+  "diagnostics": {
+    "generated_at": "2026-06-28T00:00:00.000Z",
+    "output_values": [
+      {
+        "diagnostic_id": "diag_kappa_y_crosscheck",
+        "outputs": [
+          [
+            "placeholder_score",
+            0.31061
+          ],
+          [
+            "coordinate_component",
+            0.021638
+          ],
+          [
+            "latitude_component",
+            0.15405
+          ],
+          [
+            "checksum_component",
+            0.134922
+          ]
+        ]
+      },
+      {
+        "diagnostic_id": "diag_eb_residual_placeholder",
+        "outputs": [
+          [
+            "placeholder_score",
+            0.627477
+          ],
+          [
+            "residual_tile_fraction",
+            0.5
+          ],
+          [
+            "parity_component",
+            0.285674
+          ],
+          [
+            "checksum_component",
+            0.341803
+          ]
+        ]
+      }
+    ],
+    "sha256": "eca8ac51194382aa87135da0fb7daade5cafe24ac657aa40da292ed5f75c1e7a"
+  },
   "report": {
     "validation_report": {
       "schema_version": "cosmos-cqa.contracts.v0.1.0",

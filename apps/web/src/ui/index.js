@@ -1,5 +1,6 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
 import { tileMetasFromCorePack } from "../core-pack/index.js";
+import { createDiagnosticPlaceholders } from "../diagnostics/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
 import {
   calculateAccessibilityCoverage,
@@ -520,6 +521,47 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     for (const sbomRef of manifest.sbom_refs || []) {
       upsertByKey(state.sbomRefs, "sbom_id", sbomRef);
     }
+
+    state.diagnostics = createDiagnosticPlaceholders({ manifest });
+    renderDiagnostics();
+  }
+
+  function renderDiagnostics() {
+    if (!dom.diagnosticSummary || !dom.diagnosticList) {
+      return;
+    }
+
+    dom.diagnosticList.replaceChildren();
+
+    if (!state.diagnostics.length) {
+      dom.diagnosticSummary.textContent = "No diagnostic placeholders loaded.";
+      return;
+    }
+
+    dom.diagnosticSummary.textContent = `${state.diagnostics.length} caveated diagnostic placeholder(s). Not validated scientific results.`;
+    for (const diagnostic of state.diagnostics) {
+      const card = documentRef.createElement("div");
+      card.className = "diagnostic-card";
+      const score = diagnostic.outputs.find((output) => output.key === "placeholder_score");
+      const limitation = diagnostic.limitations[0] || "Placeholder limitations are documented in claim boundaries.";
+      const title = documentRef.createElement("strong");
+      const status = documentRef.createElement("div");
+      const caveat = documentRef.createElement("div");
+      const limitationLine = documentRef.createElement("div");
+
+      title.textContent = diagnostic.name;
+      status.className = "small";
+      status.textContent = `Status: ${diagnostic.status}; implementation: ${diagnostic.implementation_state}; score: ${score?.value ?? "n/a"} ${score?.unit || ""}`;
+      caveat.className = "small warn-text";
+      caveat.textContent = diagnostic.caveat;
+      limitationLine.className = "small";
+      limitationLine.textContent = `Limitation: ${limitation}`;
+
+      card.append(title, status, caveat, limitationLine);
+      dom.diagnosticList.appendChild(card);
+    }
+
+    notifyTestBridge("diagnostics.rendered", { diagnostics: state.diagnostics });
   }
 
   function recordArtifactImport(result) {
@@ -734,6 +776,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       artifacts: state.researchArtifacts,
       sbomRefs: state.sbomRefs,
       provenanceHashes: state.provenanceHashes,
+      diagnostics: state.diagnostics,
       generatedAt,
     });
     downloadJson(report, "validation-report.json");
@@ -746,6 +789,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     const hasCorePack = state.corePacks.length > 0;
     const hasSbomRefs = state.sbomRefs.length > 0;
     const hasHashes = state.provenanceHashes.length > 0;
+    const hasDiagnostics = state.diagnostics.length > 0;
 
     return [
       {
@@ -772,6 +816,13 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         name: "provenance hashes",
         status: hasHashes ? "pass" : "warn",
         detail: `${state.provenanceHashes.length} SHA-256 provenance hash(es) attached.`,
+      },
+      {
+        name: "diagnostic placeholders",
+        status: hasDiagnostics ? "pass" : "warn",
+        detail: hasDiagnostics
+          ? `${state.diagnostics.length} caveated placeholder diagnostic(s) attached; not scientific results.`
+          : "No diagnostic placeholders attached.",
       },
       {
         name: "report JSON",
@@ -1196,6 +1247,8 @@ function bindDom(documentRef) {
     exportCSV: get("exportCSV"),
     expertDetails: get("expertDetails"),
     expertPane: get("expertPane"),
+    diagnosticSummary: get("diagnosticSummary"),
+    diagnosticList: get("diagnosticList"),
   };
 }
 

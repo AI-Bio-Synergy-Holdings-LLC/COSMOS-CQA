@@ -20,6 +20,7 @@ export function createAppState() {
     feedErrors: [],
     researchArtifacts: [],
     corePacks: [],
+    diagnostics: [],
     sbomRefs: [],
     provenanceHashes: [],
     simDisabled: false,

@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
+import { validateCorePackManifest } from "../../../packages/core/src/core-pack/index.js";
+import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
 import { buildCSV, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   createBookmarkPayload,
@@ -17,6 +19,8 @@ import { formatTileOptionLabel, truthTagDisplay } from "../src/ui/index.js";
 
 const fixtureUrl = new URL("../../../examples/core-pack/replay-fixture.json", import.meta.url);
 const fixture = JSON.parse(await readFile(fixtureUrl, "utf8"));
+const manifestUrl = new URL("../../../examples/core-pack/core-pack.manifest.json", import.meta.url);
+const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
 
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const canonical = (value) => JSON.stringify(value);
@@ -98,6 +102,25 @@ test("label export CSV matches golden replay fixture", () => {
   assert.deepEqual(rows, fixture.labels.rows);
   assert.equal(csv, fixture.labels.csv);
   assert.equal(sha256(csv), fixture.labels.csv_sha256);
+});
+
+test("Core Pack validation and diagnostic placeholders match golden replay fixture", () => {
+  const validation = validateCorePackManifest(manifest);
+  const diagnostics = createDiagnosticPlaceholders({
+    manifest,
+    generatedAt: fixture.diagnostics.generated_at,
+  });
+
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.summary, fixture.core_pack.validation_summary);
+  assert.deepEqual(
+    diagnostics.map((diagnostic) => ({
+      diagnostic_id: diagnostic.diagnostic_id,
+      outputs: diagnostic.outputs.map((output) => [output.key, output.value]),
+    })),
+    fixture.diagnostics.output_values,
+  );
+  assert.equal(sha256(canonical(diagnostics)), fixture.diagnostics.sha256);
 });
 
 test("validation report and SBOM exports match golden replay fixture", () => {

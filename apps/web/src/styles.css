@@ -345,6 +345,23 @@ details[open] summary {
   padding: 10px;
 }
 
+.diagnostic-list {
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.diagnostic-card {
+  background: #0a1020;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.warn-text {
+  color: #ffd166;
+}
+
 .hotkey-toggle {
   bottom: 14px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
