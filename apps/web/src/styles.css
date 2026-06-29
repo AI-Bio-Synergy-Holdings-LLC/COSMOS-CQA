@@ -656,11 +656,16 @@ code {
   padding: 10px 12px;
 }
 
-.report-viewer {
+.report-viewer,
+.evidence-workspace {
   border-top: 1px solid var(--border-soft);
   display: grid;
   gap: 10px;
   padding: 10px 12px 12px;
+}
+
+.evidence-workspace {
+  grid-template-columns: 1fr;
 }
 
 .feed-url {
