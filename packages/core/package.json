@@ -9,6 +9,7 @@
     ".": "./src/index.js",
     "./core-pack": "./src/core-pack/index.js",
     "./diagnostics": "./src/diagnostics/index.js",
+    "./evidence": "./src/evidence/index.js",
     "./feeds": "./src/feeds/index.js",
     "./labels": "./src/labels/index.js",
     "./metrics": "./src/metrics/index.js",

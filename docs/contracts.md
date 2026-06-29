@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist target evidence.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -13,7 +13,7 @@ Current version:
 cosmos-cqa.contracts.v0.1.0
 ```
 
-Bookmark payloads, tile passports, core pack manifests, SBOM references, validation reports, and checklist target manifests include this version as `schema_version`.
+Bookmark payloads, tile passports, core pack manifests, SBOM references, validation reports, checklist target manifests, research sessions, and evidence bundles include this version as `schema_version`.
 
 ## Covered Shapes
 
@@ -32,8 +32,12 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
 - `validationReport`: structured report JSON with checks, optional research artifacts, SBOM references, provenance hashes, and caveated diagnostic placeholder results. This is the report artifact lane before any PDF generation.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
+- `researchSession`: replayable working-state contract that ties loaded artifacts, selected tiles, labels, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata together.
+- `evidenceBundle`: export-ready wrapper around a research session with steward, research-only license notice, limitations, generated metadata, claim-boundary references, and evidence counts.
 
 Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.
+
+Research sessions are intended to capture what was loaded, selected, generated, and reviewed during a reproducible COSMOS-CQA workflow. Evidence bundles are the portable citation/review layer for those sessions. They do not certify scientific validity or production readiness on their own; claim boundaries remain governed by `docs/claim-boundaries.md` and `docs/scientific-scope.md`.
 
 ## Verification
 

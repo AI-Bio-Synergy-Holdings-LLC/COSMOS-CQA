@@ -5,6 +5,7 @@ import { test } from "node:test";
 
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
 import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
+import { createEvidenceBundle, createResearchSession, summarizeResearchSession } from "../../../packages/core/src/evidence/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
@@ -20,6 +21,12 @@ import { TARGET_COVERAGE, expectedBrowserTargetIds } from "./browser/fixtures/le
 
 const legacyChecklistTargets = JSON.parse(
   await readFile(new URL("../../../tests/evidence/legacy-v3-checklist-targets.json", import.meta.url), "utf8"),
+);
+const researchSessionFixture = JSON.parse(
+  await readFile(new URL("../../../examples/evidence-bundle/research-session.json", import.meta.url), "utf8"),
+);
+const evidenceBundleFixture = JSON.parse(
+  await readFile(new URL("../../../examples/evidence-bundle/evidence-bundle.json", import.meta.url), "utf8"),
 );
 const legacyChecklistSource = await readFile(
   new URL("../../../archive/original-materials/legacy-v3/COSMOS_TEST_CHECKLIST_v3.html", import.meta.url),
@@ -84,6 +91,8 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");
   assert.equal(typeof createBookmarkPayload, "function");
+  assert.equal(typeof createResearchSession, "function");
+  assert.equal(typeof createEvidenceBundle, "function");
   assert.equal(typeof createSbomReference, "function");
   assert.equal(typeof createValidationReport, "function");
 });
@@ -282,6 +291,92 @@ test("legacy checklist targets are tracked as evidence contract data", () => {
   }
   assert.ok(legacyChecklistTargets.targets.every((target) => isAscii(target.label)));
   assert.ok(legacyChecklistTargets.targets.some((target) => target.data_testid === "sbom-exported"));
+});
+
+test("research session and evidence bundle fixtures satisfy evidence workspace contracts", () => {
+  assertContract("researchSession", researchSessionFixture);
+  assertContract("evidenceBundle", evidenceBundleFixture);
+  assert.deepEqual(evidenceBundleFixture.session, researchSessionFixture);
+  assert.deepEqual(evidenceBundleFixture.summary, summarizeResearchSession(researchSessionFixture));
+  assert.equal(evidenceBundleFixture.steward, "AI-Bio Synergy Holdings LLC");
+  assert.match(evidenceBundleFixture.license, /Research-only public use/);
+  assert.ok(evidenceBundleFixture.limitations.some((limitation) => limitation.includes("not production")));
+});
+
+test("research session and evidence bundle helpers preserve report evidence counts", () => {
+  const generatedAt = "2026-06-29T00:00:00.000Z";
+  const diagnostics = createDiagnosticPlaceholders({
+    manifest: {
+      manifest_id: "corepack_contract_session",
+      tiles: [tile.meta],
+    },
+    generatedAt,
+  });
+  const report = createValidationReport({
+    build: createBuildInfo({ dev: false }),
+    checks: [{ name: "diagnostic placeholders", status: "pass", detail: "caveated placeholders attached" }],
+    diagnostics,
+    generatedAt,
+    reportId: "rpt_contract_session",
+  });
+  const session = createResearchSession({
+    sessionId: "session_contract_session",
+    createdAt: generatedAt,
+    updatedAt: generatedAt,
+    build: createBuildInfo({ dev: false }),
+    selectedTiles: [
+      {
+        tile_id: tile.meta.tile_id,
+        dataset: tile.meta.dataset,
+        checksum: tile.meta.checksum,
+        selected_at: generatedAt,
+        overlay: "gradient",
+        palette: "cividis",
+        review_state: "contract-test",
+      },
+    ],
+    diagnostics,
+    reports: [report],
+  });
+  const bundle = createEvidenceBundle({
+    bundleId: "bundle_contract_session",
+    generatedAt,
+    session,
+  });
+
+  assertContract("researchSession", session);
+  assertContract("evidenceBundle", bundle);
+  assert.equal(session.reports[0].diagnostics.length, 2);
+  assert.deepEqual(bundle.summary, {
+    artifact_count: 0,
+    selected_tile_count: 1,
+    label_count: 0,
+    diagnostic_count: 2,
+    report_count: 1,
+    provenance_hash_count: 0,
+    sbom_ref_count: 0,
+  });
+  assert.ok(bundle.limitations.some((limitation) => limitation.includes("not production")));
+});
+
+test("research session and evidence bundle reject malformed required fields", () => {
+  const missingBuild = structuredClone(researchSessionFixture);
+  delete missingBuild.build;
+  const sessionResult = validateContract("researchSession", missingBuild);
+  assert.equal(sessionResult.valid, false);
+  assert.ok(sessionResult.errors.some((error) => error.path === "researchSession.build"));
+
+  const badTile = structuredClone(researchSessionFixture);
+  delete badTile.selected_tiles[0].checksum;
+  const tileResult = validateContract("researchSession", badTile);
+  assert.equal(tileResult.valid, false);
+  assert.ok(tileResult.errors.some((error) => error.path === "researchSession.selected_tiles[0].checksum"));
+
+  const missingLimitations = structuredClone(evidenceBundleFixture);
+  delete missingLimitations.limitations;
+  const bundleResult = validateContract("evidenceBundle", missingLimitations);
+  assert.equal(bundleResult.valid, false);
+  assert.ok(bundleResult.errors.some((error) => error.path === "evidenceBundle.limitations"));
 });
 
 test("validation report rejects unsupported check statuses", () => {

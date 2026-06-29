@@ -28,5 +28,7 @@ The current entrypoint is `src/index.js`.
 - core pack manifests
 - validation reports
 - legacy checklist target manifests
+- research sessions
+- evidence bundles
 
 The browser app re-exports this package through `apps/web/src/contracts/` for compatibility, but new reusable infrastructure should import from this package surface.
