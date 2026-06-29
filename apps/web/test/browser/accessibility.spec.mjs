@@ -3,6 +3,59 @@ import { expect, test } from "@playwright/test";
 import { ACCESSIBILITY_TARGETS, UI_POLISH_TARGETS } from "./fixtures/legacy-targets.mjs";
 import { annotateTargets, blurActiveElement, cssValue, openWorkbench } from "./fixtures/workbench.mjs";
 
+test("exposes the redesigned research workbench shell and default public workspace", async ({ page }) => {
+  await openWorkbench(page);
+
+  const workflow = page.getByRole("navigation", { name: "Workbench workflow" });
+  await expect(workflow).toBeVisible();
+  for (const label of ["Tiles", "Labels", "Core Pack", "Diagnostics", "Reports", "Provenance"]) {
+    await expect(workflow.getByRole("link", { name: new RegExp(label) })).toBeVisible();
+  }
+
+  await expect(page.locator("#workspace-tiles")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Tile Viewer/ })).toBeVisible();
+  await expect(page.getByRole("complementary", { name: "Research inspector" })).toBeVisible();
+  await expect(page.locator("#workspace-core-pack")).toBeVisible();
+  await expect(page.locator("#workspace-diagnostics")).toBeVisible();
+  await expect(page.locator("#workspace-reports")).toBeVisible();
+  await expect(page.locator("#workspace-provenance")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Evidence drawer" })).toBeVisible();
+
+  await expect(page.locator("#truthTag")).toBeHidden();
+  await expect(page.getByText("Research only - not for production use")).toBeVisible();
+});
+
+test("keeps the research console hierarchy and responsive visual system coherent", async ({ page }) => {
+  await openWorkbench(page);
+
+  await expect.poll(() => cssValue(page.locator(".research-shell"), "gridTemplateAreas")).toContain("rail main inspector");
+  await expect.poll(() => cssValue(page.locator(".viewer"), "flexDirection")).toBe("row");
+
+  const shellBackground = await cssValue(page.locator("body"), "backgroundImage");
+  const railBackground = await cssValue(page.locator(".workflow-rail"), "backgroundColor");
+  const inspectorBackground = await cssValue(page.locator(".research-inspector .card").first(), "backgroundColor");
+  expect(shellBackground).not.toBe("none");
+  expect(railBackground).not.toBe(inspectorBackground);
+
+  const tileBox = await page.locator("#tileCanvas").boundingBox();
+  const controlsBox = await page.locator(".controls").boundingBox();
+  const inspectorBox = await page.locator(".research-inspector").boundingBox();
+  expect(tileBox.width).toBeGreaterThan(360);
+  expect(Math.abs(tileBox.width - tileBox.height)).toBeLessThan(2);
+  expect(controlsBox.width).toBeGreaterThan(280);
+  expect(inspectorBox.width).toBeGreaterThan(300);
+
+  await page.setViewportSize({ width: 390, height: 800 });
+  await openWorkbench(page);
+  await expect.poll(() => cssValue(page.locator(".workflow-rail"), "flexDirection")).toBe("row");
+  await expect.poll(() => cssValue(page.locator(".viewer"), "flexDirection")).toBe("column");
+  await expect.poll(() => cssValue(page.locator(".hotkey-toggle"), "position")).toBe("static");
+
+  const mobileCanvasBox = await page.locator("#tileCanvas").boundingBox();
+  expect(mobileCanvasBox.width).toBeLessThanOrEqual(358);
+  expect(Math.abs(mobileCanvasBox.width - mobileCanvasBox.height)).toBeLessThan(2);
+});
+
 test("migrates accessibility focus, captions, and audit targets into browser automation", async ({ page }) => {
   annotateTargets(ACCESSIBILITY_TARGETS);
   await openWorkbench(page);
