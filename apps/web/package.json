@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Browser workbench for COSMOS-CQA research workflows.",
+  "description": "Public portal and browser workbench for COSMOS-CQA research workflows.",
   "engines": {
     "node": ">=24",
     "npm": ">=10"

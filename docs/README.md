@@ -16,6 +16,7 @@ Core documents:
 - `data-governance.md` describes data and provenance handling.
 - `domain-identity.md` records the canonical public URL and redirect-domain policy.
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.
+- `public-portal.md` defines the canonical website scaffold and public copy boundaries.
 - `reproducibility.md` defines deterministic replay expectations.
 - `roadmap.md` outlines the rework path.
 - `release-checklist.md` defines what must ship with public releases.

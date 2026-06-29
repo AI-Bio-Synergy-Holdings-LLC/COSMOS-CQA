@@ -29,7 +29,7 @@ COSMOS-CQA is intended for non-commercial research, education, evaluation, repro
 ## Repository Layout
 
 ```text
-apps/web/                  Browser workbench source
+apps/web/                  Public portal and browser workbench source
 packages/core/             Core artifact QA and provenance logic
 packages/schemas/          JSON schemas for labels, manifests, reports, and tile passports
 examples/core-pack/        Small sample manifests and demo data references
@@ -64,7 +64,9 @@ Then open:
 http://localhost:4173/
 ```
 
-Use `http://localhost:4173/?dev=1` only for dev-mode truth-label review.
+The public portal is served at `http://localhost:4173/`; the research workbench demo is served at `http://localhost:4173/workbench.html`.
+
+Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
 ## Naming
 
