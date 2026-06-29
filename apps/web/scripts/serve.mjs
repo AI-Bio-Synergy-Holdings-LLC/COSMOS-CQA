@@ -4,6 +4,7 @@ import { extname, normalize, resolve, sep } from "node:path";
 
 const appRoot = resolve(import.meta.dirname, "..");
 const repoRoot = resolve(appRoot, "..", "..");
+const configuredStaticRoot = process.env.COSMOS_CQA_STATIC_ROOT ? resolve(process.cwd(), process.env.COSMOS_CQA_STATIC_ROOT) : "";
 const port = Number(process.env.PORT || 4173);
 
 const mime = {
@@ -21,8 +22,8 @@ const server = createServer(async (request, response) => {
     const requested = url.pathname === "/" ? "/index.html" : url.pathname;
     const servesPackages = requested.startsWith("/packages/");
     const servesExamples = requested.startsWith("/examples/");
-    const root = servesPackages || servesExamples ? repoRoot : appRoot;
-    const allowedRoot = servesPackages ? resolve(repoRoot, "packages") : servesExamples ? resolve(repoRoot, "examples") : appRoot;
+    const root = configuredStaticRoot || (servesPackages || servesExamples ? repoRoot : appRoot);
+    const allowedRoot = configuredStaticRoot || (servesPackages ? resolve(repoRoot, "packages") : servesExamples ? resolve(repoRoot, "examples") : appRoot);
     const filePath = normalize(resolve(root, `.${requested}`));
 
     if (!filePath.startsWith(allowedRoot + sep) && filePath !== allowedRoot) {
@@ -41,5 +42,6 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, () => {
-  console.log(`COSMOS-CQA web app serving at http://localhost:${port}/`);
+  const rootLabel = configuredStaticRoot ? ` from ${configuredStaticRoot}` : "";
+  console.log(`COSMOS-CQA web app serving at http://localhost:${port}/${rootLabel}`);
 });

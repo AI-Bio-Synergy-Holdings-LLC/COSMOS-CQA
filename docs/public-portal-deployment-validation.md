@@ -36,9 +36,38 @@ The HTTP mode checks:
 - sample Core Pack manifest is reachable;
 - shared `packages/schemas` and `packages/core` browser entrypoints are reachable.
 
+## GitHub Pages Deployment
+
+The GitHub Pages workflow lives at `.github/workflows/pages.yml`. It deploys from `main` and may also be started manually with `workflow_dispatch`.
+
+The workflow builds a lean Pages artifact with:
+
+```bash
+npm --prefix apps/web run pages:prepare
+```
+
+That command writes `apps/web/dist-pages` with:
+
+- `apps/web/index.html`, `apps/web/workbench.html`, `apps/web/CNAME`, and `apps/web/src/` as the public site root;
+- `packages/` so browser ES module imports resolve on GitHub Pages;
+- `examples/` so the hosted sample Core Pack workflow can load public sample manifests;
+- `.nojekyll` so GitHub Pages serves static module paths without Jekyll processing.
+
+The Pages workflow uses official GitHub Pages Actions: `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`. It uploads `apps/web/dist-pages`, deploys to the `github-pages` environment, and runs post-deploy validation with `COSMOS_CQA_PORTAL_BASE_URL` set to the deployed Pages URL.
+
+After the first custom-domain deployment, confirm that GitHub Pages has provisioned the `cosmos-cqa.org` certificate and that HTTPS enforcement is enabled. GitHub may report the certificate as unavailable until DNS and Pages deployment propagation complete.
+
+Check whether Squarespace DNS has been handed off to GitHub Pages with:
+
+```bash
+npm --prefix apps/web run pages:check-dns
+```
+
 ## CI Responsibility
 
 Pull requests and pushes to `main` run the portal deployment validation in CI. The CI workflow starts the static server, sets `COSMOS_CQA_PORTAL_BASE_URL=http://127.0.0.1:4173`, and validates the served portal surface after the full repository check.
+
+Pushes to `main` also run the GitHub Pages deployment workflow. The deployment workflow serves the prepared artifact locally with `COSMOS_CQA_STATIC_ROOT=apps/web/dist-pages` before upload, then checks DNS readiness and validates the deployed public URL after `actions/deploy-pages` completes. If DNS still points to Squarespace, the workflow emits a warning and live custom-domain validation waits for DNS propagation instead of treating an external DNS handoff as a code failure.
 
 This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, or OSI open-source status.
 
@@ -48,5 +77,9 @@ Before a public release or portal deployment, confirm:
 
 - `npm --prefix apps/web run check` passes;
 - `npm --prefix apps/web run check:portal-deploy` passes locally;
+- `npm --prefix apps/web run pages:prepare` produces a deploy artifact with `CNAME`, `packages/`, and `examples/`;
+- `npm --prefix apps/web run pages:check-dns` passes after the Squarespace DNS handoff is complete;
 - CI public portal deployment validation passes on the release PR or merge commit;
+- GitHub Pages post-deploy validation passes on the `main` deployment run;
+- GitHub Pages custom-domain HTTPS enforcement is enabled after certificate provisioning;
 - release notes, validation report JSON, SBOM JSON, known limitations, archive/provenance notes, and research-only license notice are linked from `docs/releases/README.md`.

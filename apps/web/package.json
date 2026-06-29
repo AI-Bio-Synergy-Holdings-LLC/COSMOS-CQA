@@ -13,6 +13,8 @@
     "check:portal-deploy": "node ./scripts/check-public-portal-deployment.mjs",
     "check:repo-health": "node ./scripts/check-repo-health.mjs",
     "check:source": "node ./scripts/check-source-syntax.mjs",
+    "pages:check-dns": "node ./scripts/check-pages-dns.mjs",
+    "pages:prepare": "node ./scripts/prepare-pages-artifact.mjs",
     "test:contracts": "node --test ./test/contracts.test.mjs",
     "test:unit": "node --test ./test/unit/*.test.mjs",
     "test:core-pack": "node --test ./test/core-pack-intake.test.mjs",
