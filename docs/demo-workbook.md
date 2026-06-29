@@ -14,6 +14,12 @@ https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
 
 The hosted demo loads the public sample Core Pack, keeps public truth labels hidden by default, prepares the validation report preview, and exposes Core Pack, report, evidence, and provenance inspection panels.
 
+Use the public research experiment page for the scientific framing and sonic loop boundaries:
+
+```text
+https://cosmos-cqa.org/research-experiment.html
+```
+
 ## Walkthrough
 
 1. Open the hosted demo and confirm the banner reports that the sample Core Pack is ready.
@@ -24,6 +30,7 @@ The hosted demo loads the public sample Core Pack, keeps public truth labels hid
 6. Read diagnostic caveats before treating any diagnostic surface as evidence.
 7. Refresh the validation report preview.
 8. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.
+9. Read the research experiment page and confirm the sonic loop is treated as a sonification sidecar, not a detector or validated diagnostic.
 
 ## Review Notes To Capture
 

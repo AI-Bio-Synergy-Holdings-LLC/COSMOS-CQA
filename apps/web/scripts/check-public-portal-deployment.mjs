@@ -12,6 +12,7 @@ const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.0-research-alpha";
 const publicPagePaths = [
   "demo-workbook.html",
+  "research-experiment.html",
   "docs.html",
   "releases.html",
   "citation.html",
@@ -87,6 +88,7 @@ async function validateStaticContract() {
     owner,
     "./docs.html",
     "./demo-workbook.html",
+    "./research-experiment.html",
     "./releases.html",
     "./story.html",
     "./contact.html",
@@ -119,6 +121,7 @@ async function validateStaticContract() {
     `<loc>${canonicalUrl}</loc>`,
     `<loc>${canonicalUrl}workbench.html</loc>`,
     `<loc>${canonicalUrl}demo-workbook.html</loc>`,
+    `<loc>${canonicalUrl}research-experiment.html</loc>`,
     `<loc>${canonicalUrl}docs.html</loc>`,
     `<loc>${canonicalUrl}releases.html</loc>`,
     `<loc>${canonicalUrl}story.html</loc>`,
@@ -155,6 +158,7 @@ async function validateStaticContract() {
     "copyright",
     "user data",
     "demo-workbook.html",
+    "research-experiment.html",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -286,6 +290,7 @@ async function validateHttpSurface() {
         canonicalUrl,
         `${canonicalUrl}workbench.html`,
         `${canonicalUrl}demo-workbook.html`,
+        `${canonicalUrl}research-experiment.html`,
         `${canonicalUrl}story.html`,
         `${canonicalUrl}contact.html`,
       ],

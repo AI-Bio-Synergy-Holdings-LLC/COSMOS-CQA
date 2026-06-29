@@ -4,6 +4,7 @@ import { openWorkbench } from "./fixtures/workbench.mjs";
 
 const publicPages = [
   { path: "/demo-workbook.html", title: /Demo Workbook \| COSMOS-CQA/, text: "Demo workbook for the public Core Pack workflow." },
+  { path: "/research-experiment.html", title: /Research Experiment \| COSMOS-CQA/, text: "What the COSMOS-CQA workbench is testing." },
   { path: "/docs.html", title: /Docs \| COSMOS-CQA/, text: "Research infrastructure docs." },
   { path: "/releases.html", title: /Releases \| COSMOS-CQA/, text: "Research alpha release evidence." },
   { path: "/citation.html", title: /Citation \| COSMOS-CQA/, text: "Cite the repository and release evidence." },
@@ -28,17 +29,22 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const label of ["Demo", "Workbook", "Docs", "Releases", "Story", "Contact"]) {
+  for (const label of ["Demo", "Workbook", "Experiment", "Docs", "Releases", "Story", "Contact"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
   await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(nav.getByRole("link", { name: /^Workbook$/ })).toHaveAttribute("href", "./demo-workbook.html");
+  await expect(nav.getByRole("link", { name: /^Experiment$/ })).toHaveAttribute("href", "./research-experiment.html");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
   await expect(page.getByRole("link", { name: "Docs Quickstart, contracts, evidence bundles, deployment validation, and scope references." })).toHaveAttribute("href", "./docs.html");
   await expect(page.getByRole("link", { name: "Demo Workbook Step-by-step public walkthrough for the sample Core Pack workflow and evidence exports." })).toHaveAttribute(
     "href",
     "./demo-workbook.html",
+  );
+  await expect(page.getByRole("link", { name: "Research Experiment Scientific framing, engine fundamentals, sonic loop boundaries, and citizen participation benefits." })).toHaveAttribute(
+    "href",
+    "./research-experiment.html",
   );
   await expect(page.getByRole("link", { name: "Citation CITATION.cff fields, canonical URL, release tag guidance, and citation boundaries." })).toHaveAttribute(
     "href",
@@ -95,6 +101,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   const sitemapText = await sitemap.text();
   expect(sitemapText).toContain("https://cosmos-cqa.org/workbench.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/demo-workbook.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/research-experiment.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
 
@@ -135,12 +142,23 @@ test("serves public resource pages with canonical metadata and notices", async (
   await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Research Experiment" })).toHaveAttribute("href", "./research-experiment.html");
+
+  await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("What experiment is this workbench modeling?")).toBeVisible();
+  await expect(page.getByText("What does the current prototype demonstrate?")).toBeVisible();
+  await expect(page.getByText("How researchers and citizens benefit")).toBeVisible();
+  await expect(page.getByText("What is explicitly not claimed yet?")).toBeVisible();
+  await expect(page.getByText("It does not decide the label.")).toBeVisible();
+  for (const source of ["NASA Chandra Data Sonification", "The Sonification Handbook"]) {
+    await expect(page.getByRole("link", { name: source })).toBeVisible();
+  }
 });
 
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
 
-  for (const path of ["/releases.html", "/story.html"]) {
+  for (const path of ["/releases.html", "/story.html", "/research-experiment.html"]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     const inlineListRows = await page.locator(".portal-inline-list").evaluateAll((lists) =>
       lists.map((list) =>

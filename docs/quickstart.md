@@ -42,6 +42,12 @@ The public workbook for the hosted sample workflow is served at:
 https://cosmos-cqa.org/demo-workbook.html
 ```
 
+The bounded research experiment framing is served at:
+
+```text
+https://cosmos-cqa.org/research-experiment.html
+```
+
 ## Sample Core Pack Workflow
 
 1. Open the hosted sample Core Pack workflow.
@@ -49,6 +55,7 @@ https://cosmos-cqa.org/demo-workbook.html
 3. Inspect the Core Pack Intake panel, tile passports, diagnostic caveats, evidence workspace, and report preview.
 4. Keep public mode active for public review. Use `?dev=1` only for explicit local dev review.
 5. Use the demo workbook to record manifest ids, tile passport ids, evidence exports, known limitations, and any visual/accessibility issues found during review.
+6. Use the research experiment page to distinguish modeled infrastructure, exposed engine fundamentals, sonic loop sidecars, public benefits, and non-claims.
 
 ## Report Export
 
