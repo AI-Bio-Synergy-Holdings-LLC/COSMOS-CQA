@@ -5,7 +5,14 @@ import { test } from "node:test";
 
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
 import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
-import { createEvidenceBundle, createResearchSession, summarizeResearchSession } from "../../../packages/core/src/evidence/index.js";
+import {
+  createEvidenceBundle,
+  createResearchSession,
+  parseEvidenceBundleJson,
+  serializeEvidenceBundle,
+  summarizeResearchSession,
+  validateEvidenceBundleJson,
+} from "../../../packages/core/src/evidence/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
@@ -296,8 +303,13 @@ test("legacy checklist targets are tracked as evidence contract data", () => {
 test("research session and evidence bundle fixtures satisfy evidence workspace contracts", () => {
   assertContract("researchSession", researchSessionFixture);
   assertContract("evidenceBundle", evidenceBundleFixture);
+  const serializedBundle = serializeEvidenceBundle(evidenceBundleFixture);
+  const bundleValidation = validateEvidenceBundleJson(serializedBundle);
   assert.deepEqual(evidenceBundleFixture.session, researchSessionFixture);
   assert.deepEqual(evidenceBundleFixture.summary, summarizeResearchSession(researchSessionFixture));
+  assert.equal(bundleValidation.valid, true);
+  assert.deepEqual(bundleValidation.bundle, evidenceBundleFixture);
+  assert.deepEqual(parseEvidenceBundleJson(serializedBundle), evidenceBundleFixture);
   assert.equal(evidenceBundleFixture.steward, "AI-Bio Synergy Holdings LLC");
   assert.match(evidenceBundleFixture.license, /Research-only public use/);
   assert.ok(evidenceBundleFixture.limitations.some((limitation) => limitation.includes("not production")));
@@ -377,6 +389,10 @@ test("research session and evidence bundle reject malformed required fields", ()
   const bundleResult = validateContract("evidenceBundle", missingLimitations);
   assert.equal(bundleResult.valid, false);
   assert.ok(bundleResult.errors.some((error) => error.path === "evidenceBundle.limitations"));
+
+  const malformedJson = validateEvidenceBundleJson('{"schema_version":"cosmos-cqa.contracts.v0.1.0"}');
+  assert.equal(malformedJson.valid, false);
+  assert.ok(malformedJson.errors.some((error) => error.includes("evidenceBundle.bundle_id")));
 });
 
 test("validation report rejects unsupported check statuses", () => {

@@ -64,6 +64,64 @@ export function createEvidenceBundle({
   });
 }
 
+export function normalizeEvidenceBundle(bundle) {
+  const validBundle = assertContract("evidenceBundle", bundle);
+  const normalized = {
+    schema_version: validBundle.schema_version,
+    bundle_id: validBundle.bundle_id,
+    generated_at: validBundle.generated_at,
+    steward: validBundle.steward,
+    license: validBundle.license,
+    limitations: cloneJson(validBundle.limitations),
+  };
+
+  if (validBundle.intended_use !== undefined) {
+    normalized.intended_use = validBundle.intended_use;
+  }
+  if (validBundle.claim_boundary_refs !== undefined) {
+    normalized.claim_boundary_refs = cloneJson(validBundle.claim_boundary_refs);
+  }
+
+  normalized.session = normalizeResearchSession(validBundle.session);
+  normalized.summary = summarizeResearchSession(normalized.session);
+  return assertContract("evidenceBundle", normalized);
+}
+
+export function serializeEvidenceBundle(bundle) {
+  return `${JSON.stringify(normalizeEvidenceBundle(bundle), null, 2)}\n`;
+}
+
+export function parseEvidenceBundleJson(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(String(text || ""));
+  } catch (error) {
+    throw new TypeError(`Invalid COSMOS-CQA evidence bundle: malformed JSON (${error.message})`);
+  }
+
+  try {
+    return normalizeEvidenceBundle(parsed);
+  } catch (error) {
+    throw new TypeError(`Invalid COSMOS-CQA evidence bundle: ${error.message}`);
+  }
+}
+
+export function validateEvidenceBundleJson(text) {
+  try {
+    return {
+      valid: true,
+      bundle: parseEvidenceBundleJson(text),
+      errors: [],
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      bundle: null,
+      errors: [error.message],
+    };
+  }
+}
+
 export function summarizeResearchSession(session) {
   return {
     artifact_count: session.artifacts.length,

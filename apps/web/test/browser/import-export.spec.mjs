@@ -32,6 +32,64 @@ test("migrates CSV export download targets into browser automation", async ({ pa
   await expect(page.locator("#caption")).toContainText("CSV exported.");
 });
 
+test("exports schema-ready evidence bundle JSON with archive metadata", async ({ page }) => {
+  await openWorkbench(page);
+  await disableSimulation(page);
+
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
+
+  const sbomDownloadPromise = page.waitForEvent("download");
+  await page.locator("#exportSBOM").click();
+  await sbomDownloadPromise;
+
+  const bundleDownloadPromise = page.waitForEvent("download");
+  await page.locator("#exportBundle").click();
+  const bundleDownload = await bundleDownloadPromise;
+  expect(bundleDownload.suggestedFilename()).toBe("cosmos-cqa-evidence-bundle.json");
+  const bundle = JSON.parse(await bundleDownload.createReadStream().then(readStreamText));
+
+  expect(bundle.schema_version).toBe("cosmos-cqa.contracts.v0.1.0");
+  expect(bundle.bundle_id).toMatch(/^bundle_/);
+  expect(bundle.steward).toBe("AI-Bio Synergy Holdings LLC");
+  expect(bundle.license).toContain("Research-only public use");
+  expect(bundle.limitations).toEqual(expect.arrayContaining([expect.stringContaining("not production")]));
+  expect(bundle.summary).toMatchObject({
+    artifact_count: 1,
+    selected_tile_count: 1,
+    diagnostic_count: 2,
+    report_count: 1,
+    provenance_hash_count: 2,
+    sbom_ref_count: 2,
+  });
+  expect(bundle.session.artifacts[0]).toMatchObject({
+    kind: "core-pack",
+    source: "examples/core-pack/core-pack.manifest.json",
+    record_count: 2,
+    error_count: 0,
+  });
+  expect(bundle.session.provenance_hashes).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ subject: "examples/core-pack/core-pack.manifest.json" }),
+      expect.objectContaining({ subject: "download:sbom.json" }),
+    ]),
+  );
+  expect(bundle.session.reports[0].summary).toMatchObject({
+    label_count: 0,
+    feed_error_count: 0,
+  });
+  expect(bundle.session.diagnostics.map((diagnostic) => diagnostic.diagnostic_id)).toEqual([
+    "diag_kappa_y_crosscheck",
+    "diag_eb_residual_placeholder",
+  ]);
+  expect(bundle.session.sbom_refs[0]).toMatchObject({
+    format: "CycloneDX",
+    spec_version: "1.4",
+  });
+  await expect(page.locator("#sessionStatus")).toContainText("Exported");
+  await expect(page.locator("#caption")).toContainText("Evidence bundle JSON exported.");
+});
+
 test("migrates data import and public sample targets into browser automation", async ({ page }) => {
   annotateTargets(DATA_IMPORT_TARGETS);
   await openWorkbench(page);
