@@ -23,8 +23,10 @@ import {
   writeClipboard,
 } from "../provenance/index.js";
 import {
+  createEvidenceBundle,
   createResearchSession,
   createResearchSessionReloadPlan,
+  serializeEvidenceBundle,
   serializeResearchSession,
   validateResearchSessionJson,
 } from "../evidence/index.js";
@@ -1285,6 +1287,30 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     notifyTestBridge("researchSession.exported", { session, contents });
   }
 
+  function buildEvidenceBundle({ generatedAt = new Date().toISOString() } = {}) {
+    const session = buildResearchSession({ generatedAt });
+    return createEvidenceBundle({
+      bundleId: `bundle_${safeId(session.session_id.replace(/^session_/, ""))}`,
+      generatedAt,
+      session,
+    });
+  }
+
+  function exportEvidenceBundle() {
+    const bundle = buildEvidenceBundle();
+    const contents = serializeEvidenceBundle(bundle);
+    downloadBlob({
+      contents,
+      type: "application/json",
+      filename: "cosmos-cqa-evidence-bundle.json",
+    });
+    renderSessionStatus(
+      `Exported ${bundle.bundle_id}: ${bundle.summary.artifact_count} artifact(s), ${bundle.summary.report_count} report(s), ${bundle.summary.sbom_ref_count} SBOM ref(s).`,
+    );
+    setCaption("Evidence bundle JSON exported.");
+    notifyTestBridge("evidenceBundle.exported", { bundle, contents });
+  }
+
   function handleSessionImport(event) {
     const file = event.target.files[0];
     if (!file) {
@@ -1714,6 +1740,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.bookmarkBtn.addEventListener("click", createBookmark);
     dom.exportCSV.addEventListener("click", exportLabelsCsv);
     dom.exportSession.addEventListener("click", exportResearchSession);
+    dom.exportBundle.addEventListener("click", exportEvidenceBundle);
     dom.sessionInput.addEventListener("change", handleSessionImport);
     dom.exportSBOM.addEventListener("click", exportSbom);
     dom.exportReport.addEventListener("click", exportValidationReport);
@@ -1766,8 +1793,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     tiles,
     charts,
     exportResearchSession,
+    exportEvidenceBundle,
     importResearchSessionText,
     buildResearchSession,
+    buildEvidenceBundle,
   };
 }
 
@@ -1898,6 +1927,7 @@ function bindDom(documentRef) {
     testLog: get("testLog"),
     exportCSV: get("exportCSV"),
     exportSession: get("exportSession"),
+    exportBundle: get("exportBundle"),
     sessionInput: get("sessionInput"),
     sessionStatus: get("sessionStatus"),
     expertDetails: get("expertDetails"),

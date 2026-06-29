@@ -22,12 +22,15 @@ Fixture examples live in:
 - `examples/evidence-bundle/research-session.json`
 - `examples/evidence-bundle/evidence-bundle.json`
 - `examples/evidence-bundle/session-roundtrip.json`
+- `examples/evidence-bundle/core-pack-evidence-bundle-golden.json`
 
 Reusable helpers live in `packages/core/src/evidence/`, and canonical schemas live in `packages/schemas/src/`.
 
 The browser workbench can export a `researchSession` JSON file and import a valid session file. Invalid session imports are rejected before state mutation so the current review state remains intact. Session JSON restores contracted evidence metadata; external source artifacts may still need to be available or reloaded when a selected tile image is not already present in the workbench.
 
 The Evidence Workspace in the browser UI makes this model inspectable during review. It lists imported/exported research artifacts, provenance hashes, SBOM references, loaded Core Packs, diagnostic placeholder records, and validation checks, with validation report IDs shown alongside related artifacts and references.
+
+Evidence bundle exports are schema-validated JSON artifacts suitable for research archive comparison. The golden Core Pack fixture records the serialized bundle hash, steward, research-only license notice, limitations, report summary counts, diagnostics, provenance subjects, and SBOM references so future refactors can prove the archive shape stayed stable.
 
 ## Claim Boundaries
 

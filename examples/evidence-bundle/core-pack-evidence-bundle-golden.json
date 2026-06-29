@@ -1,0 +1,33 @@
+{
+  "schema_version": "cosmos-cqa.evidence-bundle-golden.v0.1.0",
+  "source": "examples/core-pack/core-pack.manifest.json",
+  "generated_at": "2026-06-29T00:00:00.000Z",
+  "serialized_sha256": "be9e40f33abd683774cdc12d540c75bfdcb34d96366032d26e9878696702fc9a",
+  "serialized_bytes": 16702,
+  "bundle_id": "bundle_core_pack_evidence_bundle",
+  "session_id": "session_core_pack_evidence_bundle",
+  "steward": "AI-Bio Synergy Holdings LLC",
+  "license": "Research-only public use; all other rights reserved.",
+  "summary": {
+    "artifact_count": 1,
+    "selected_tile_count": 1,
+    "label_count": 0,
+    "diagnostic_count": 2,
+    "report_count": 1,
+    "provenance_hash_count": 2,
+    "sbom_ref_count": 1
+  },
+  "artifact_id": "artifact_core-pack_e6c04cdf34a231b1",
+  "report_id": "rpt_core_pack_evidence_bundle",
+  "diagnostic_ids": [
+    "diag_kappa_y_crosscheck",
+    "diag_eb_residual_placeholder"
+  ],
+  "provenance_subjects": [
+    "examples/core-pack/core-pack.manifest.json",
+    "download:sbom.json"
+  ],
+  "sbom_ids": [
+    "sbom_0.0.0-source-split"
+  ]
+}
