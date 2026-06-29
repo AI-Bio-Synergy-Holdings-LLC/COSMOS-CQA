@@ -9,6 +9,7 @@ import {
 } from "../../../../packages/core/src/metrics/index.js";
 import { makeAudioMapForTile } from "../../../../packages/core/src/sidecars/index.js";
 import { createDemoTileRecords } from "../../../../packages/core/src/tile-synthesis/index.js";
+import { getTestBridgeTargetOrigin, notifyTestBridge } from "../../src/provenance/index.js";
 import { formatTileOptionLabel, truthTagDisplay } from "../../src/ui/index.js";
 
 test("promotes metric and accessibility assertions into unit coverage", () => {
@@ -56,3 +57,91 @@ test("promotes public truth-label display policy into unit coverage", () => {
   assert.equal(truthTagDisplay({ dev: false }), "none");
   assert.equal(truthTagDisplay({ dev: true }), "");
 });
+
+test("restricts test bridge messages to same-origin openers", () => {
+  const messages = [];
+  const windowRef = fakeWindow({
+    origin: "http://127.0.0.1:4173",
+    opener: {
+      location: { origin: "http://127.0.0.1:4173" },
+      postMessage(message, targetOrigin) {
+        messages.push({ message, targetOrigin });
+      },
+    },
+  });
+
+  assert.equal(getTestBridgeTargetOrigin(windowRef), "http://127.0.0.1:4173");
+  notifyTestBridge("validationReport.exported", { report_id: "rpt_test" }, windowRef);
+
+  assert.deepEqual(messages, [
+    {
+      message: {
+        channel: "cosmos-test-bridge",
+        type: "validationReport.exported",
+        detail: { report_id: "rpt_test" },
+      },
+      targetOrigin: "http://127.0.0.1:4173",
+    },
+  ]);
+});
+
+test("does not send test bridge messages to cross-origin or opaque openers", () => {
+  const crossOriginMessages = [];
+  const crossOriginWindow = fakeWindow({
+    origin: "http://127.0.0.1:4173",
+    opener: {
+      location: { origin: "https://example.invalid" },
+      postMessage(message, targetOrigin) {
+        crossOriginMessages.push({ message, targetOrigin });
+      },
+    },
+  });
+
+  assert.equal(getTestBridgeTargetOrigin(crossOriginWindow), "");
+  notifyTestBridge("validationReport.exported", { report_id: "rpt_test" }, crossOriginWindow);
+  assert.deepEqual(crossOriginMessages, []);
+
+  const opaqueOriginMessages = [];
+  const opaqueWindow = fakeWindow({
+    origin: "null",
+    href: "about:blank",
+    opener: {
+      location: { origin: "null", href: "about:blank" },
+      postMessage(message, targetOrigin) {
+        opaqueOriginMessages.push({ message, targetOrigin });
+      },
+    },
+  });
+
+  assert.equal(getTestBridgeTargetOrigin(opaqueWindow), "");
+  notifyTestBridge("validationReport.exported", { report_id: "rpt_test" }, opaqueWindow);
+  assert.deepEqual(opaqueOriginMessages, []);
+});
+
+test("fails closed when opener origin cannot be verified", () => {
+  const messages = [];
+  const windowRef = fakeWindow({
+    origin: "http://127.0.0.1:4173",
+    opener: {
+      location: {
+        get origin() {
+          throw new Error("cross-origin access denied");
+        },
+      },
+      postMessage(message, targetOrigin) {
+        messages.push({ message, targetOrigin });
+      },
+    },
+  });
+
+  assert.equal(getTestBridgeTargetOrigin(windowRef), "");
+  notifyTestBridge("validationReport.exported", { report_id: "rpt_test" }, windowRef);
+  assert.deepEqual(messages, []);
+});
+
+function fakeWindow({ origin, href = `${origin}/workbench.html`, opener }) {
+  return {
+    location: { origin, href },
+    opener,
+  };
+}
