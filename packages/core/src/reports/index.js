@@ -54,6 +54,7 @@ export function createValidationReport({
   artifacts = [],
   sbomRefs = [],
   provenanceHashes = [],
+  diagnostics = [],
   generatedAt = new Date().toISOString(),
   reportId = `rpt_${Date.now().toString(36)}`,
 } = {}) {
@@ -87,6 +88,9 @@ export function createValidationReport({
   }
   if (provenanceHashes.length) {
     report.provenance_hashes = provenanceHashes;
+  }
+  if (diagnostics.length) {
+    report.diagnostics = diagnostics;
   }
 
   return assertContract("validationReport", report);

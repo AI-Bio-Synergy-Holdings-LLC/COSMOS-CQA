@@ -7,4 +7,5 @@ Initial extraction targets from legacy v3:
 - SBOM export hooks;
 - test report references;
 - label export packaging;
-- validation report JSON generation before any PDF generation.
+- validation report JSON generation before any PDF generation;
+- caveated diagnostic placeholder entries for research workflow review, not scientific claims.
