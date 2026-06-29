@@ -18,6 +18,7 @@ Core documents:
 - `domain-identity.md` records the canonical public URL and redirect-domain policy.
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.
 - `public-portal.md` defines the canonical website scaffold and public copy boundaries.
+- `public-portal-deployment-validation.md` defines the portal release/deployment validation workflow.
 - `quickstart.md` defines the public local run, hosted demo, report export, and verification path.
 - `reproducibility.md` defines deterministic replay expectations.
 - `roadmap.md` outlines the rework path.

@@ -53,3 +53,17 @@ http://localhost:4173/
 ```
 
 The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo sample loading, and validation report JSON export.
+
+Run the public portal release/deployment validation with:
+
+```bash
+npm --prefix apps/web run check:portal-deploy
+```
+
+For served-route validation, start the local static server and run:
+
+```powershell
+$env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web run check:portal-deploy
+```
+
+This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
