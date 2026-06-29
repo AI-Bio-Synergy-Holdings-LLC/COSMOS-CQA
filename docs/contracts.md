@@ -26,10 +26,11 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `researchArtifact`: imported feed, Core Pack, SBOM, or validation-report artifact metadata with source hash and counts.
 - `tilePassport`: tile-level provenance, checksum, truth, coordinate, and sidecar metadata.
 - `diagnosticConcept`: review-gated diagnostic concept metadata with required scientific caveats.
+- `diagnosticResult`: deterministic placeholder diagnostic output for report plumbing, with required caveats, limitations, and claim-boundary references.
 - `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
 - `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, evidence references, and optional diagnostic concept references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
-- `validationReport`: structured report JSON with checks, optional research artifacts, SBOM references, and provenance hashes. This is the report artifact lane before any PDF generation.
+- `validationReport`: structured report JSON with checks, optional research artifacts, SBOM references, provenance hashes, and caveated diagnostic placeholder results. This is the report artifact lane before any PDF generation.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 
 Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.

@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
+import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
@@ -288,6 +289,24 @@ test("validation report rejects unsupported check statuses", () => {
     () =>
       createValidationReport({
         checks: [{ name: "unknown status", status: "skip" }],
+      }),
+    /Invalid validationReport contract/,
+  );
+});
+
+test("validation report rejects malformed diagnostic placeholder entries", () => {
+  const diagnostics = createDiagnosticPlaceholders({
+    manifest: {
+      manifest_id: "corepack_contract_diag",
+      tiles: [tile.meta],
+    },
+    generatedAt: "2026-06-28T00:00:00.000Z",
+  });
+
+  assert.throws(
+    () =>
+      createValidationReport({
+        diagnostics: [{ ...diagnostics[0], caveat: "Too short." }],
       }),
     /Invalid validationReport contract/,
   );

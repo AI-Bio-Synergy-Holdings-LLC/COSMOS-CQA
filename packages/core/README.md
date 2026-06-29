@@ -5,7 +5,7 @@
 The current entrypoint is `src/index.js`, with submodule entrypoints for:
 
 - `core-pack`: Core Pack intake manifest validation helpers
-- `diagnostics`: review-gated diagnostic concept references and caveat helpers
+- `diagnostics`: review-gated diagnostic concept references and caveated placeholder output helpers
 - `feeds`: feed parsing, normalization, and validation helpers
 - `labels`: label export and CSV helpers
 - `metrics`: PR-AUC, reliability, latency, and accessibility helpers

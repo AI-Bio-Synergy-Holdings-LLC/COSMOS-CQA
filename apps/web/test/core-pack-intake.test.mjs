@@ -11,6 +11,7 @@ import {
 } from "../../../packages/core/src/core-pack/index.js";
 import {
   DIAGNOSTIC_CONCEPTS,
+  createDiagnosticPlaceholders,
   diagnosticRefsForCorePack,
 } from "../../../packages/core/src/diagnostics/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
@@ -121,6 +122,46 @@ test("research artifact loader classifies feed payloads with contract errors", a
   assert.match(result.artifact.source_sha256, /^sha256:[a-f0-9]{64}$/);
 });
 
+test("diagnostic placeholders are deterministic, caveated, and schema-valid", () => {
+  const generatedAt = "2026-06-28T00:00:00.000Z";
+  const diagnostics = createDiagnosticPlaceholders({ manifest, generatedAt });
+
+  assert.equal(diagnostics.length, 2);
+  assert.deepEqual(
+    diagnostics.map((diagnostic) => diagnostic.diagnostic_id),
+    ["diag_kappa_y_crosscheck", "diag_eb_residual_placeholder"],
+  );
+  assert.deepEqual(createDiagnosticPlaceholders({ manifest, generatedAt }), diagnostics);
+
+  for (const diagnostic of diagnostics) {
+    assertContract("diagnosticResult", diagnostic);
+    assert.equal(diagnostic.status, "placeholder");
+    assert.equal(diagnostic.implementation_state, "placeholder");
+    assert.match(diagnostic.caveat, /not a validated/i);
+    assert.match(diagnostic.caveat, /must not be used/i);
+    assert.ok(diagnostic.limitations.length >= 3);
+    assert.ok(diagnostic.claim_boundary_refs.includes("docs/claim-boundaries.md"));
+  }
+
+  assert.deepEqual(
+    diagnostics.map((diagnostic) => diagnostic.outputs.map((output) => [output.key, output.value])),
+    [
+      [
+        ["placeholder_score", 0.31061],
+        ["coordinate_component", 0.021638],
+        ["latitude_component", 0.15405],
+        ["checksum_component", 0.134922],
+      ],
+      [
+        ["placeholder_score", 0.627477],
+        ["residual_tile_fraction", 0.5],
+        ["parity_component", 0.285674],
+        ["checksum_component", 0.341803],
+      ],
+    ],
+  );
+});
+
 test("validation reports carry artifacts, SBOM references, and provenance hashes", async () => {
   const generatedAt = "2026-06-28T00:00:00.000Z";
   const corePack = await parseResearchArtifactPayload(JSON.stringify(manifest), {
@@ -146,6 +187,7 @@ test("validation reports carry artifacts, SBOM references, and provenance hashes
     artifacts: [corePack.artifact],
     sbomRefs: [sbomRef],
     provenanceHashes: [corePack.provenanceHash, sbomHash],
+    diagnostics: createDiagnosticPlaceholders({ manifest, generatedAt }),
     checks: [
       { name: "Core Pack manifest", status: "pass", detail: "sample manifest loaded" },
       { name: "report JSON", status: "pass", detail: "generated before PDF" },
@@ -156,4 +198,6 @@ test("validation reports carry artifacts, SBOM references, and provenance hashes
   assert.equal(report.artifacts[0].manifest_id, manifest.manifest_id);
   assert.equal(report.sbom_refs[0].checksum, sbomHash.value);
   assert.equal(report.provenance_hashes.length, 2);
+  assert.equal(report.diagnostics.length, 2);
+  assert.equal(report.diagnostics[0].diagnostic_id, "diag_kappa_y_crosscheck");
 });

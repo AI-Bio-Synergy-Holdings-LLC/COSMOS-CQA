@@ -10,6 +10,8 @@ export const CHECKLIST_AUTOMATION_STATES = ["manual", "planned", "automated"];
 export const CHECKLIST_MIGRATION_STATES = ["tracked", "planned", "migrated"];
 export const DIAGNOSTIC_STATUSES = ["concept-only", "prototype-note", "review-required"];
 export const DIAGNOSTIC_IMPLEMENTATION_STATES = ["not-implemented", "documentation-only", "planned"];
+export const DIAGNOSTIC_RESULT_STATUSES = ["placeholder", "review-required"];
+export const DIAGNOSTIC_RESULT_IMPLEMENTATION_STATES = ["placeholder"];
 export const RESEARCH_ARTIFACT_KINDS = ["feed", "core-pack", "sbom", "validation-report"];
 
 const idPattern = "^[A-Za-z0-9._:-]+$";
@@ -298,6 +300,73 @@ export const schemas = {
     },
   },
 
+  diagnosticResult: {
+    $id: "cosmos-cqa/diagnostic-result.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "diagnostic_id",
+      "name",
+      "status",
+      "implementation_state",
+      "generated_at",
+      "input_summary",
+      "outputs",
+      "caveat",
+      "limitations",
+      "claim_boundary_refs",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      diagnostic_id: { type: "string", pattern: "^diag_[A-Za-z0-9._:-]+$" },
+      name: { type: "string", minLength: 1, maxLength: 256 },
+      status: { type: "string", enum: DIAGNOSTIC_RESULT_STATUSES },
+      implementation_state: { type: "string", enum: DIAGNOSTIC_RESULT_IMPLEMENTATION_STATES },
+      generated_at: { type: "string", format: "date-time" },
+      input_summary: {
+        type: "object",
+        required: ["source", "tile_count", "dataset_ids"],
+        additionalProperties: false,
+        properties: {
+          source: { type: "string", minLength: 1, maxLength: 512 },
+          tile_count: { type: "integer", minimum: 0 },
+          dataset_ids: {
+            type: "array",
+            items: { type: "string", minLength: 1, maxLength: 128 },
+          },
+        },
+      },
+      outputs: {
+        type: "array",
+        minItems: 1,
+        items: {
+          type: "object",
+          required: ["key", "label", "value", "unit", "meaning"],
+          additionalProperties: false,
+          properties: {
+            key: { type: "string", minLength: 1, maxLength: 128, pattern: idPattern },
+            label: { type: "string", minLength: 1, maxLength: 128 },
+            value: { type: "number" },
+            unit: { type: "string", minLength: 1, maxLength: 64 },
+            meaning: { type: "string", minLength: 1, maxLength: 512 },
+          },
+        },
+      },
+      caveat: { type: "string", minLength: 100, maxLength: 1600 },
+      limitations: {
+        type: "array",
+        minItems: 2,
+        items: { type: "string", minLength: 1, maxLength: 512 },
+      },
+      claim_boundary_refs: {
+        type: "array",
+        minItems: 1,
+        items: { type: "string", minLength: 1, maxLength: 2048 },
+      },
+    },
+  },
+
   corePackManifest: {
     $id: "cosmos-cqa/core-pack-manifest.schema.json",
     type: "object",
@@ -516,6 +585,10 @@ export const schemas = {
       provenance_hashes: {
         type: "array",
         items: { $ref: "provenanceHash" },
+      },
+      diagnostics: {
+        type: "array",
+        items: { $ref: "diagnosticResult" },
       },
     },
   },
