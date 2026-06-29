@@ -12,6 +12,7 @@ These contracts make Phase 3 evidence work durable without turning prototype dia
 Use research sessions and evidence bundles to:
 
 - replay a COSMOS-CQA research workflow from known artifacts;
+- save and import browser workbench state without depending on local storage;
 - cite the exact labels, diagnostics, validation reports, hashes, and SBOM references reviewed together;
 - move evidence between browser UI, package consumers, release validation, and expert review;
 - preserve build metadata and generated-at timestamps alongside research-only license and steward notices.
@@ -20,8 +21,11 @@ Fixture examples live in:
 
 - `examples/evidence-bundle/research-session.json`
 - `examples/evidence-bundle/evidence-bundle.json`
+- `examples/evidence-bundle/session-roundtrip.json`
 
 Reusable helpers live in `packages/core/src/evidence/`, and canonical schemas live in `packages/schemas/src/`.
+
+The browser workbench can export a `researchSession` JSON file and import a valid session file. Invalid session imports are rejected before state mutation so the current review state remains intact. Session JSON restores contracted evidence metadata; external source artifacts may still need to be available or reloaded when a selected tile image is not already present in the workbench.
 
 ## Claim Boundaries
 

@@ -26,6 +26,8 @@ export function createAppState() {
     sbomRefs: [],
     provenanceHashes: [],
     validationReportPreview: null,
+    researchSessionId: "",
+    researchSessionCreatedAt: "",
     simDisabled: false,
     usedKeyboard: false,
     seed: 12648430,

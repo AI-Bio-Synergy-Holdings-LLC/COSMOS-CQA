@@ -5,6 +5,12 @@ import { test } from "node:test";
 
 import { validateCorePackManifest } from "../../../packages/core/src/core-pack/index.js";
 import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
+import {
+  createResearchSessionReloadPlan,
+  parseResearchSessionJson,
+  serializeResearchSession,
+  validateResearchSessionJson,
+} from "../../../packages/core/src/evidence/index.js";
 import { buildCSV, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   createBookmarkPayload,
@@ -21,6 +27,10 @@ const fixtureUrl = new URL("../../../examples/core-pack/replay-fixture.json", im
 const fixture = JSON.parse(await readFile(fixtureUrl, "utf8"));
 const manifestUrl = new URL("../../../examples/core-pack/core-pack.manifest.json", import.meta.url);
 const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
+const researchSessionUrl = new URL("../../../examples/evidence-bundle/research-session.json", import.meta.url);
+const researchSessionFixture = JSON.parse(await readFile(researchSessionUrl, "utf8"));
+const sessionRoundtripUrl = new URL("../../../examples/evidence-bundle/session-roundtrip.json", import.meta.url);
+const sessionRoundtripFixture = JSON.parse(await readFile(sessionRoundtripUrl, "utf8"));
 
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const canonical = (value) => JSON.stringify(value);
@@ -153,6 +163,23 @@ test("validation report and SBOM exports match golden replay fixture", () => {
   assert.equal(sha256(canonical(report)), fixture.report.validation_report_sha256);
   assert.deepEqual(sbom, fixture.report.sbom);
   assert.equal(sha256(canonical(sbom)), fixture.report.sbom_sha256);
+});
+
+test("research session save/import reload plan matches golden replay fixture", () => {
+  const serialized = serializeResearchSession(researchSessionFixture);
+  const imported = parseResearchSessionJson(serialized);
+  const validation = validateResearchSessionJson(serialized);
+  const reloadPlan = createResearchSessionReloadPlan(imported);
+
+  assert.equal(sha256(serialized), sessionRoundtripFixture.serialized_sha256);
+  assert.deepEqual(imported, researchSessionFixture);
+  assert.equal(validation.valid, true);
+  assert.deepEqual(validation.session, researchSessionFixture);
+  assert.deepEqual(reloadPlan, sessionRoundtripFixture.reload_plan);
+
+  const malformed = validateResearchSessionJson('{"schema_version":"cosmos-cqa.contracts.v0.1.0"}');
+  assert.equal(malformed.valid, false);
+  assert.match(malformed.errors[0], /researchSession\.session_id/);
 });
 
 test("public and dev UI truth-label policies match replay fixture", () => {

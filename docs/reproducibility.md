@@ -19,6 +19,7 @@ It records:
 - Core Pack manifest validation summary;
 - caveated diagnostic placeholder outputs and digest;
 - validation report and SBOM digests;
+- research session serialized digest and reload plan;
 - public/dev truth-label display policy.
 
 ## Replay Check
@@ -37,6 +38,6 @@ npm --prefix apps/web run check
 
 ## Guarantee
 
-For a given fixture seed, schema version, sample Core Pack manifest, and module version, the replay suite must produce the same tile digest, sidecar digest, bookmark state, CSV export, Core Pack validation summary, diagnostic placeholder outputs, report summary, and public/dev visibility policy.
+For a given fixture seed, schema version, sample Core Pack manifest, research session fixture, and module version, the replay suite must produce the same tile digest, sidecar digest, bookmark state, CSV export, Core Pack validation summary, diagnostic placeholder outputs, report summary, session reload plan, and public/dev visibility policy.
 
 Any intentional change to these outputs should update the fixture and explain the reason in the commit or release notes.

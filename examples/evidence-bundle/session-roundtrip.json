@@ -1,0 +1,25 @@
+{
+  "schema_version": "cosmos-cqa.session-roundtrip-fixture.v0.1.0",
+  "source": "examples/evidence-bundle/research-session.json",
+  "serialized_sha256": "b9a03efbb91319bd7dcb612cd11ee76cded7e3858e2573479edd1b83a945947c",
+  "reload_plan": {
+    "schema_version": "cosmos-cqa.contracts.v0.1.0",
+    "session_id": "session_demo-v0.3.0-evidence",
+    "selected_tile_id": "demo_corepack_tile_001",
+    "selected_tile_checksum": "sha256:demo-corepack-tile-001",
+    "selected_tile_manifest_id": "corepack_demo-v0.1.0-intake",
+    "overlay": "none",
+    "palette": "viridis",
+    "report_id": "rpt_demo-v0.3.0-evidence",
+    "report_generated_at": "2026-06-29T00:00:00.000Z",
+    "summary": {
+      "artifact_count": 1,
+      "selected_tile_count": 1,
+      "label_count": 0,
+      "diagnostic_count": 0,
+      "report_count": 1,
+      "provenance_hash_count": 1,
+      "sbom_ref_count": 1
+    }
+  }
+}
