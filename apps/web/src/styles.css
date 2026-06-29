@@ -656,6 +656,13 @@ code {
   padding: 10px 12px;
 }
 
+.report-viewer {
+  border-top: 1px solid var(--border-soft);
+  display: grid;
+  gap: 10px;
+  padding: 10px 12px 12px;
+}
+
 .feed-url {
   min-width: 0;
 }
