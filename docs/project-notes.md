@@ -26,8 +26,25 @@ The merged safety layer added:
 
 ## Current Public-Surface Hardening Trail
 
-Next hardening layer:
+Completed in PR #52:
 
 - privacy and user-data wording;
 - safety and accessibility issue-reporting templates;
 - validation that reporting lanes remain available and non-confidential.
+
+Post-merge evidence:
+
+- local verification passed with `npm --prefix apps/web run check`;
+- GitHub Web checks and CodeQL passed before merge;
+- `main` was fast-forwarded locally to `946bea7`;
+- main-branch CI, CodeQL, and GitHub Pages deployment passed after merge;
+- live smoke checks passed for `user-data.html`, `safety.html`, and `contact.html`.
+
+## Current Public Trust Operations Trail
+
+Next hardening layer:
+
+- `SECURITY.md` responsible disclosure routing;
+- a public security/disclosure page;
+- issue template chooser routing so private vulnerabilities and sensitive safety details are not filed as public issues;
+- validation that security, safety, privacy, accessibility, and contact routes remain connected.

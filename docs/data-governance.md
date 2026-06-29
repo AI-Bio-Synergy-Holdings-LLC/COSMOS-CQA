@@ -11,6 +11,7 @@ COSMOS-CQA should prefer manifests, checksums, derived synthetic examples, small
 - Avoid personally identifying information.
 - Store reproducibility parameters in machine-readable manifests.
 - Route public reports through non-confidential GitHub issue templates or contact email summaries.
+- Route vulnerability reports and sensitive safety details through the private disclosure path rather than public issues.
 - Prefer synthetic examples, public references, and redacted screenshots in public reports.
 
 ## Third-Party Data
@@ -20,6 +21,8 @@ NASA, ESA, DES, ACT, Planck, WMAP, and other external datasets remain subject to
 ## Public Reporting Data
 
 GitHub issues, pull requests, and public discussion surfaces are public by default. Reports about safety, accessibility, bugs, schemas, or data/provenance should not include restricted datasets, personal data, personal health information, regulated data, credentials, private keys, confidential screenshots, private source code, or third-party materials that cannot be shared.
+
+Vulnerability reports, reproducible exploit steps, deployment-secret exposure, and sensitive safety details should follow `SECURITY.md` and `docs/security-disclosure.md` instead of public issue templates.
 
 The hosted portal is static and local-first. Imported files, labels, bookmarks, exported reports, sessions, CSVs, SBOMs, and evidence bundles are handled in the user's browser environment unless the user shares them through GitHub, email, or another external service.
 

@@ -21,6 +21,7 @@ const publicPagePaths = [
   "ownership-and-use.html",
   "story.html",
   "safety.html",
+  "security.html",
   "copyright.html",
   "user-data.html",
   "contact.html",
@@ -53,6 +54,9 @@ async function validateStaticContract() {
   const publicPortalDoc = await readText("docs/public-portal.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
   const publicSafetyDoc = await readText("docs/public-safety.md");
+  const securityPolicy = await readText("SECURITY.md");
+  const securityDisclosureDoc = await readText("docs/security-disclosure.md");
+  const securityPage = await readText("apps/web/security.html");
   const dataGovernanceDoc = await readText("docs/data-governance.md");
   const userDataPage = await readText("apps/web/user-data.html");
   const issueTemplateConfig = await readText(".github/ISSUE_TEMPLATE/config.yml");
@@ -100,6 +104,7 @@ async function validateStaticContract() {
     "./releases.html",
     "./story.html",
     "./safety.html",
+    "./security.html",
     "./contact.html",
     "./copyright.html",
     "./user-data.html",
@@ -137,6 +142,7 @@ async function validateStaticContract() {
     `<loc>${canonicalUrl}releases.html</loc>`,
     `<loc>${canonicalUrl}story.html</loc>`,
     `<loc>${canonicalUrl}safety.html</loc>`,
+    `<loc>${canonicalUrl}security.html</loc>`,
     `<loc>${canonicalUrl}contact.html</loc>`,
   ]);
 
@@ -182,6 +188,8 @@ async function validateStaticContract() {
     "demo-workbook.html",
     "research-experiment.html",
     "safety.html",
+    "security.html",
+    "docs/security-disclosure.md",
     "docs/public-safety.md",
   ]);
 
@@ -206,6 +214,7 @@ async function validateStaticContract() {
     "post-deploy",
     "HTTPS enforcement",
     "AI-Bio Synergy Holdings LLC",
+    "security disclosure routing",
   ]);
 
   requirePhrases("docs/public-safety.md", publicSafetyDoc, [
@@ -221,12 +230,42 @@ async function validateStaticContract() {
     "diagnostic",
     "repository issue templates",
     "personal health information",
+    "private disclosure route",
+  ]);
+
+  requirePhrases("SECURITY.md", securityPolicy, [
+    "Security Policy",
+    "Private Vulnerability Reporting",
+    "COSMOS-CQA vulnerability report",
+    "Public Safety And Accessibility Reports",
+    "AI-Bio Synergy Holdings LLC",
+    "not approved for production deployment",
+  ]);
+
+  requirePhrases("docs/security-disclosure.md", securityDisclosureDoc, [
+    "Security And Safety Disclosure",
+    "Private vulnerability reports",
+    "Public safety reports",
+    "Public accessibility reports",
+    "What To Keep Out Of Public Reports",
+    "AI-Bio Synergy Holdings LLC",
+  ]);
+
+  requirePhrases("apps/web/security.html", securityPage, [
+    "Security and responsible disclosure",
+    "Private vulnerabilities",
+    "Public safety reports",
+    "Public accessibility reports",
+    "What not to share publicly",
+    "COSMOS-CQA vulnerability report",
+    "Repository Security Policy",
   ]);
 
   requirePhrases("docs/data-governance.md", dataGovernanceDoc, [
     "Public Reporting Data",
     "GitHub issues, pull requests, and public discussion surfaces are public by default",
     "restricted datasets",
+    "Vulnerability reports",
     "local-first",
     "Imported files, labels, bookmarks, exported reports",
   ]);
@@ -238,13 +277,16 @@ async function validateStaticContract() {
     "GitHub issues and public reports",
     "Operational logs and third-party routes",
     "Issue Templates",
+    "Security and Disclosure",
     "Do not submit restricted datasets",
   ]);
 
   requirePhrases(".github/ISSUE_TEMPLATE/config.yml", issueTemplateConfig, [
     "Public Safety And Use Boundaries",
     "User Data Notice",
+    "Private Vulnerability And Disclosure Policy",
     "cosmos-cqa.org/user-data.html",
+    "cosmos-cqa.org/security.html",
   ]);
 
   requirePhrases(".github/ISSUE_TEMPLATE/safety_report.md", safetyIssueTemplate, [
@@ -372,6 +414,7 @@ async function validateHttpSurface() {
         `${canonicalUrl}research-experiment.html`,
         `${canonicalUrl}story.html`,
         `${canonicalUrl}safety.html`,
+        `${canonicalUrl}security.html`,
         `${canonicalUrl}contact.html`,
       ],
     },

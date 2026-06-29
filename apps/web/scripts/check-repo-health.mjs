@@ -62,6 +62,20 @@ const guardrails = [
       "AI-Bio Synergy Holdings LLC",
       "research-only public license",
       "not approved for production deployment",
+      "Private Vulnerability Reporting",
+      "COSMOS-CQA vulnerability report",
+      "Public Safety And Accessibility Reports",
+    ],
+  },
+  {
+    path: "docs/security-disclosure.md",
+    label: "security disclosure",
+    phrases: [
+      "Security And Safety Disclosure",
+      "Private vulnerability reports",
+      "public safety reports",
+      "public accessibility reports",
+      "AI-Bio Synergy Holdings LLC",
     ],
   },
   {
@@ -133,6 +147,16 @@ const guardrails = [
     path: ".github/ISSUE_TEMPLATE/accessibility_report.md",
     label: "accessibility issue template",
     phrases: ["Accessibility report", "Assistive technology", "Screenshots Or Recordings"],
+  },
+  {
+    path: ".github/ISSUE_TEMPLATE/config.yml",
+    label: "issue template chooser",
+    phrases: [
+      "Public Safety And Use Boundaries",
+      "User Data Notice",
+      "Private Vulnerability And Disclosure Policy",
+      "cosmos-cqa.org/security.html",
+    ],
   },
 ];
 
