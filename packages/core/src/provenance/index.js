@@ -8,6 +8,24 @@ export function createBuildInfo({ dev = false } = {}) {
   });
 }
 
+export async function sha256Text(text, cryptoRef = globalThis.crypto) {
+  if (!cryptoRef?.subtle) {
+    throw new Error("SHA-256 hashing requires Web Crypto subtle.digest support");
+  }
+  const bytes = new TextEncoder().encode(String(text));
+  const digest = await cryptoRef.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export function createProvenanceHash({ subject, sha256, generatedAt = new Date().toISOString() }) {
+  return assertContract("provenanceHash", {
+    subject,
+    algorithm: "sha256",
+    value: sha256.startsWith("sha256:") ? sha256 : `sha256:${sha256}`,
+    generated_at: generatedAt,
+  });
+}
+
 export function createBookmarkPayload({ tile, overlay, palette, rate, loop, captions, seed }) {
   const meta = tile.meta;
   return assertContract("bookmarkPayload", {

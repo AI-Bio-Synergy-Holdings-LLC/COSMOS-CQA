@@ -22,6 +22,8 @@ Expected evidence artifacts include:
 - core pack manifest;
 - tile passport;
 - diagnostic concept caveats;
+- research artifact record;
+- provenance hash;
 - label export;
 - expert adjudication export;
 - SBOM;

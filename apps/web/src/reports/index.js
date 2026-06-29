@@ -1,4 +1,4 @@
-export { createSbom, createValidationReport } from "../../../../packages/core/src/reports/index.js";
+export { createSbom, createSbomReference, createValidationReport } from "../../../../packages/core/src/reports/index.js";
 
 export function downloadBlob({ contents, type, filename }) {
   const blob = new Blob([contents], { type });

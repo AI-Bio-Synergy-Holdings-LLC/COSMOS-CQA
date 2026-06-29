@@ -26,6 +26,28 @@ test("migrates SBOM download targets into browser automation", async ({ page }) 
     ]),
   );
   await expect(page.locator("#caption")).toContainText("SBOM exported.");
+
+  const reportDownloadPromise = page.waitForEvent("download");
+  await page.locator("#exportReport").click();
+  const reportDownload = await reportDownloadPromise;
+  expect(reportDownload.suggestedFilename()).toBe("validation-report.json");
+  const report = JSON.parse(await reportDownload.createReadStream().then(readStreamText));
+  expect(report.sbom_refs).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        format: "CycloneDX",
+        checksum: expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
+      }),
+    ]),
+  );
+  expect(report.provenance_hashes).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        subject: "download:sbom.json",
+        value: expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
+      }),
+    ]),
+  );
 });
 
 test("migrates built-in self-check targets into browser automation", async ({ page }) => {

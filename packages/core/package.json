@@ -13,6 +13,7 @@
     "./labels": "./src/labels/index.js",
     "./metrics": "./src/metrics/index.js",
     "./provenance": "./src/provenance/index.js",
+    "./research-artifacts": "./src/research-artifacts/index.js",
     "./reports": "./src/reports/index.js",
     "./sidecars": "./src/sidecars/index.js",
     "./tile-synthesis": "./src/tile-synthesis/index.js"

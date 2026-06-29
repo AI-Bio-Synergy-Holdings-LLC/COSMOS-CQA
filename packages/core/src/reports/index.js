@@ -27,11 +27,33 @@ export function createSbom({ generatedAt = new Date().toISOString(), extraCompon
   });
 }
 
+export function createSbomReference({
+  sbom,
+  path = "sbom.json",
+  checksum,
+  generatedAt = sbom?.metadata?.timestamp || new Date().toISOString(),
+  sbomId = `sbom_${safeId(sbom?.metadata?.component?.version || "source-split")}`,
+} = {}) {
+  return assertContract("sbomReference", {
+    schema_version: CONTRACT_SCHEMA_VERSION,
+    sbom_id: sbomId,
+    format: "CycloneDX",
+    spec_version: sbom?.specVersion || "1.4",
+    path,
+    checksum,
+    generated_at: generatedAt,
+    component_name: sbom?.metadata?.component?.name || "COSMOS-CQA Research Workbench",
+  });
+}
+
 export function createValidationReport({
   build = createBuildInfo(),
   labels = [],
   feedErrors = [],
   checks = [],
+  artifacts = [],
+  sbomRefs = [],
+  provenanceHashes = [],
   generatedAt = new Date().toISOString(),
   reportId = `rpt_${Date.now().toString(36)}`,
 } = {}) {
@@ -43,7 +65,7 @@ export function createValidationReport({
   const passCount = normalizedChecks.filter((check) => check.status === "pass").length;
   const failCount = normalizedChecks.filter((check) => check.status === "fail").length;
 
-  return assertContract("validationReport", {
+  const report = {
     schema_version: CONTRACT_SCHEMA_VERSION,
     report_id: reportId,
     generated_at: generatedAt,
@@ -55,5 +77,21 @@ export function createValidationReport({
       fail_count: failCount,
     },
     checks: normalizedChecks,
-  });
+  };
+
+  if (artifacts.length) {
+    report.artifacts = artifacts;
+  }
+  if (sbomRefs.length) {
+    report.sbom_refs = sbomRefs;
+  }
+  if (provenanceHashes.length) {
+    report.provenance_hashes = provenanceHashes;
+  }
+
+  return assertContract("validationReport", report);
+}
+
+function safeId(value) {
+  return String(value).replace(/[^A-Za-z0-9._:-]+/g, "_");
 }

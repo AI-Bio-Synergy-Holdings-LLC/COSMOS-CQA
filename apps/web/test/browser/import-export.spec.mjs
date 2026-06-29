@@ -66,13 +66,13 @@ test("migrates data import and public sample targets into browser automation", a
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(feedPayload)),
   });
-  await expect(page.locator("#feedStatus")).toContainText("Loaded 2 feed object(s) from JSON");
+  await expect(page.locator("#feedStatus")).toContainText("Loaded 2 feed object(s) from research artifact");
   await expect(page.locator("#tileId")).toHaveText("external_001");
   await expect(page.locator("#overlaySel")).toHaveValue("rings");
   await expect(page.locator("#tileSelect option")).toHaveCount(33);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#feedStatus")).toHaveText("Loaded public sample: 4 demo tiles.");
-  await expect(page.locator("#tileId")).toHaveText("sample_001");
-  await expect(page.locator("#tileSelect option")).toHaveCount(37);
+  await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_demo-v0.1.0-intake: 2 tile passport(s).");
+  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#tileSelect option")).toHaveCount(35);
 });

@@ -19,6 +19,7 @@ Current status:
 - Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
 - The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with all tracked legacy targets covered by Playwright browser automation.
 - A Core Pack intake lane now validates a sample manifest, evidence/SBOM references, and documentation-only diagnostic concepts before any CSSFP prototype repair or import.
+- Browser import/export paths now classify feed and Core Pack JSON as research artifacts, retain SHA-256 provenance hashes, and export validation report JSON before any PDF workflow.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use

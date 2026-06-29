@@ -2,8 +2,10 @@ export {
   createBookmarkPayload,
   createBookmarkUrl,
   createBuildInfo,
+  createProvenanceHash,
   decodeBookmarkPayload,
   encodeBookmarkPayload,
+  sha256Text,
 } from "../../../../packages/core/src/provenance/index.js";
 
 export function notifyTestBridge(type, detail) {

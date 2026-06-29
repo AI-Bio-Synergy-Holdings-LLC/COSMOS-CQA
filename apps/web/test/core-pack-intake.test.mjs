@@ -13,6 +13,9 @@ import {
   DIAGNOSTIC_CONCEPTS,
   diagnosticRefsForCorePack,
 } from "../../../packages/core/src/diagnostics/index.js";
+import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
+import { createProvenanceHash, sha256Text } from "../../../packages/core/src/provenance/index.js";
+import { createSbom, createSbomReference, createValidationReport } from "../../../packages/core/src/reports/index.js";
 
 const manifest = JSON.parse(
   await readFile(new URL("../../../examples/core-pack/core-pack.manifest.json", import.meta.url), "utf8"),
@@ -70,4 +73,87 @@ test("Core Pack CLI validator accepts the sample manifest", () => {
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.match(result.stdout, /Core Pack manifest OK/);
   assert.match(result.stdout, /diagnostic_refs=2/);
+});
+
+test("research artifact loader classifies Core Pack manifests with provenance hashes", async () => {
+  const text = JSON.stringify(manifest);
+  const result = await parseResearchArtifactPayload(text, {
+    source: "examples/core-pack/core-pack.manifest.json",
+    generatedAt: "2026-06-28T00:00:00.000Z",
+  });
+
+  assert.equal(result.kind, "core-pack");
+  assert.equal(result.artifact.kind, "core-pack");
+  assert.equal(result.artifact.manifest_id, manifest.manifest_id);
+  assert.equal(result.artifact.record_count, 2);
+  assert.equal(result.errors.length, 0);
+  assert.equal(result.provenanceHash.algorithm, "sha256");
+  assert.match(result.provenanceHash.value, /^sha256:[a-f0-9]{64}$/);
+});
+
+test("research artifact loader classifies feed payloads with contract errors", async () => {
+  const feedText = JSON.stringify([
+    {
+      type: "expert",
+      tile_id: "demo_corepack_tile_001",
+      expert_class: "residual",
+      expert_confidence: 0.9,
+      latency_s: 1.25,
+    },
+    {
+      type: "expert",
+      tile_id: "demo_corepack_tile_002",
+      expert_class: "residual",
+      expert_confidence: 1.5,
+      latency_s: 1,
+    },
+  ]);
+  const result = await parseResearchArtifactPayload(feedText, {
+    source: "file:expert-feed.json",
+    generatedAt: "2026-06-28T00:00:00.000Z",
+  });
+
+  assert.equal(result.kind, "feed");
+  assert.equal(result.events.length, 1);
+  assert.equal(result.errors.length, 1);
+  assert.equal(result.artifact.record_count, 1);
+  assert.equal(result.artifact.error_count, 1);
+  assert.match(result.artifact.source_sha256, /^sha256:[a-f0-9]{64}$/);
+});
+
+test("validation reports carry artifacts, SBOM references, and provenance hashes", async () => {
+  const generatedAt = "2026-06-28T00:00:00.000Z";
+  const corePack = await parseResearchArtifactPayload(JSON.stringify(manifest), {
+    source: "examples/core-pack/core-pack.manifest.json",
+    generatedAt,
+  });
+  const sbom = createSbom({ generatedAt });
+  const sbomText = JSON.stringify(sbom, null, 2);
+  const sbomHash = createProvenanceHash({
+    subject: "download:sbom.json",
+    sha256: await sha256Text(sbomText),
+    generatedAt,
+  });
+  const sbomRef = createSbomReference({
+    sbom,
+    path: "sbom.json",
+    checksum: sbomHash.value,
+    generatedAt,
+  });
+  const report = createValidationReport({
+    generatedAt,
+    reportId: "rpt_core_pack_intake_artifacts",
+    artifacts: [corePack.artifact],
+    sbomRefs: [sbomRef],
+    provenanceHashes: [corePack.provenanceHash, sbomHash],
+    checks: [
+      { name: "Core Pack manifest", status: "pass", detail: "sample manifest loaded" },
+      { name: "report JSON", status: "pass", detail: "generated before PDF" },
+    ],
+  });
+
+  assertContract("validationReport", report);
+  assert.equal(report.artifacts[0].manifest_id, manifest.manifest_id);
+  assert.equal(report.sbom_refs[0].checksum, sbomHash.value);
+  assert.equal(report.provenance_hashes.length, 2);
 });

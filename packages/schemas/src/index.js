@@ -10,6 +10,7 @@ export const CHECKLIST_AUTOMATION_STATES = ["manual", "planned", "automated"];
 export const CHECKLIST_MIGRATION_STATES = ["tracked", "planned", "migrated"];
 export const DIAGNOSTIC_STATUSES = ["concept-only", "prototype-note", "review-required"];
 export const DIAGNOSTIC_IMPLEMENTATION_STATES = ["not-implemented", "documentation-only", "planned"];
+export const RESEARCH_ARTIFACT_KINDS = ["feed", "core-pack", "sbom", "validation-report"];
 
 const idPattern = "^[A-Za-z0-9._:-]+$";
 const checksumPattern = "^(sha256:[A-Za-z0-9._:-]+|)$";
@@ -349,6 +350,37 @@ export const schemas = {
     },
   },
 
+  provenanceHash: {
+    $id: "cosmos-cqa/provenance-hash.schema.json",
+    type: "object",
+    required: ["subject", "algorithm", "value"],
+    additionalProperties: false,
+    properties: {
+      subject: { type: "string", minLength: 1, maxLength: 512 },
+      algorithm: { type: "string", const: "sha256" },
+      value: { type: "string", pattern: checksumPattern },
+      generated_at: { type: "string", format: "date-time" },
+    },
+  },
+
+  researchArtifact: {
+    $id: "cosmos-cqa/research-artifact.schema.json",
+    type: "object",
+    required: ["artifact_id", "kind", "source", "source_sha256", "record_count", "error_count", "imported_at"],
+    additionalProperties: false,
+    properties: {
+      artifact_id: { type: "string", pattern: "^artifact_[A-Za-z0-9._:-]+$" },
+      kind: { type: "string", enum: RESEARCH_ARTIFACT_KINDS },
+      source: { type: "string", minLength: 1, maxLength: 512 },
+      source_sha256: { type: "string", pattern: checksumPattern },
+      record_count: { type: "integer", minimum: 0 },
+      error_count: { type: "integer", minimum: 0 },
+      imported_at: { type: "string", format: "date-time" },
+      manifest_id: { type: "string", pattern: "^corepack_[A-Za-z0-9._:-]+$" },
+      notes: { type: "string", maxLength: 1000 },
+    },
+  },
+
   checklistTestTargets: {
     $id: "cosmos-cqa/checklist-test-targets.schema.json",
     type: "object",
@@ -472,6 +504,18 @@ export const schemas = {
             detail: { type: "string", maxLength: 1000 },
           },
         },
+      },
+      artifacts: {
+        type: "array",
+        items: { $ref: "researchArtifact" },
+      },
+      sbom_refs: {
+        type: "array",
+        items: { $ref: "sbomReference" },
+      },
+      provenance_hashes: {
+        type: "array",
+        items: { $ref: "provenanceHash" },
       },
     },
   },

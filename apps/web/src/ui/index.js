@@ -1,5 +1,5 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
-import { parseFeedPayload } from "../feeds/index.js";
+import { tileMetasFromCorePack } from "../core-pack/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows, saveLabels, undoLastLabel } from "../labels/index.js";
 import {
   calculateAccessibilityCoverage,
@@ -15,11 +15,14 @@ import {
   createBookmarkPayload,
   createBookmarkUrl,
   createBuildInfo,
+  createProvenanceHash,
   decodeBookmarkPayload,
   notifyTestBridge,
+  sha256Text,
   writeClipboard,
 } from "../provenance/index.js";
-import { createSbom, downloadCsv, downloadJson } from "../reports/index.js";
+import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
+import { createSbom, createSbomReference, createValidationReport, downloadCsv, downloadJson } from "../reports/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
 
@@ -32,7 +35,7 @@ const HINTS = {
 };
 
 export function formatTileOptionLabel(meta, config = {}) {
-  return config.dev ? `${meta.tile_id} - ${meta.truth.class}` : meta.tile_id;
+  return config.dev && meta.truth?.class ? `${meta.tile_id} - ${meta.truth.class}` : meta.tile_id;
 }
 
 export function truthTagDisplay(config = {}) {
@@ -498,26 +501,68 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
   }
 
-  function loadPublicSample() {
-    const sampleTiles = createDemoTiles({ count: 4, seed: state.seed + tiles.length + 1 }).map((tile, index) => {
-      const sequence = String(index + 1).padStart(3, "0");
-      return {
-        ...tile,
-        meta: {
-          ...tile.meta,
-          tile_id: `sample_${sequence}`,
-          dataset: "DEMO_PUBLIC_SAMPLE",
-          release: "v0-public-sample",
-          doi: "doi:10.0000/demo-public-sample",
-          checksum: `sha256:public-sample-${sequence}`,
-        },
-      };
+  function processCorePackManifest(manifest) {
+    const corePackTiles = tileMetasFromCorePack(manifest).map((meta) => ({
+      meta,
+      canvas: synthTile(meta.truth || { class: "clean", severity: "low" }),
+    }));
+
+    tiles.push(...corePackTiles);
+    populateTileSelect();
+    drawTile(tiles.length - corePackTiles.length);
+    upsertByKey(state.corePacks, "manifest_id", {
+      manifest_id: manifest.manifest_id,
+      name: manifest.name,
+      tile_count: manifest.tiles.length,
+      diagnostic_ref_count: manifest.diagnostic_refs?.length || 0,
     });
 
-    tiles.push(...sampleTiles);
-    populateTileSelect();
-    drawTile(tiles.length - sampleTiles.length);
-    dom.feedStatus.textContent = "Loaded public sample: 4 demo tiles.";
+    for (const sbomRef of manifest.sbom_refs || []) {
+      upsertByKey(state.sbomRefs, "sbom_id", sbomRef);
+    }
+  }
+
+  function recordArtifactImport(result) {
+    upsertByKey(state.researchArtifacts, "artifact_id", result.artifact);
+    upsertByKey(state.provenanceHashes, "subject", result.provenanceHash);
+    state.feedErrors.push(...result.errors);
+  }
+
+  async function importResearchArtifactText(text, { source }) {
+    const result = await parseResearchArtifactPayload(String(text || ""), { source });
+    recordArtifactImport(result);
+
+    if (result.kind === "core-pack") {
+      if (result.errors.length) {
+        dom.feedStatus.textContent = `Core Pack rejected ${result.errors.length} intake check(s): ${result.errors[0].message}`;
+        return result;
+      }
+
+      processCorePackManifest(result.manifest);
+      dom.feedStatus.textContent = `Loaded Core Pack ${result.manifest.manifest_id}: ${result.manifest.tiles.length} tile passport(s).`;
+      notifyTestBridge("corePack.loaded", { manifest: result.manifest, artifact: result.artifact });
+      return result;
+    }
+
+    result.events.forEach(processFeedObject);
+    const hashLabel = result.provenanceHash.value.slice("sha256:".length, "sha256:".length + 12);
+    dom.feedStatus.textContent = result.errors.length
+      ? `Loaded ${result.events.length} feed object(s); rejected ${result.errors.length} by contract. sha256:${hashLabel}`
+      : `Loaded ${result.events.length} feed object(s) from research artifact. sha256:${hashLabel}`;
+    return result;
+  }
+
+  async function loadPublicSample() {
+    try {
+      const response = await fetch("/examples/core-pack/core-pack.manifest.json");
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const text = await response.text();
+      await importResearchArtifactText(text, { source: "examples/core-pack/core-pack.manifest.json" });
+    } catch {
+      dom.feedStatus.textContent = "Public sample Core Pack unavailable.";
+    }
   }
 
   function startWs(url) {
@@ -532,7 +577,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       feedWS.onopen = () => {
         dom.feedStatus.textContent = `WS connected: ${url} (sim disabled)`;
       };
-      feedWS.onmessage = (event) => parseFeedText(event.data);
+      feedWS.onmessage = (event) => {
+        void importResearchArtifactText(event.data, { source: `ws:${url}` });
+      };
       feedWS.onerror = () => {
         dom.feedStatus.textContent = "WS error";
       };
@@ -542,17 +589,6 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       };
     } catch {
       dom.feedStatus.textContent = "WS connect failed";
-    }
-  }
-
-  function parseFeedText(text) {
-    const { events, errors } = parseFeedPayload(text);
-    events.forEach(processFeedObject);
-
-    if (errors.length) {
-      dom.feedStatus.textContent = `Feed contract rejected ${errors.length} event(s): ${errors[0].message}`;
-    } else if (events.length) {
-      dom.feedStatus.textContent = `Accepted ${events.length} feed event(s).`;
     }
   }
 
@@ -581,7 +617,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
             lastETag = etag;
           }
           if (text) {
-            parseFeedText(text);
+            await importResearchArtifactText(text, { source: `http:${url}` });
           }
         } catch {
           dom.feedStatus.textContent = "HTTP poll error";
@@ -635,18 +671,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.simDisabled = true;
     const name = file.name.toLowerCase();
 
-    if (!name.endsWith(".json")) {
-      dom.feedStatus.textContent = `Loaded file: ${file.name} (stubbed)`;
+    if (!name.endsWith(".json") && !name.endsWith(".ndjson")) {
+      dom.feedStatus.textContent = `Unsupported research artifact: ${file.name}. Load JSON or NDJSON.`;
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      const { events, errors } = parseFeedPayload(reader.result);
-      events.forEach(processFeedObject);
-      dom.feedStatus.textContent = errors.length
-        ? `Loaded ${events.length} feed object(s); rejected ${errors.length} by contract.`
-        : `Loaded ${events.length} feed object(s) from JSON (sim disabled)`;
+      void importResearchArtifactText(reader.result, { source: `file:${file.name}` });
     };
     reader.readAsText(file);
   }
@@ -670,11 +702,83 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     setCaption("CSV exported.");
   }
 
-  function exportSbom() {
-    const sbom = createSbom();
+  async function exportSbom() {
+    const generatedAt = new Date().toISOString();
+    const sbom = createSbom({ generatedAt });
+    const sbomContents = JSON.stringify(sbom, null, 2);
+    const sbomHash = createProvenanceHash({
+      subject: "download:sbom.json",
+      sha256: await sha256Text(sbomContents),
+      generatedAt,
+    });
+    const sbomRef = createSbomReference({
+      sbom,
+      path: "sbom.json",
+      checksum: sbomHash.value,
+      generatedAt,
+    });
+    upsertByKey(state.sbomRefs, "sbom_id", sbomRef);
+    upsertByKey(state.provenanceHashes, "subject", sbomHash);
     downloadJson(sbom, "sbom.json");
-    setCaption("SBOM exported.");
-    notifyTestBridge("sbom.exported", { sbom });
+    setCaption("SBOM exported. Provenance hash recorded.");
+    notifyTestBridge("sbom.exported", { sbom, sbomRef, provenanceHash: sbomHash });
+  }
+
+  async function exportValidationReport() {
+    const generatedAt = new Date().toISOString();
+    const report = createValidationReport({
+      build,
+      labels: state.labels,
+      feedErrors: state.feedErrors,
+      checks: buildValidationChecks(),
+      artifacts: state.researchArtifacts,
+      sbomRefs: state.sbomRefs,
+      provenanceHashes: state.provenanceHashes,
+      generatedAt,
+    });
+    downloadJson(report, "validation-report.json");
+    setCaption("Validation report JSON exported.");
+    notifyTestBridge("validationReport.exported", { report });
+  }
+
+  function buildValidationChecks() {
+    const hasArtifacts = state.researchArtifacts.length > 0;
+    const hasCorePack = state.corePacks.length > 0;
+    const hasSbomRefs = state.sbomRefs.length > 0;
+    const hasHashes = state.provenanceHashes.length > 0;
+
+    return [
+      {
+        name: "label records",
+        status: "pass",
+        detail: `${state.labels.length} label record(s) available for validation report export.`,
+      },
+      {
+        name: "feed and Core Pack imports",
+        status: hasArtifacts && state.feedErrors.length === 0 ? "pass" : hasArtifacts ? "warn" : "warn",
+        detail: `${state.researchArtifacts.length} artifact(s), ${state.feedErrors.length} contract/intake error(s), ${state.corePacks.length} Core Pack manifest(s).`,
+      },
+      {
+        name: "Core Pack manifest",
+        status: hasCorePack ? "pass" : "warn",
+        detail: hasCorePack ? `${state.corePacks[0].manifest_id} loaded.` : "No Core Pack manifest loaded in this session.",
+      },
+      {
+        name: "SBOM references",
+        status: hasSbomRefs ? "pass" : "warn",
+        detail: `${state.sbomRefs.length} SBOM reference(s) attached.`,
+      },
+      {
+        name: "provenance hashes",
+        status: hasHashes ? "pass" : "warn",
+        detail: `${state.provenanceHashes.length} SHA-256 provenance hash(es) attached.`,
+      },
+      {
+        name: "report JSON",
+        status: "pass",
+        detail: "Validation report JSON is generated before any PDF workflow.",
+      },
+    ];
   }
 
   function runSelfChecks() {
@@ -918,6 +1022,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.bookmarkBtn.addEventListener("click", createBookmark);
     dom.exportCSV.addEventListener("click", exportLabelsCsv);
     dom.exportSBOM.addEventListener("click", exportSbom);
+    dom.exportReport.addEventListener("click", exportValidationReport);
     dom.runTests.addEventListener("click", runSelfChecks);
     dom.startCalib.addEventListener("click", startCalibFlow);
     dom.nextStep.addEventListener("click", nextCalibStep);
@@ -1085,10 +1190,20 @@ function bindDom(documentRef) {
     loadSample: get("loadSample"),
     feedStatus: get("feedStatus"),
     exportSBOM: get("exportSBOM"),
+    exportReport: get("exportReport"),
     runTests: get("runTests"),
     testLog: get("testLog"),
     exportCSV: get("exportCSV"),
     expertDetails: get("expertDetails"),
     expertPane: get("expertPane"),
   };
+}
+
+function upsertByKey(items, key, value) {
+  const index = items.findIndex((item) => item[key] === value[key]);
+  if (index >= 0) {
+    items[index] = value;
+  } else {
+    items.push(value);
+  }
 }

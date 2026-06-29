@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
+import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
 import {
   createBookmarkPayload,
   createBookmarkUrl,
@@ -13,7 +14,7 @@ import {
   decodeBookmarkPayload,
   encodeBookmarkPayload,
 } from "../../../packages/core/src/provenance/index.js";
-import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
+import { createSbom, createSbomReference, createValidationReport } from "../../../packages/core/src/reports/index.js";
 import { TARGET_COVERAGE, expectedBrowserTargetIds } from "./browser/fixtures/legacy-targets.mjs";
 
 const legacyChecklistTargets = JSON.parse(
@@ -80,7 +81,9 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof assertContract, "function");
   assert.equal(typeof createVolunteerLabel, "function");
   assert.equal(typeof parseFeedPayload, "function");
+  assert.equal(typeof parseResearchArtifactPayload, "function");
   assert.equal(typeof createBookmarkPayload, "function");
+  assert.equal(typeof createSbomReference, "function");
   assert.equal(typeof createValidationReport, "function");
 });
 

@@ -22,6 +22,8 @@ Until steps 1-6 pass, diagnostic entries must remain concept-only or documentati
 
 - Sample manifest: `examples/core-pack/core-pack.manifest.json`
 - Validator: `apps/web/scripts/validate-core-pack.mjs`
+- Browser loader: JSON feed/Core Pack uploads are classified as research artifacts with SHA-256 provenance hashes.
+- Report export: validation report JSON includes imported artifacts, SBOM references, and provenance hashes before any PDF workflow.
 - Import checklist: `docs/core-pack-import-checklist.md`
 - Diagnostic caveats: `docs/diagnostic-concepts.md`
 - Archive provenance: `archive/original-materials/MANIFEST.md`
