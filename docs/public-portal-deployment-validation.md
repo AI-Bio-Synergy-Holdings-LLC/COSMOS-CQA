@@ -17,7 +17,8 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/CNAME` contains only `cosmos-cqa.org`;
 - `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public research-only copy, license boundaries, GitHub release links, release artifact index links, and the hosted demo route;
 - `apps/web/workbench.html` includes canonical URL metadata and social preview metadata;
-- `apps/web/robots.txt`, `apps/web/sitemap.xml`, and the social preview assets are present;
+- public resource pages for docs, releases, citation, license, governance, ownership and use, story, copyright, user data, and contact are present;
+- `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
 - `docs/releases/README.md` links release notes, validation report JSON, SBOM JSON, known limitations, and verification commands;
 - published release validation JSON records a non-dev public build, passing checks, the canonical public URL, research-only license notice, and SBOM artifact;
@@ -34,7 +35,8 @@ The HTTP mode checks:
 - portal root page loads;
 - hosted demo workbench shell loads at `/workbench.html?demo=core-pack`;
 - `CNAME` is served from the static root;
-- `robots.txt`, `sitemap.xml`, favicon, and social preview assets are served from the static root;
+- `robots.txt`, `sitemap.xml`, favicon, social preview source, and social preview assets are served from the static root;
+- public resource pages load from the static root;
 - portal and workbench modules are reachable;
 - sample Core Pack manifest is reachable;
 - shared `packages/schemas` and `packages/core` browser entrypoints are reachable.
@@ -51,7 +53,7 @@ npm --prefix apps/web run pages:prepare
 
 That command writes `apps/web/dist-pages` with:
 
-- `apps/web/index.html`, `apps/web/workbench.html`, `apps/web/CNAME`, and `apps/web/src/` as the public site root;
+- all top-level `apps/web/*.html` files, `apps/web/CNAME`, and `apps/web/src/` as the public site root;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, and `apps/web/assets/` for crawl and social preview metadata;
 - `packages/` so browser ES module imports resolve on GitHub Pages;
 - `examples/` so the hosted sample Core Pack workflow can load public sample manifests;
@@ -75,7 +77,7 @@ Pushes to `main` also run the GitHub Pages deployment workflow. The deployment w
 
 This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, or OSI open-source status.
 
-The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation.
+The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation. The public copyright and user data notices are static public pages, not legal advice or a substitute for counsel review.
 
 ## Release Responsibility
 

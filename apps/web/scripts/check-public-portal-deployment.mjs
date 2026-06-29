@@ -10,6 +10,18 @@ const canonicalUrl = "https://cosmos-cqa.org/";
 const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.0-research-alpha";
+const publicPagePaths = [
+  "docs.html",
+  "releases.html",
+  "citation.html",
+  "license.html",
+  "governance.html",
+  "ownership-and-use.html",
+  "story.html",
+  "copyright.html",
+  "user-data.html",
+  "contact.html",
+];
 const failures = [];
 
 await validateStaticContract();
@@ -46,8 +58,11 @@ async function validateStaticContract() {
 
   assert(cname === canonicalHost, "apps/web/CNAME must contain only the canonical public domain.");
   await requireReadable("apps/web/assets/favicon.svg");
-  await requireReadable("apps/web/assets/social-preview.svg");
+  await requireReadable("apps/web/social-preview.html");
   await requireReadable("apps/web/assets/social-preview.png");
+  for (const pagePath of publicPagePaths) {
+    await requireReadable(`apps/web/${pagePath}`);
+  }
 
   requirePhrases("apps/web/index.html", portalHtml, [
     "<title>COSMOS-CQA Public Research Portal</title>",
@@ -69,8 +84,14 @@ async function validateStaticContract() {
     "Not an OSI open-source release.",
     "COSMOS-CQA Research-Only Public License",
     owner,
-    "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/releases",
-    "docs/releases/README.md",
+    "./docs.html",
+    "./releases.html",
+    "./story.html",
+    "./contact.html",
+    "./copyright.html",
+    "./user-data.html",
+    "./governance.html",
+    "./ownership-and-use.html",
     "./workbench.html?demo=core-pack#workspace-core-pack",
   ]);
 
@@ -95,6 +116,10 @@ async function validateStaticContract() {
     "<urlset",
     `<loc>${canonicalUrl}</loc>`,
     `<loc>${canonicalUrl}workbench.html</loc>`,
+    `<loc>${canonicalUrl}docs.html</loc>`,
+    `<loc>${canonicalUrl}releases.html</loc>`,
+    `<loc>${canonicalUrl}story.html</loc>`,
+    `<loc>${canonicalUrl}contact.html</loc>`,
   ]);
 
   requirePhrases("CITATION.cff", citation, [
@@ -123,6 +148,8 @@ async function validateStaticContract() {
     "http://127.0.0.1:4173",
     "public portal release/deployment validation",
     "SEO, social preview, accessibility, and usability baseline",
+    "copyright",
+    "user data",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -131,6 +158,7 @@ async function validateStaticContract() {
     "social preview metadata",
     "robots.txt",
     "sitemap.xml",
+    "public resource pages",
     "structured data",
     "research-only license notice",
     "release artifact links",
@@ -171,8 +199,7 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/scripts/prepare-pages-artifact.mjs", artifactPrepScript, [
     "apps/web/dist-pages",
-    "index.html",
-    "workbench.html",
+    "topLevelHtmlFiles",
     "CNAME",
     "robots.txt",
     "sitemap.xml",
@@ -250,7 +277,7 @@ async function validateHttpSurface() {
     {
       path: "/sitemap.xml",
       label: "sitemap",
-      phrases: [canonicalUrl, `${canonicalUrl}workbench.html`],
+      phrases: [canonicalUrl, `${canonicalUrl}workbench.html`, `${canonicalUrl}story.html`, `${canonicalUrl}contact.html`],
     },
     {
       path: "/assets/favicon.svg",
@@ -258,9 +285,9 @@ async function validateHttpSurface() {
       phrases: ["COSMOS-CQA mark"],
     },
     {
-      path: "/assets/social-preview.svg",
+      path: "/social-preview.html",
       label: "social preview source",
-      phrases: ["COSMOS-CQA social preview", "Research-only public portal"],
+      phrases: ["portalSignalCanvas", "COSMOS-CQA social preview"],
     },
     {
       path: "/assets/social-preview.png",
@@ -293,6 +320,14 @@ async function validateHttpSurface() {
       phrases: ["./labels/index.js", "./reports/index.js"],
     },
   ];
+
+  for (const pagePath of publicPagePaths) {
+    routes.push({
+      path: `/${pagePath}`,
+      label: `public page ${pagePath}`,
+      phrases: ["COSMOS-CQA", "https://cosmos-cqa.org/assets/social-preview.png"],
+    });
+  }
 
   for (const route of routes) {
     await validateHttpRoute(baseUrl, route);

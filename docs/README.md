@@ -8,6 +8,7 @@ Start with:
 - `public-portal.md` for the canonical public site and deployment surface.
 - `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
 - `contracts.md` for research workflow contracts.
+- Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, copyright, user data, and contact.
 
 Core documents:
 

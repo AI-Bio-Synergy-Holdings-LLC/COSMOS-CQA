@@ -27,7 +27,7 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 | --- | --- | --- | --- |
 | Open Graph | Portal and workbench define `og:title`, `og:description`, `og:url`, `og:type`, and large preview image metadata. | In place | Validate with platform preview tools after DNS and cache propagation. |
 | Twitter/X card | Portal and workbench define `summary_large_image` card metadata. | In place | Recheck after social cache refreshes. |
-| Preview image | `apps/web/assets/social-preview.png` is 1200x630 and derived from `social-preview.svg`. | In place | Regenerate if public positioning or visual identity materially changes. |
+| Preview image | `apps/web/assets/social-preview.png` is 1200x630 and generated from `apps/web/social-preview.html`, which reuses the `portal-hero-canvas` rendering. | In place | Regenerate if public positioning or visual identity materially changes. |
 | Alt text | Social image metadata describes the research-only portal and evidence/replay scope. | In place | Keep alt text claim-boundary safe. |
 
 ## WCAG 2.2 Baseline Assessment
@@ -76,4 +76,3 @@ $env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web r
 - This is not usability testing with representative researchers.
 - This does not validate diagnostics, scientific findings, regulatory use, clinical use, production service use, or commercial use.
 - Social preview rendering can vary by platform cache and crawler behavior.
-
