@@ -1,6 +1,13 @@
 import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
 import { createBuildInfo } from "../provenance/index.js";
 
+export const VALIDATION_REPORT_LICENSE = "Research-only public use; all other rights reserved.";
+export const VALIDATION_REPORT_LIMITATIONS = [
+  "Validation reports are research artifacts, not production decision-system certifications.",
+  "Diagnostic entries may include caveated placeholders and must not be treated as validated scientific results.",
+  "External datasets, SBOM references, and source artifacts remain subject to their own terms and provenance limits.",
+];
+
 export function createSbom({ generatedAt = new Date().toISOString(), extraComponents = [] } = {}) {
   return assertContract("cycloneDxSbom", {
     bomFormat: "CycloneDX",
@@ -55,6 +62,8 @@ export function createValidationReport({
   sbomRefs = [],
   provenanceHashes = [],
   diagnostics = [],
+  license = VALIDATION_REPORT_LICENSE,
+  limitations = VALIDATION_REPORT_LIMITATIONS,
   generatedAt = new Date().toISOString(),
   reportId = `rpt_${Date.now().toString(36)}`,
 } = {}) {
@@ -71,6 +80,8 @@ export function createValidationReport({
     report_id: reportId,
     generated_at: generatedAt,
     build,
+    license,
+    limitations,
     summary: {
       label_count: labels.length,
       feed_error_count: feedErrors.length,

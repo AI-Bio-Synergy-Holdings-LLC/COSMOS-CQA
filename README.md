@@ -64,7 +64,7 @@ Then open:
 http://localhost:4173/
 ```
 
-The public portal is served at `http://localhost:4173/`; the research workbench demo is served at `http://localhost:4173/workbench.html`.
+The public portal is served at `http://localhost:4173/`; the research workbench is served at `http://localhost:4173/workbench.html`. The hosted public demo workflow is served at `http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack`.
 
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 

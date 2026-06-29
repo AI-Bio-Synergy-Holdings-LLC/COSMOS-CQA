@@ -34,6 +34,8 @@ test("migrates SBOM download targets into browser automation", async ({ page }) 
   const reportDownload = await reportDownloadPromise;
   expect(reportDownload.suggestedFilename()).toBe("validation-report.json");
   const report = JSON.parse(await reportDownload.createReadStream().then(readStreamText));
+  expect(report.license).toContain("Research-only public use");
+  expect(report.limitations).toEqual(expect.arrayContaining([expect.stringContaining("not production")]));
   expect(report.sbom_refs).toEqual(
     expect.arrayContaining([
       expect.objectContaining({

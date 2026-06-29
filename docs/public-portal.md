@@ -6,7 +6,15 @@ The canonical public portal for COSMOS-CQA is:
 https://cosmos-cqa.org
 ```
 
-The portal is the root static page in `apps/web/index.html`. The maintained research workbench is served from `apps/web/workbench.html` and linked from the portal as the public demo entry.
+The portal is the root static page in `apps/web/index.html`. The maintained research workbench is served from `apps/web/workbench.html`.
+
+The hosted public demo path is:
+
+```text
+https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
+```
+
+This path opens the maintained browser workbench, auto-loads the public sample Core Pack, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
 
 When `apps/web/` is published as the static site root, `apps/web/CNAME` carries the canonical `cosmos-cqa.org` domain setting.
 
@@ -23,7 +31,7 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 
 The first public scaffold exposes:
 
-- Demo: `./workbench.html`
+- Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
 - Docs: repository `docs/`
 - Releases: GitHub Releases
 - Citation: `CITATION.cff`
@@ -44,4 +52,4 @@ Then open:
 http://localhost:4173/
 ```
 
-The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, and narrow-screen overflow.
+The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo sample loading, and validation report JSON export.
