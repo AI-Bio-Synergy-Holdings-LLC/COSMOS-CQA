@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COSMOS-CQA Research Workbench</title>
+  <link rel="stylesheet" href="./src/styles.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    window.Chart || console.warn("Chart.js CDN failed; charts disabled.");
+  </script>
+</head>
+<body class="app">
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <header class="app-header">
+    <div class="brand-lockup">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand">COSMOS-CQA</div>
+        <div class="small">Research Workbench</div>
+      </div>
+    </div>
+    <div class="kpis" aria-label="Quality metrics">
+      <div class="kpi">PR-AUC <span id="kpiAUC" class="hl">-</span></div>
+      <div class="kpi">Precision/Recall <span id="kpiPR" class="hl">-</span></div>
+      <div class="kpi">Cohen k / alpha* <span id="kpiIRR" class="hl">-</span> <span class="small">(*approx)</span></div>
+      <div class="kpi">Median latency <span id="kpiLatency" class="hl">-</span></div>
+      <div class="kpi">Accessibility <span id="kpiA11y" class="ok">-</span></div>
+    </div>
+    <div class="research-notice">Research only - not for production use</div>
+  </header>
+
+  <main id="main" class="research-shell" tabindex="-1">
+    <nav class="workflow-rail" aria-label="Workbench workflow">
+      <a class="workflow-link active" href="#workspace-tiles">
+        <span class="rail-icon" aria-hidden="true">T</span>
+        <span>Tiles</span>
+      </a>
+      <a class="workflow-link" href="#workspace-labels">
+        <span class="rail-icon" aria-hidden="true">L</span>
+        <span>Labels</span>
+      </a>
+      <a class="workflow-link" href="#workspace-core-pack">
+        <span class="rail-icon" aria-hidden="true">C</span>
+        <span>Core Pack</span>
+      </a>
+      <a class="workflow-link" href="#workspace-diagnostics">
+        <span class="rail-icon" aria-hidden="true">D</span>
+        <span>Diagnostics</span>
+      </a>
+      <a class="workflow-link" href="#workspace-reports">
+        <span class="rail-icon" aria-hidden="true">R</span>
+        <span>Reports</span>
+      </a>
+      <a class="workflow-link" href="#workspace-provenance">
+        <span class="rail-icon" aria-hidden="true">P</span>
+        <span>Provenance</span>
+      </a>
+    </nav>
+
+    <section id="workspace-tiles" class="card workspace-main" aria-label="Tile viewer with overlays">
+      <div class="panel-header">
+        <div>
+          <h1>Tile Viewer <span id="tileId" class="badge">-</span> <span class="tag" id="truthTag" title="demo truth label for reviewers">truth: -</span></h1>
+          <p class="small">First-screen review surface for visual residual inspection, labeling, and replayable bookmark state.</p>
+        </div>
+        <span class="panel-status">Local-first</span>
+      </div>
+      <div class="viewer">
+        <div class="tile-stage">
+          <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
+        </div>
+        <div class="controls" aria-label="Tile review controls">
+          <section class="control-group" aria-label="Tile navigation">
+            <div class="group-title">Tile Navigation</div>
+            <div class="row">
+              <label for="tileSelect">Tile</label>
+              <select id="tileSelect" aria-label="Choose tile"></select>
+              <button id="prevBtn" type="button" title="Previous tile (Ctrl+Left)">Prev</button>
+              <button id="nextBtn" type="button" title="Next tile (Ctrl+Right)">Next</button>
+            </div>
+            <div class="caption">Keys: <span class="kbd">Space</span> play, <span class="kbd">L</span> loop, <span class="kbd">S</span> submit</div>
+          </section>
+
+          <section class="control-group" aria-label="Overlay and palette controls">
+            <div class="group-title">Visual Sidecars</div>
+            <div class="row">
+              <label for="overlaySel">Overlay</label>
+              <select id="overlaySel" aria-label="Overlay type">
+                <option value="none">None</option>
+                <option value="gradient">Gradient (Sobel)</option>
+                <option value="rings">Power rings</option>
+                <option value="wavelet">Wavelet-like</option>
+              </select>
+              <label for="paletteSel">Palette</label>
+              <select id="paletteSel" aria-label="Color palette">
+                <option value="gray">Gray</option>
+                <option value="viridis" selected>Viridis</option>
+                <option value="cividis">Cividis (color-safe)</option>
+              </select>
+              <button id="fullscreenBtn" type="button" title="Fullscreen">Fullscreen</button>
+            </div>
+          </section>
+
+          <section class="control-group" aria-label="Audio controls">
+            <div class="group-title">Audio and Captions</div>
+            <div class="row">
+              <button id="playBtn" type="button" aria-pressed="false">Play</button>
+              <button id="loopBtn" type="button" aria-pressed="true">Loop: on</button>
+              <label for="rateSel">Rate</label>
+              <select id="rateSel" aria-label="Playback rate">
+                <option>0.5</option>
+                <option selected>1.0</option>
+                <option>1.5</option>
+                <option>2.0</option>
+              </select>
+              <label class="checkbox-label"><input type="checkbox" id="captionsChk" checked> Captions</label>
+              <div class="progress" aria-hidden="true"><div id="prog" class="bar"></div></div>
+            </div>
+          </section>
+
+          <section id="workspace-labels" class="control-group label-workflow" aria-label="Label submission">
+            <div class="group-title">Label Workflow</div>
+            <div class="grid">
+              <div>
+                <label for="classSel">Class</label>
+                <select id="classSel" aria-label="Artifact class">
+                  <option value="stripe">Stripe</option>
+                  <option value="dipole">Dipole</option>
+                  <option value="ringing">Ringing</option>
+                  <option value="point">Point-source residual</option>
+                  <option value="clean">Clean</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="sevSel">Severity</label>
+                <select id="sevSel" aria-label="Severity">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <label for="note">Note</label>
+            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240">
+            <div class="command-grid">
+              <button id="submitBtn" type="button" class="pill primary-action"><span class="cmd-icon" aria-hidden="true">&#10003;</span> Submit (S)</button>
+              <button id="undoBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#8630;</span> Undo (Ctrl+Z)</button>
+              <button id="calibBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9881;</span> Calibration (C)</button>
+              <button id="expertBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9673;</span> Expert Queue</button>
+              <button id="bookmarkBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#128279;</span> Bookmark</button>
+            </div>
+          </section>
+          <div id="caption" class="caption status-caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="research-inspector" aria-label="Research inspector">
+      <section class="card inspector-panel" aria-labelledby="tile-passport-title">
+        <div class="panel-header compact">
+          <h2 id="tile-passport-title">Tile Passport</h2>
+          <span id="tilePassportStatus" class="panel-status">Current tile</span>
+        </div>
+        <div id="tilePassportDetails" class="metadata-panel"></div>
+        <div id="tilePassportProvenance" class="metadata-panel divided"></div>
+        <div id="tilePassportSidecars" class="metadata-panel divided"></div>
+      </section>
+
+      <section id="workspace-core-pack" class="card inspector-panel" aria-labelledby="core-pack-title">
+        <div class="panel-header compact">
+          <h2 id="core-pack-title">Core Pack Intake</h2>
+          <span class="panel-status">Contracted</span>
+        </div>
+        <p class="small">Load a stored tile set, public sample, or live research artifact stream.</p>
+        <div class="small contract-line">
+          <em>Schema:</em> <code>{ type:"tile", tile_id, dataset, ra, dec, band, overlay, checksum, png }</code>
+          and <code>{ type:"expert", tile_id, expert_class, expert_confidence, latency_s }</code>.
+        </div>
+        <div class="feed-stack">
+          <label class="pill file-pill">Load dataset <input id="fileInput" type="file" accept=".json,.ndjson,application/json"></label>
+          <select id="feedMethod" aria-label="Feed method">
+            <option value="ws">WebSocket</option>
+            <option value="http">HTTP (poll)</option>
+          </select>
+          <input id="feedUrl" type="text" placeholder="wss://example/ws or https://example/api/stream" class="feed-url">
+          <div class="row">
+            <button id="startFeed" type="button" class="pill">Connect</button>
+            <button id="stopFeed" type="button" class="pill">Stop</button>
+            <button id="loadSample" type="button" class="pill">Load public sample</button>
+          </div>
+        </div>
+        <div id="feedStatus" class="small inspector-status"></div>
+        <div class="explorer-panel" aria-label="Core Pack explorer">
+          <div id="corePackExplorerStatus" class="small empty-state">No Core Pack manifest loaded. Load the public sample or upload a validated Core Pack manifest to inspect evidence.</div>
+          <div id="corePackManifestSummary" class="metadata-panel"></div>
+          <div>
+            <div class="group-title explorer-title">Tile Passports</div>
+            <div id="corePackTileList" class="tile-passport-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Evidence References</div>
+            <div id="corePackEvidenceRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="corePackSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostic References</div>
+            <div id="corePackDiagnosticRefs" class="reference-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspace-diagnostics" class="card inspector-panel" aria-labelledby="diagnostics-title">
+        <div class="panel-header compact">
+          <h2 id="diagnostics-title">Diagnostic Placeholders</h2>
+          <span class="panel-status warning">Caveated</span>
+        </div>
+        <div id="diagnosticSummary" class="small">No diagnostic placeholders loaded.</div>
+        <div id="diagnosticList" class="diagnostic-list"></div>
+      </section>
+
+      <section id="workspace-provenance" class="card inspector-panel" aria-labelledby="provenance-title">
+        <div class="panel-header compact">
+          <h2 id="provenance-title">Evidence Workspace</h2>
+          <span class="panel-status">Inspectable</span>
+        </div>
+        <div id="evidenceWorkspaceStatus" class="small inspector-status">No imported or exported evidence artifacts yet.</div>
+        <div class="evidence-workspace" aria-label="Evidence workspace">
+          <div>
+            <div class="group-title explorer-title">Evidence Summary</div>
+            <div id="evidenceSummary" class="metadata-panel"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Artifacts</div>
+            <div id="evidenceArtifacts" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Provenance Hashes</div>
+            <div id="evidenceProvenanceHashes" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="evidenceSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Loaded Core Packs</div>
+            <div id="evidenceCorePacks" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostics</div>
+            <div id="evidenceDiagnostics" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Validation Checks</div>
+            <div id="evidenceValidationChecks" class="reference-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspace-reports" class="card inspector-panel" aria-labelledby="reports-title">
+        <div class="panel-header compact">
+          <h2 id="reports-title">Reports</h2>
+          <span class="panel-status">Artifacts</span>
+        </div>
+        <div class="report-actions">
+          <button id="refreshReportPreview" type="button" class="pill">Refresh Validation Preview</button>
+          <button id="exportSBOM" type="button" class="pill">Export SBOM</button>
+          <button id="exportReport" type="button" class="pill">Export Validation Report JSON</button>
+        </div>
+        <div id="reportViewerStatus" class="small inspector-status">Validation report preview has not been generated.</div>
+        <div class="report-viewer" aria-label="Validation report viewer">
+          <div>
+            <div class="group-title explorer-title">Summary</div>
+            <div id="reportSummary" class="metadata-panel"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Checks</div>
+            <div id="reportChecks" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Research Artifacts</div>
+            <div id="reportArtifacts" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostics and Caveats</div>
+            <div id="reportDiagnostics" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="reportSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Provenance Hashes</div>
+            <div id="reportProvenanceHashes" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Known Limitations</div>
+            <div id="reportLimitations" class="reference-list"></div>
+          </div>
+        </div>
+        <div class="small license-note">
+          Research-only public use; all other rights reserved. This workbench is not a production decision system.
+        </div>
+      </section>
+    </aside>
+
+    <section class="card evidence-drawer" aria-label="Evidence drawer">
+      <div class="panel-header">
+        <div>
+          <h2>Evidence Drawer</h2>
+          <p class="small">Calibration, charts, exports, expert queue, and local self-checks for reproducible review sessions.</p>
+        </div>
+        <span class="panel-status">Session evidence</span>
+      </div>
+      <div class="drawer-grid">
+        <details open>
+          <summary><strong>Calibration</strong> <span class="small">wizard plus inline mini-quiz</span></summary>
+          <div class="small">
+            Pick a mode. Both compute reliability; wizard shows hints and explainer.
+            <div class="row panel-row">
+              <label>Mode
+                <select id="calibMode" aria-label="Calibration mode">
+                  <option value="wizard">Wizard (1/3 to 2/3 to 3/3)</option>
+                  <option value="inline">Inline Mini-Quiz</option>
+                </select>
+              </label>
+              <label>Progress policy
+                <select id="gatePolicy" aria-label="Progress policy">
+                  <option value="learning">Learning-through-errors (allow Next)</option>
+                  <option value="gated">Gated (require correct to proceed)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <button id="startCalib" type="button" class="pill">Start</button>
+            <button id="nextStep" type="button" class="pill" disabled>Next</button>
+            <span id="calibStep" class="small"></span>
+          </div>
+          <div id="calibHint" class="small callout"></div>
+          <div id="calibExplain" class="small explain"></div>
+          <div id="calibStatus" class="small"></div>
+        </details>
+
+        <details open>
+          <summary><strong>Live PR Curve</strong> <span class="small">(if Chart.js available)</span></summary>
+          <div class="chartbox"><canvas id="prChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Live Ops Metrics</strong> <span class="small">(EMA smoothed)</span></summary>
+          <div class="chartbox"><canvas id="opsChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Confidence Distribution</strong></summary>
+          <div class="chartbox"><canvas id="confChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Live Graph Feed</strong> <span class="small">(events over time)</span></summary>
+          <div class="chartbox"><canvas id="liveChart" height="160"></canvas></div>
+        </details>
+
+        <details open>
+          <summary><strong>Export Data</strong></summary>
+          <div class="export">
+            <button id="exportCSV" type="button" class="pill">Export Labels CSV</button>
+          </div>
+        </details>
+
+        <details open>
+          <summary><strong>Session Evidence</strong></summary>
+          <div class="export session-actions">
+            <button id="exportSession" type="button" class="pill">Export Session JSON</button>
+            <button id="exportBundle" type="button" class="pill">Export Evidence Bundle JSON</button>
+            <label class="pill file-pill">Import Session <input id="sessionInput" type="file" accept=".json,application/json"></label>
+          </div>
+          <div id="sessionStatus" class="small inspector-status">No research session imported.</div>
+        </details>
+
+        <details>
+          <summary><strong>Self-Checks</strong></summary>
+          <div class="small">Run built-in tests to verify core functions.</div>
+          <button id="runTests" type="button" class="pill">Run Tests</button>
+          <pre id="testLog" class="small test-log"></pre>
+        </details>
+
+        <details id="expertDetails">
+          <summary><strong>Expert Queue</strong></summary>
+          <div id="expertPane" class="expert-pane">Queue is empty.</div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

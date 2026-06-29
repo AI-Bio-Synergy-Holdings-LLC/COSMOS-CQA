@@ -1,8 +1,21 @@
 import { test } from "@playwright/test";
 
-export async function openWorkbench(page, url = "/") {
-  await page.goto(url, { waitUntil: "domcontentloaded" });
+export async function openWorkbench(page, url = "/workbench.html") {
+  const target = normalizeWorkbenchUrl(url);
+  await page.goto(target, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
+}
+
+function normalizeWorkbenchUrl(url) {
+  if (url === "/" || url === "") {
+    return "/workbench.html";
+  }
+
+  if (url.startsWith("/?")) {
+    return `/workbench.html${url.slice(1)}`;
+  }
+
+  return url;
 }
 
 export async function disableSimulation(page) {

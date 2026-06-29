@@ -64,4 +64,4 @@ Good future option for expensive diagnostics, FITS/HEALPix transforms, and repor
 
 ## Near-Term Rule
 
-Do not edit imported legacy HTML to create active behavior. Use `apps/web/index.html` and `apps/web/src/` for maintained source, and keep `archive/original-materials/legacy-v3/` as provenance.
+Do not edit imported legacy HTML to create active behavior. Use `apps/web/index.html` for the public portal, `apps/web/workbench.html` for the maintained research workbench, and `apps/web/src/` for maintained browser source. Keep `archive/original-materials/legacy-v3/` as provenance.

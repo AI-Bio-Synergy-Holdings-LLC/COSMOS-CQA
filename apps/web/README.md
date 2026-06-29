@@ -1,6 +1,6 @@
-# COSMOS QA Workbench
+# COSMOS QA Web
 
-This directory will contain the browser workbench source for COSMOS-CQA.
+This directory contains the public portal and browser workbench source for COSMOS-CQA.
 
 Planned responsibilities:
 
@@ -51,16 +51,22 @@ The maintained source app uses native browser modules, so use a local static ser
 npm --prefix apps/web run serve
 ```
 
-Then open:
+Then open the public portal:
 
 ```text
 http://localhost:4173/
 ```
 
+The maintained demo workbench is served at:
+
+```text
+http://localhost:4173/workbench.html
+```
+
 Use `?dev=1` to show dev-only truth labels:
 
 ```text
-http://localhost:4173/?dev=1
+http://localhost:4173/workbench.html?dev=1
 ```
 
 ## Migration Target
