@@ -99,7 +99,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     applyPalette(ctx, dom.paletteSel.value);
     drawOverlay(ctx, dom.overlaySel.value);
     dom.tileId.textContent = tile.meta.tile_id;
-    dom.truthTag.textContent = `truth: ${tile.meta.truth.class}`;
+    dom.truthTag.hidden = !config.dev;
+    dom.truthTag.textContent = config.dev ? `truth: ${tile.meta.truth.class}` : "";
     dom.truthTag.style.display = truthTagDisplay(config);
     dom.tileSelect.value = String(index);
     renderTilePassport(tile);
@@ -1121,7 +1122,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.demoModeNotice.replaceChildren();
     const strong = documentRef.createElement("strong");
     strong.textContent = label;
-    dom.demoModeNotice.append(strong, ` ${detail}`);
+    const link = documentRef.createElement("a");
+    link.href = "./demo-workbook.html";
+    link.textContent = "Demo Workbook";
+    dom.demoModeNotice.append(strong, ` ${detail} `, link);
   }
 
   function scrollToDemoSection() {

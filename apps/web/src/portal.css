@@ -268,6 +268,20 @@ a {
   max-width: 860px;
 }
 
+.workbook-hero {
+  padding-bottom: clamp(28px, 4vw, 48px);
+  padding-top: clamp(42px, 6vw, 84px);
+}
+
+.workbook-hero h1 {
+  font-size: clamp(38px, 6vw, 74px);
+  max-width: 940px;
+}
+
+.workbook-hero p {
+  max-width: 800px;
+}
+
 .portal-page-content {
   padding: clamp(38px, 6vw, 84px) clamp(18px, 5vw, 76px);
 }
@@ -322,6 +336,42 @@ a {
 .portal-page-section a {
   color: var(--portal-teal);
   font-weight: 760;
+}
+
+.workbook-steps {
+  counter-reset: workbook-step;
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding-left: 0;
+}
+
+.workbook-steps li {
+  background: rgba(21, 32, 42, 0.76);
+  border: 1px solid var(--portal-border);
+  border-radius: 8px;
+  counter-increment: workbook-step;
+  min-height: 78px;
+  padding: 14px 16px 14px 54px;
+  position: relative;
+}
+
+.workbook-steps li::before {
+  align-items: center;
+  background: rgba(67, 214, 197, 0.12);
+  border: 1px solid rgba(67, 214, 197, 0.42);
+  border-radius: 7px;
+  color: var(--portal-teal);
+  content: counter(workbook-step);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 850;
+  height: 30px;
+  justify-content: center;
+  left: 14px;
+  position: absolute;
+  top: 14px;
+  width: 30px;
 }
 
 .portal-callout {

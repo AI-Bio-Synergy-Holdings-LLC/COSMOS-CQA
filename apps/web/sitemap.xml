@@ -11,6 +11,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://cosmos-cqa.org/demo-workbook.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://cosmos-cqa.org/docs.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
