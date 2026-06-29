@@ -133,7 +133,7 @@
             <div class="group-title">Audio and Captions</div>
             <div class="row">
               <button id="playBtn" type="button" aria-pressed="false">Play</button>
-              <button id="loopBtn" type="button" aria-pressed="true">Loop: on</button>
+              <button id="loopBtn" type="button" aria-pressed="false">Loop: off</button>
               <label for="rateSel">Rate</label>
               <select id="rateSel" aria-label="Playback rate">
                 <option>0.5</option>
@@ -144,6 +144,7 @@
               <label class="checkbox-label"><input type="checkbox" id="captionsChk" checked> Captions</label>
               <div class="progress" aria-hidden="true"><div id="prog" class="bar"></div></div>
             </div>
+            <p id="audioSafetyNotice" class="audio-safety-note">Optional audio starts only when Play is selected. Keep device volume low, stop if uncomfortable, and treat the sonic loop as a review aid, not a diagnostic or therapeutic signal. <a href="./safety.html">Audio safety</a></p>
           </section>
 
           <section id="workspace-labels" class="control-group label-workflow" aria-label="Label submission">

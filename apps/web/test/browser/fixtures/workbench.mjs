@@ -120,23 +120,52 @@ export async function readClipboard(page) {
 
 export async function installMockAudio(page) {
   await page.addInitScript(() => {
+    const audioEvents = [];
+    window.__COSMOS_AUDIO_EVENTS = audioEvents;
+
+    class MockAudioParam {
+      constructor(name) {
+        this.name = name;
+        this._value = 0;
+      }
+      get value() {
+        return this._value;
+      }
+      set value(nextValue) {
+        this._value = nextValue;
+        audioEvents.push({ type: `param:${this.name}`, value: nextValue });
+      }
+    }
+
     class MockOscillator {
       constructor() {
-        this.frequency = { value: 0 };
+        this.frequency = new MockAudioParam("frequency");
         this.type = "sine";
       }
-      connect() {}
-      disconnect() {}
-      start() {}
-      stop() {}
+      connect() {
+        audioEvents.push({ type: "oscillator.connect" });
+      }
+      disconnect() {
+        audioEvents.push({ type: "oscillator.disconnect" });
+      }
+      start() {
+        audioEvents.push({ type: "oscillator.start" });
+      }
+      stop() {
+        audioEvents.push({ type: "oscillator.stop" });
+      }
     }
 
     class MockGain {
       constructor() {
-        this.gain = { value: 0 };
+        this.gain = new MockAudioParam("gain");
       }
-      connect() {}
-      disconnect() {}
+      connect() {
+        audioEvents.push({ type: "gain.connect" });
+      }
+      disconnect() {
+        audioEvents.push({ type: "gain.disconnect" });
+      }
     }
 
     class MockAudioContext {
@@ -154,6 +183,10 @@ export async function installMockAudio(page) {
     window.AudioContext = MockAudioContext;
     window.webkitAudioContext = MockAudioContext;
   });
+}
+
+export async function audioEvents(page) {
+  return page.evaluate(() => window.__COSMOS_AUDIO_EVENTS || []);
 }
 
 export async function audioPreview(page) {

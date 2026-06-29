@@ -6,6 +6,7 @@ Start with:
 
 - `quickstart.md` for local use and hosted demo workflow.
 - `public-portal.md` for the canonical public site and deployment surface.
+- `public-safety.md` for audio-first public safety and use boundaries.
 - `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
 - `contracts.md` for research workflow contracts.
 - Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, copyright, user data, and contact.
@@ -22,6 +23,7 @@ Core documents:
 - `source-architecture.md` explains the source split architecture and alternatives.
 - `scientific-scope.md` defines the research lane.
 - `claim-boundaries.md` prevents overstatement.
+- `public-safety.md` defines optional audio sonification limits, public safety copy, and maintained checks.
 - `data-governance.md` describes data and provenance handling.
 - `domain-identity.md` records the canonical public URL and redirect-domain policy.
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.

@@ -1,5 +1,15 @@
+import {
+  AUDIO_SAFETY_LIMITS,
+  clampAudioFrequency,
+  getAudioContourDurationMs,
+} from "../../../../packages/core/src/sidecars/index.js";
+
 export {
+  AUDIO_SAFETY_LIMITS,
+  clampAudioFrequency,
+  clampPlaybackRate,
   dftMagnitude,
+  getAudioContourDurationMs,
   makeAudioMapForTile,
   rowMeans,
 } from "../../../../packages/core/src/sidecars/index.js";
@@ -172,19 +182,23 @@ export function createAudioController({ state, controls, getPalette, setCaption 
     oscillator = audioContext.createOscillator();
     gain = audioContext.createGain();
     oscillator.type = "sine";
-    gain.gain.value = 0.06;
+    gain.gain.value = AUDIO_SAFETY_LIMITS.outputGain;
     oscillator.connect(gain);
     gain.connect(audioContext.destination);
     oscillator.start();
 
     startTime = performance.now();
-    const duration = 6000 / state.rate;
+    const duration = getAudioContourDurationMs(state.rate);
 
     const animate = () => {
       const elapsed = performance.now() - startTime;
       const fraction = Math.min(1, elapsed / duration);
       const wobble = getPalette() === "cividis" ? 4 : 8;
-      oscillator.frequency.value = 180 + 420 * fraction + Math.sin(elapsed * 0.02) * wobble;
+      oscillator.frequency.value = clampAudioFrequency(
+        AUDIO_SAFETY_LIMITS.minFrequencyHz +
+          (AUDIO_SAFETY_LIMITS.maxFrequencyHz - AUDIO_SAFETY_LIMITS.minFrequencyHz) * fraction +
+          Math.sin(elapsed * 0.02) * wobble,
+      );
       controls.progressBar.style.width = `${fraction * 100}%`;
 
       if (fraction >= 1) {

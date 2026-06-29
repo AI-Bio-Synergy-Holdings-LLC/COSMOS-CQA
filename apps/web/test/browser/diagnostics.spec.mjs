@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import { AUDIO_TARGETS, CALIBRATION_TARGETS, METRICS_CHART_TARGETS } from "./fixtures/legacy-targets.mjs";
 import {
   annotateTargets,
+  audioEvents,
   audioPreview,
   blurActiveElement,
   chartSignals,
@@ -54,6 +55,13 @@ test("migrates audio control targets into browser automation", async ({ page }) 
   await installMockAudio(page);
   await openWorkbench(page);
 
+  await expect(page.locator("#audioSafetyNotice")).toContainText("Optional audio starts only when Play is selected.");
+  await expect(page.locator("#audioSafetyNotice")).toContainText("not a diagnostic or therapeutic signal");
+  await expect(page.getByRole("link", { name: "Audio safety" })).toHaveAttribute("href", "./safety.html");
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
+  await expect(page.locator("#loopBtn")).toHaveAttribute("aria-pressed", "false");
+  await expect.poll(() => audioEvents(page).then((events) => events.filter((event) => event.type === "oscillator.start").length)).toBe(0);
+
   const firstPreview = await audioPreview(page);
   const secondPreview = await audioPreview(page);
   expect(firstPreview).toEqual(secondPreview);
@@ -66,15 +74,27 @@ test("migrates audio control targets into browser automation", async ({ page }) 
   await expect(page.locator("#playBtn")).toHaveText("Pause");
   await expect(page.locator("#playBtn")).toHaveAttribute("aria-pressed", "true");
   await expect.poll(() => progressWidth(page)).toBeGreaterThan(0);
+  const playbackEvents = await audioEvents(page);
+  const gainValues = playbackEvents.filter((event) => event.type === "param:gain").map((event) => event.value);
+  const frequencyValues = playbackEvents.filter((event) => event.type === "param:frequency").map((event) => event.value);
+  expect(playbackEvents.filter((event) => event.type === "oscillator.start")).toHaveLength(1);
+  expect(gainValues.length).toBeGreaterThan(0);
+  expect(frequencyValues.length).toBeGreaterThan(0);
+  expect(Math.max(...gainValues)).toBeLessThanOrEqual(0.04);
+  expect(Math.min(...frequencyValues)).toBeGreaterThanOrEqual(180);
+  expect(Math.max(...frequencyValues)).toBeLessThanOrEqual(600);
 
   await page.locator("#playBtn").click();
   await expect(page.locator("#playBtn")).toHaveText("Play");
   await expect(page.locator("#playBtn")).toHaveAttribute("aria-pressed", "false");
+  await expect.poll(() => audioEvents(page).then((events) => events.some((event) => event.type === "oscillator.stop"))).toBe(true);
 
   await page.locator("#loopBtn").click();
-  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
-  await page.locator("#loopBtn").click();
   await expect(page.locator("#loopBtn")).toHaveText("Loop: on");
+  await expect(page.locator("#loopBtn")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#loopBtn").click();
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
+  await expect(page.locator("#loopBtn")).toHaveAttribute("aria-pressed", "false");
 
   await blurActiveElement(page);
   await page.keyboard.press("Space");
@@ -85,7 +105,7 @@ test("migrates audio control targets into browser automation", async ({ page }) 
 
   await blurActiveElement(page);
   await page.keyboard.press("l");
-  await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
+  await expect(page.locator("#loopBtn")).toHaveText("Loop: on");
 });
 
 test("migrates calibration wizard targets into browser automation", async ({ page }) => {

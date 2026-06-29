@@ -7,7 +7,13 @@ import {
   ema,
   prAUC,
 } from "../../../../packages/core/src/metrics/index.js";
-import { makeAudioMapForTile } from "../../../../packages/core/src/sidecars/index.js";
+import {
+  AUDIO_SAFETY_LIMITS,
+  clampAudioFrequency,
+  clampPlaybackRate,
+  getAudioContourDurationMs,
+  makeAudioMapForTile,
+} from "../../../../packages/core/src/sidecars/index.js";
 import { createDemoTileRecords } from "../../../../packages/core/src/tile-synthesis/index.js";
 import { getTestBridgeTargetOrigin, notifyTestBridge } from "../../src/provenance/index.js";
 import { formatTileOptionLabel, truthTagDisplay } from "../../src/ui/index.js";
@@ -46,7 +52,26 @@ test("promotes deterministic tile and audio assertions into unit coverage", () =
   const audio = makeAudioMapForTile(firstTile);
   assert.equal(audio.length, 120);
   assert.deepEqual(audio.slice(0, 5), makeAudioMapForTile(replayTile).slice(0, 5));
-  assert.ok(audio.every((frame) => frame.freq >= 180 && frame.gain >= 0.05));
+  assert.ok(
+    audio.every(
+      (frame) =>
+        frame.freq >= AUDIO_SAFETY_LIMITS.minFrequencyHz &&
+        frame.freq <= AUDIO_SAFETY_LIMITS.maxFrequencyHz &&
+        frame.gain >= AUDIO_SAFETY_LIMITS.minPreviewGain &&
+        frame.gain <= AUDIO_SAFETY_LIMITS.maxPreviewGain,
+    ),
+  );
+});
+
+test("keeps shared audio safety limits bounded for public playback", () => {
+  assert.equal(AUDIO_SAFETY_LIMITS.defaultLooping, false);
+  assert.equal(AUDIO_SAFETY_LIMITS.outputGain, 0.04);
+  assert.equal(clampAudioFrequency(20), AUDIO_SAFETY_LIMITS.minFrequencyHz);
+  assert.equal(clampAudioFrequency(20_000), AUDIO_SAFETY_LIMITS.maxFrequencyHz);
+  assert.equal(clampPlaybackRate(0.1), AUDIO_SAFETY_LIMITS.minPlaybackRate);
+  assert.equal(clampPlaybackRate(8), AUDIO_SAFETY_LIMITS.maxPlaybackRate);
+  assert.equal(getAudioContourDurationMs(1), AUDIO_SAFETY_LIMITS.baseContourDurationMs);
+  assert.equal(getAudioContourDurationMs(2), AUDIO_SAFETY_LIMITS.baseContourDurationMs / 2);
 });
 
 test("promotes public truth-label display policy into unit coverage", () => {

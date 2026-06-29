@@ -36,6 +36,8 @@ The sonic loop is a deterministic sonification sidecar. In the current workbench
 
 It must be described as a perception, accessibility, attention, and training aid.
 
+It must also be described as optional, user initiated, and bounded. Browser code can limit frequency and software gain, but it cannot control device volume, headphones, room acoustics, or individual sensitivity.
+
 It must not be described as:
 
 - an independent detector;
@@ -62,6 +64,7 @@ Open research benefits when citizen science participation is paired with contrac
 
 - The current public demo does not validate a cosmology diagnostic or publish scientific results.
 - The sonic loop does not classify artifacts, discover signals, or replace visual/statistical review.
+- The sonic loop is not a therapeutic, medical, or biologically active sound-frequency system.
 - The sample Core Pack is synthetic demonstration material, not a restricted third-party science dataset.
 - Public mode hides truth labels; dev truth display is only for explicit local development review.
 - COSMOS-CQA is research-only public infrastructure, not an OSI open-source release and not a production decision system.

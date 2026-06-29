@@ -18,7 +18,6 @@ test("migrates tracked bookmark creation and reload targets into browser automat
   await page.locator("#overlaySel").selectOption("rings");
   await page.locator("#paletteSel").selectOption("cividis");
   await page.locator("#rateSel").selectOption("1.5");
-  await page.locator("#loopBtn").click();
   await expect(page.locator("#loopBtn")).toHaveText("Loop: off");
   await page.locator("#captionsChk").setChecked(false);
 

@@ -20,6 +20,7 @@ Current status:
 - The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with all tracked legacy targets covered by Playwright browser automation.
 - A Core Pack intake lane now validates a sample manifest, evidence/SBOM references, and documentation-only diagnostic concepts before any CSSFP prototype repair or import.
 - Browser import/export paths now classify feed and Core Pack JSON as research artifacts, retain SHA-256 provenance hashes, and export validation report JSON before any PDF workflow.
+- Public safety boundaries now cover optional audio sonification, loop-off defaults, bounded playback parameters, visible stop behavior, and non-diagnostic/non-therapeutic claim limits.
 - Public use is governed by the COSMOS-CQA Research-Only Public License.
 
 ## Intended Use
@@ -68,7 +69,7 @@ The public portal is served at `http://localhost:4173/`; the research workbench 
 
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
-Public quickstart, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
+Public quickstart, safety, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
 
 ## Naming
 

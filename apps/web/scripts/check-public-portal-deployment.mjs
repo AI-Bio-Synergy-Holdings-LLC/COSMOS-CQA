@@ -20,6 +20,7 @@ const publicPagePaths = [
   "governance.html",
   "ownership-and-use.html",
   "story.html",
+  "safety.html",
   "copyright.html",
   "user-data.html",
   "contact.html",
@@ -50,6 +51,7 @@ async function validateStaticContract() {
   const quickstart = await readText("docs/quickstart.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
+  const publicSafetyDoc = await readText("docs/public-safety.md");
   const domainDoc = await readText("docs/domain-identity.md");
   const pagesWorkflow = await readText(".github/workflows/pages.yml");
   const artifactPrepScript = await readText("apps/web/scripts/prepare-pages-artifact.mjs");
@@ -91,6 +93,7 @@ async function validateStaticContract() {
     "./research-experiment.html",
     "./releases.html",
     "./story.html",
+    "./safety.html",
     "./contact.html",
     "./copyright.html",
     "./user-data.html",
@@ -107,6 +110,8 @@ async function validateStaticContract() {
     `<meta name="twitter:card" content="summary_large_image">`,
     "Core Pack intake",
     "deterministic replay",
+    "Optional audio starts only when Play is selected.",
+    "./safety.html",
     owner,
   ]);
 
@@ -125,6 +130,7 @@ async function validateStaticContract() {
     `<loc>${canonicalUrl}docs.html</loc>`,
     `<loc>${canonicalUrl}releases.html</loc>`,
     `<loc>${canonicalUrl}story.html</loc>`,
+    `<loc>${canonicalUrl}safety.html</loc>`,
     `<loc>${canonicalUrl}contact.html</loc>`,
   ]);
 
@@ -138,6 +144,7 @@ async function validateStaticContract() {
     "https://cosmos-cqa.org",
     "demo workbook",
     "sample Core Pack workflow",
+    "https://cosmos-cqa.org/safety.html",
     "Export Validation Report JSON",
     "npm --prefix apps/web run check",
     "npm --prefix apps/web run check:portal-deploy",
@@ -159,6 +166,8 @@ async function validateStaticContract() {
     "user data",
     "demo-workbook.html",
     "research-experiment.html",
+    "safety.html",
+    "docs/public-safety.md",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -168,6 +177,8 @@ async function validateStaticContract() {
     "robots.txt",
     "sitemap.xml",
     "public resource pages",
+    "safety",
+    "optional audio sonification",
     "structured data",
     "research-only license notice",
     "release artifact links",
@@ -180,6 +191,19 @@ async function validateStaticContract() {
     "post-deploy",
     "HTTPS enforcement",
     "AI-Bio Synergy Holdings LLC",
+  ]);
+
+  requirePhrases("docs/public-safety.md", publicSafetyDoc, [
+    "Public Safety And Use Boundaries",
+    "audio sonification treated as the first-class risk surface",
+    "avoid autoplay",
+    "looping off by default",
+    "180 Hz to 600 Hz",
+    "output gain: 0.04",
+    "device volume",
+    "not legal, medical, audiology, or regulatory advice",
+    "therapeutic sound",
+    "diagnostic",
   ]);
 
   requirePhrases("docs/domain-identity.md", domainDoc, [
@@ -292,6 +316,7 @@ async function validateHttpSurface() {
         `${canonicalUrl}demo-workbook.html`,
         `${canonicalUrl}research-experiment.html`,
         `${canonicalUrl}story.html`,
+        `${canonicalUrl}safety.html`,
         `${canonicalUrl}contact.html`,
       ],
     },

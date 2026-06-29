@@ -39,6 +39,7 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 | Understandable | Public copy states research-only use, claim boundaries, license limits, and stewardship. Workbench controls use stable labels and status captions. | Partially covered | Add error-message tests for import failures, validation failures, and unsupported file paths. |
 | Robust | The app uses HTML landmarks, headings, native controls, ARIA labels where needed, and browser automation around key accessibility targets. | Partially covered | Add axe-style regression checks and a screen-reader smoke checklist before claiming higher maturity. |
 | WCAG 2.2 additions | Focus visibility is tested; target sizing is mostly supported by existing control dimensions; drag-only workflows are not required for core use. | Early baseline | Add explicit Focus Not Obscured, Target Size, and Accessible Authentication checklist rows before v0.2.x release. |
+| Audio control | Optional sonification is user initiated, loop-off by default, visibly caveated, and immediately stoppable. Browser code bounds frequency and software gain but does not control hardware volume or individual sensitivity. | Partially covered | Keep audio safety tests aligned with `docs/public-safety.md` and add screen-reader/audio-conflict review before claiming higher maturity. |
 
 ## Nielsen Norman Group Heuristic Baseline
 
@@ -74,5 +75,6 @@ $env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web r
 - This is not a WCAG conformance claim.
 - This is not an accessibility audit by an independent specialist.
 - This is not usability testing with representative researchers.
+- This is not an audiology, medical, therapeutic, or device-volume safety certification.
 - This does not validate diagnostics, scientific findings, regulatory use, clinical use, production service use, or commercial use.
 - Social preview rendering can vary by platform cache and crawler behavior.

@@ -20,17 +20,24 @@ Use the public research experiment page for the scientific framing and sonic loo
 https://cosmos-cqa.org/research-experiment.html
 ```
 
+Use the public safety page before optional audio playback:
+
+```text
+https://cosmos-cqa.org/safety.html
+```
+
 ## Walkthrough
 
 1. Open the hosted demo and confirm the banner reports that the sample Core Pack is ready.
 2. Inspect Core Pack intake: manifest summary, tile passports, evidence references, SBOM references, and diagnostic references.
 3. Review the first tile, change one overlay and one palette, and confirm the caption and tile passport remain readable.
-4. Submit a short label note, then undo the label.
-5. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
-6. Read diagnostic caveats before treating any diagnostic surface as evidence.
-7. Refresh the validation report preview.
-8. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.
-9. Read the research experiment page and confirm the sonic loop is treated as a sonification sidecar, not a detector or validated diagnostic.
+4. Check audio safety before playback: read the Audio and Captions notice, keep device volume low, and leave Loop off unless you intentionally need repeat playback.
+5. Submit a short label note, then undo the label.
+6. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
+7. Read diagnostic caveats before treating any diagnostic surface as evidence.
+8. Refresh the validation report preview.
+9. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.
+10. Read the research experiment page and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
 
 ## Review Notes To Capture
 
@@ -59,5 +66,6 @@ npm --prefix apps/web run check
 
 - Public truth labels remain hidden in the visible workflow and public DOM text.
 - Diagnostic placeholders are caveated research concepts, not validated scientific results.
+- Optional audio is user initiated, loop-off by default, and bounded by shared sidecar constants, but device volume and individual sensitivity remain outside browser control.
 - The static portal has no account system or server-side workspace.
 - Downloads, bookmarks, imports, and exported evidence remain local to the browser unless the user shares them.
