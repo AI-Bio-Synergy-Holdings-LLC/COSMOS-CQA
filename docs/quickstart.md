@@ -74,6 +74,12 @@ For a focused hosted demo check:
 npm --prefix apps/web run test:browser -- test/browser/hosted-demo.spec.mjs
 ```
 
+For public portal release/deployment checks:
+
+```bash
+npm --prefix apps/web run check:portal-deploy
+```
+
 ## Citation And Release Evidence
 
 - Citation guide: `docs/citation.md`
