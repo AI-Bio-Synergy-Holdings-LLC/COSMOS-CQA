@@ -18,6 +18,7 @@ temp/
 # Dependencies and builds
 node_modules/
 dist/
+apps/web/dist-pages/
 build/
 coverage/
 playwright-report/

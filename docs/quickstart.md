@@ -80,6 +80,18 @@ For public portal release/deployment checks:
 npm --prefix apps/web run check:portal-deploy
 ```
 
+To prepare the GitHub Pages artifact used for `https://cosmos-cqa.org` deployments:
+
+```bash
+npm --prefix apps/web run pages:prepare
+```
+
+To verify the canonical domain is ready for GitHub Pages:
+
+```bash
+npm --prefix apps/web run pages:check-dns
+```
+
 ## Citation And Release Evidence
 
 - Citation guide: `docs/citation.md`

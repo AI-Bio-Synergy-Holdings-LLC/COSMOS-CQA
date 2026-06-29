@@ -33,6 +33,10 @@ async function validateStaticContract() {
   const quickstart = await readText("docs/quickstart.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
+  const domainDoc = await readText("docs/domain-identity.md");
+  const pagesWorkflow = await readText(".github/workflows/pages.yml");
+  const artifactPrepScript = await readText("apps/web/scripts/prepare-pages-artifact.mjs");
+  const pagesDnsScript = await readText("apps/web/scripts/check-pages-dns.mjs");
   const releaseIndex = await readText("docs/releases/README.md");
   const validationReport = JSON.parse(await readText(`docs/releases/${releaseId}-validation-report.json`));
   const sbom = JSON.parse(await readText(`docs/releases/${releaseId}-sbom.json`));
@@ -71,8 +75,11 @@ async function validateStaticContract() {
   requirePhrases("docs/public-portal.md", publicPortalDoc, [
     canonicalUrl.slice(0, -1),
     "apps/web/CNAME",
+    "GitHub Pages",
     "npm --prefix apps/web run check:portal-deploy",
+    "npm --prefix apps/web run pages:prepare",
     "COSMOS_CQA_PORTAL_BASE_URL",
+    "COSMOS_CQA_STATIC_ROOT",
     "http://127.0.0.1:4173",
     "public portal release/deployment validation",
   ]);
@@ -85,7 +92,55 @@ async function validateStaticContract() {
     "SBOM",
     "validation report",
     "hosted demo route",
+    "GitHub Pages",
+    "apps/web/dist-pages",
+    "actions/deploy-pages",
+    "post-deploy",
+    "HTTPS enforcement",
     "AI-Bio Synergy Holdings LLC",
+  ]);
+
+  requirePhrases("docs/domain-identity.md", domainDoc, [
+    "GitHub Pages DNS Handoff",
+    "cosmos-cqa.org",
+    "185.199.108.153",
+    "185.199.109.153",
+    "185.199.110.153",
+    "185.199.111.153",
+    "AI-Bio-Synergy-Holdings-LLC.github.io",
+    "HTTPS enforcement",
+  ]);
+
+  requirePhrases(".github/workflows/pages.yml", pagesWorkflow, [
+    "Deploy Public Portal",
+    "actions/configure-pages@v6",
+    "actions/upload-pages-artifact@v5",
+    "actions/deploy-pages@v5",
+    "apps/web/dist-pages",
+    "pages: write",
+    "id-token: write",
+    "pages:check-dns",
+    "COSMOS_CQA_PORTAL_BASE_URL",
+    "COSMOS_CQA_STATIC_ROOT",
+  ]);
+
+  requirePhrases("apps/web/scripts/prepare-pages-artifact.mjs", artifactPrepScript, [
+    "apps/web/dist-pages",
+    "index.html",
+    "workbench.html",
+    "CNAME",
+    "packages",
+    "examples",
+    ".nojekyll",
+  ]);
+
+  requirePhrases("apps/web/scripts/check-pages-dns.mjs", pagesDnsScript, [
+    "cosmos-cqa.org",
+    "185.199.108.153",
+    "185.199.109.153",
+    "185.199.110.153",
+    "185.199.111.153",
+    "ai-bio-synergy-holdings-llc.github.io",
   ]);
 
   requirePhrases("docs/releases/README.md", releaseIndex, [
