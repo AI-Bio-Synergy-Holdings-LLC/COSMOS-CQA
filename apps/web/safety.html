@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safety and Use Boundaries | COSMOS-CQA</title>
+  <meta name="description" content="COSMOS-CQA public safety and use boundaries for research-only public access, optional audio sonification, visual review surfaces, data handling, and claim limits.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://cosmos-cqa.org/safety.html">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="COSMOS-CQA Safety and Use Boundaries">
+  <meta property="og:description" content="Public safety boundaries for optional audio sonification, visual review surfaces, local-first data, and research-only use.">
+  <meta property="og:url" content="https://cosmos-cqa.org/safety.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://cosmos-cqa.org/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="./src/portal.css">
+</head>
+<body class="portal">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="portal-header" aria-label="COSMOS-CQA public portal">
+    <a class="portal-brand" href="./" aria-label="COSMOS-CQA home"><span class="portal-brand-mark" aria-hidden="true"></span><span><strong>COSMOS-CQA</strong><small>Public Research Portal</small></span></a>
+    <nav class="portal-nav" aria-label="Primary">
+      <a href="./workbench.html?demo=core-pack#workspace-core-pack">Demo</a>
+      <a href="./demo-workbook.html">Workbook</a>
+      <a href="./research-experiment.html">Experiment</a>
+      <a href="./docs.html">Docs</a>
+      <a href="./releases.html">Releases</a>
+      <a href="./story.html">Story</a>
+      <a href="./safety.html">Safety</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+  </header>
+  <main id="main" class="portal-page-main" tabindex="-1">
+    <section class="portal-page-hero">
+      <p class="portal-kicker">Public safety</p>
+      <h1>Safety boundaries for public research use.</h1>
+      <p>COSMOS-CQA is a research-only public workbench. These boundaries explain the optional audio sonification, visual review surfaces, data handling, and non-claims that keep the public demo cautious and inspectable.</p>
+      <div class="portal-actions">
+        <a class="portal-action primary" href="./workbench.html?demo=core-pack#workspace-core-pack">Open Demo Workbench</a>
+        <a class="portal-action" href="https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/docs/public-safety.md">Repository Safety Note</a>
+      </div>
+    </section>
+
+    <section class="portal-page-content">
+      <div class="portal-page-section">
+        <h2>Audio-first safety boundary</h2>
+        <div class="notice-grid">
+          <article class="portal-tile">
+            <h3>User initiated</h3>
+            <p>The sonic loop does not autoplay. It starts only when a reviewer selects Play or uses the documented keyboard control, and the same control stops playback.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Bounded contour</h3>
+            <p>The maintained workbench keeps the public audio contour within documented frequency and software-gain limits. Browser code cannot control device or headphone volume.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Comfort first</h3>
+            <p>Keep device volume low. Stop immediately if sound feels uncomfortable, distracting, painful, or unsuitable for hearing sensitivity, tinnitus, migraine, sensory sensitivity, or shared audio environments.</p>
+          </article>
+          <article class="portal-tile">
+            <h3>Not a treatment or diagnostic</h3>
+            <p>The sonic loop is a sonification sidecar for review attention and accessibility. It is not a medical, therapeutic, diagnostic, signal-discovery, or scientific measurement system.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>What the sonic loop is allowed to mean</h2>
+        <p>The sonic loop maps selected tile-review values into a short, repeatable auditory contour. It is allowed to support perception, comparison, training, and accessibility alongside visual overlays, captions, labels, and evidence exports.</p>
+        <p>It must not be used to decide labels by itself, infer scientific results, validate cosmology diagnostics, make health or accessibility claims, or imply that a sound frequency has a biological effect.</p>
+        <div class="portal-callout">
+          <p><strong>Public wording:</strong> the sound is an optional way to inspect the same review object. It can help some reviewers notice patterns or compare states. It does not decide the label, validate an artifact, or produce a result.</p>
+        </div>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>Other public safety surfaces</h2>
+        <div class="portal-page-grid">
+          <article class="portal-link-card"><strong>Visual review</strong><span>Use visual overlays and palettes as review aids only. Stop if visual motion, contrast, or pattern density becomes uncomfortable.</span></article>
+          <article class="portal-link-card"><strong>Research data</strong><span>The hosted demo is local-first and account-free. Downloads, bookmarks, and imported artifacts remain under the reviewer's control unless shared.</span></article>
+          <article class="portal-link-card"><strong>Public claims</strong><span>COSMOS-CQA does not claim production readiness, clinical suitability, regulatory suitability, or validated scientific diagnostic performance.</span></article>
+          <article class="portal-link-card"><strong>Issue routing</strong><span>Report accessibility, safety, public-copy, or data-handling concerns through the contact route or repository issues.</span></article>
+        </div>
+      </div>
+
+      <div class="portal-page-section">
+        <h2>Maintained checks</h2>
+        <ul>
+          <li>Audio is user initiated and has no autoplay path in the hosted workbench.</li>
+          <li>Looping is off by default and must be explicitly enabled by the reviewer.</li>
+          <li>Frequency, software gain, and playback-rate limits are centralized in the shared sidecar module.</li>
+          <li>Browser tests verify visible audio safety copy, bounded playback parameters, stop behavior, and safety-page routing.</li>
+          <li>Portal deployment validation includes the safety page so public releases fail if it is missing.</li>
+        </ul>
+        <ul class="portal-inline-list">
+          <li><a href="./demo-workbook.html">Demo Workbook</a></li>
+          <li><a href="./research-experiment.html">Research Experiment</a></li>
+          <li><a href="./license.html">Research License</a></li>
+          <li><a href="./contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer class="portal-footer">
+    <span>Copyright (c) AI-Bio Synergy Holdings LLC. All rights reserved.</span>
+    <span><a href="./copyright.html">Copyright</a> | <a href="./user-data.html">User Data</a> | <a href="./license.html">License</a> | <a href="./governance.html">Governance</a> | <a href="./ownership-and-use.html">Ownership</a> | <a href="./contact.html">Contact</a></span>
+  </footer>
+</body>
+</html>

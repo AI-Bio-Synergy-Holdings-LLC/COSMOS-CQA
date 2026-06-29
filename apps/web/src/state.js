@@ -2,7 +2,7 @@ export function createAppState() {
   return {
     idx: 0,
     playing: false,
-    looping: true,
+    looping: false,
     rate: 1,
     volunteerId: `anon_${Math.random().toString(36).slice(2, 6)}`,
     weight: 0.5,

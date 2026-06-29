@@ -48,6 +48,12 @@ The bounded research experiment framing is served at:
 https://cosmos-cqa.org/research-experiment.html
 ```
 
+The public safety and use boundaries are served at:
+
+```text
+https://cosmos-cqa.org/safety.html
+```
+
 ## Sample Core Pack Workflow
 
 1. Open the hosted sample Core Pack workflow.
@@ -56,6 +62,7 @@ https://cosmos-cqa.org/research-experiment.html
 4. Keep public mode active for public review. Use `?dev=1` only for explicit local dev review.
 5. Use the demo workbook to record manifest ids, tile passport ids, evidence exports, known limitations, and any visual/accessibility issues found during review.
 6. Use the research experiment page to distinguish modeled infrastructure, exposed engine fundamentals, sonic loop sidecars, public benefits, and non-claims.
+7. Review the safety page before using optional audio. Keep device volume low, leave Loop off unless intentionally needed, and stop if sound is uncomfortable.
 
 ## Report Export
 

@@ -19,6 +19,7 @@ Public resource pages are served as top-level static HTML files:
 - `governance.html`
 - `ownership-and-use.html`
 - `story.html`
+- `safety.html`
 - `copyright.html`
 - `user-data.html`
 - `contact.html`
@@ -58,6 +59,7 @@ The public scaffold exposes:
 - Governance: `./governance.html`
 - Ownership and use: `./ownership-and-use.html`
 - Story behind the research: `./story.html`
+- Safety and use boundaries: `./safety.html`
 - Copyright notice: `./copyright.html`
 - User data notice: `./user-data.html`
 - Contact: `./contact.html`
@@ -86,6 +88,8 @@ The social preview PNG is generated from `apps/web/social-preview.html`, which r
 
 The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
 
+The public safety note is maintained in `docs/public-safety.md` and mirrored by `apps/web/safety.html`. It treats optional audio sonification as the first-class risk surface: no autoplay, loop off by default, bounded frequency/software-gain constants, clear stop behavior, device-volume caveats, and no therapeutic, medical, diagnostic, or scientific-result claims.
+
 Run the public portal release/deployment validation with:
 
 ```bash
@@ -98,7 +102,7 @@ For served-route validation, start the local static server and run:
 $env:COSMOS_CQA_PORTAL_BASE_URL="http://127.0.0.1:4173"; npm --prefix apps/web run check:portal-deploy
 ```
 
-This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, public resource pages, notices, contact routing, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
+This checks canonical URL metadata, research-only license notice, release artifact links, validation report and SBOM paths, static module reachability, public resource pages, safety notices, contact routing, and hosted demo route health. The full validation responsibilities are documented in `docs/public-portal-deployment-validation.md`.
 
 Prepare the GitHub Pages artifact locally with:
 

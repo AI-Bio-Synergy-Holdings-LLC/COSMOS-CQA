@@ -582,6 +582,20 @@ textarea:hover {
   padding-left: 9px;
 }
 
+.audio-safety-note {
+  border-left: 2px solid rgba(240, 201, 106, 0.68);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  padding-left: 9px;
+}
+
+.audio-safety-note a {
+  color: var(--accent);
+  font-weight: 800;
+}
+
 #workspace-tiles,
 #workspace-labels,
 #workspace-core-pack,

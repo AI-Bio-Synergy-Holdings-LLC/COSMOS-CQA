@@ -12,6 +12,7 @@ const publicPages = [
   { path: "/governance.html", title: /Governance \| COSMOS-CQA/, text: "Stewarded public research infrastructure." },
   { path: "/ownership-and-use.html", title: /Ownership and Use \| COSMOS-CQA/, text: "Owned and stewarded by AI-Bio Synergy Holdings LLC." },
   { path: "/story.html", title: /Story Behind the Research \| COSMOS-CQA/, text: "From artifact intuition to public research infrastructure." },
+  { path: "/safety.html", title: /Safety and Use Boundaries \| COSMOS-CQA/, text: "Safety boundaries for public research use." },
   { path: "/copyright.html", title: /Copyright Notice \| COSMOS-CQA/, text: "Copyright, notices, and third-party boundaries." },
   { path: "/user-data.html", title: /User Data Notice \| COSMOS-CQA/, text: "Local-first research workflow data." },
   { path: "/contact.html", title: /Contact \| COSMOS-CQA/, text: "Developer and public research route." },
@@ -29,7 +30,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const label of ["Demo", "Workbook", "Experiment", "Docs", "Releases", "Story", "Contact"]) {
+  for (const label of ["Demo", "Workbook", "Experiment", "Docs", "Releases", "Story", "Safety", "Contact"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
@@ -55,6 +56,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
     "./releases.html",
   );
   await expect(page.getByRole("link", { name: "Story Behind the Research Origin concept, public science references, and the path to a citable research workbench." })).toHaveAttribute("href", "./story.html");
+  await expect(page.getByRole("link", { name: "Safety and Use Boundaries Audio sonification limits, visual review cautions, local-first data, and public non-claims." })).toHaveAttribute("href", "./safety.html");
   await expect(page.getByRole("link", { name: "Contact Developer route for public research questions, accessibility feedback, and issue routing." })).toHaveAttribute("href", "./contact.html");
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
@@ -103,6 +105,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   expect(sitemapText).toContain("https://cosmos-cqa.org/demo-workbook.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/research-experiment.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/safety.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
 
   const previewSource = await request.get("/social-preview.html");
@@ -143,6 +146,7 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Research Experiment" })).toHaveAttribute("href", "./research-experiment.html");
+  await expect(page.getByRole("link", { name: "Safety and Use Boundaries" })).toHaveAttribute("href", "./safety.html");
 
   await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("What experiment is this workbench modeling?")).toBeVisible();
@@ -150,9 +154,15 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("How researchers and citizens benefit")).toBeVisible();
   await expect(page.getByText("What is explicitly not claimed yet?")).toBeVisible();
   await expect(page.getByText("It does not decide the label.")).toBeVisible();
+  await expect(page.getByText("Browser code can limit frequency and software gain")).toBeVisible();
   for (const source of ["NASA Chandra Data Sonification", "The Sonification Handbook"]) {
     await expect(page.getByRole("link", { name: source })).toBeVisible();
   }
+
+  await page.goto("/safety.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Audio-first safety boundary")).toBeVisible();
+  await expect(page.getByText("Browser code cannot control device or headphone volume.")).toBeVisible();
+  await expect(page.getByText("not a medical, therapeutic, diagnostic")).toBeVisible();
 });
 
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {
@@ -176,11 +186,28 @@ test("keeps public page inline action buttons visually aligned", async ({ page }
     for (const row of inlineListRows) {
       expect(row.length).toBeGreaterThan(1);
       expect(new Set(row.map((item) => item.alignItems))).toEqual(new Set(["center"]));
-      const tops = row.map((item) => item.top);
-      expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
+      const visualRows = groupByVisualRow(row);
+      for (const visualRow of visualRows) {
+        const tops = visualRow.map((item) => item.top);
+        expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
+      }
     }
   }
 });
+
+function groupByVisualRow(items) {
+  return items
+    .toSorted((left, right) => left.top - right.top)
+    .reduce((rows, item) => {
+      const currentRow = rows.find((row) => Math.abs(row[0].top - item.top) <= 1);
+      if (currentRow) {
+        currentRow.push(item);
+      } else {
+        rows.push([item]);
+      }
+      return rows;
+    }, []);
+}
 
 test("keeps the research workbench discoverability metadata aligned with the portal", async ({ page }) => {
   await page.goto("/workbench.html", { waitUntil: "domcontentloaded" });
