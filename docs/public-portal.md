@@ -90,6 +90,8 @@ The baseline assessment is maintained in `docs/seo-social-accessibility-baseline
 
 The public safety note is maintained in `docs/public-safety.md` and mirrored by `apps/web/safety.html`. It treats optional audio sonification as the first-class risk surface: no autoplay, loop off by default, bounded frequency/software-gain constants, clear stop behavior, device-volume caveats, and no therapeutic, medical, diagnostic, or scientific-result claims.
 
+The user data notice is maintained in `apps/web/user-data.html` with companion data governance in `docs/data-governance.md`. It describes the static local-first browser posture, public GitHub issue/reporting boundaries, contact email routing, external service logs, and non-confidential reporting guardrails.
+
 Run the public portal release/deployment validation with:
 
 ```bash

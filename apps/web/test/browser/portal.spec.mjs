@@ -136,6 +136,11 @@ test("serves public resource pages with canonical metadata and notices", async (
     "href",
     /mailto:cosmos-cqa-developer@ai-biosynergyholdings\.com/,
   );
+  await expect(page.getByRole("link", { name: "Issue Templates" })).toHaveAttribute(
+    "href",
+    "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/issues/new/choose",
+  );
+  await expect(page.getByText("Safety or audio/visual use-boundary concerns")).toBeVisible();
 
   await page.goto("/story.html", { waitUntil: "domcontentloaded" });
   for (const source of ["ESA Planck Legacy Archive", "NASA LAMBDA WMAP data products", "Dark Energy Survey Data Release 2", "Galaxy Zoo / Zooniverse"]) {
@@ -163,6 +168,17 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("Audio-first safety boundary")).toBeVisible();
   await expect(page.getByText("Browser code cannot control device or headphone volume.")).toBeVisible();
   await expect(page.getByText("not a medical, therapeutic, diagnostic")).toBeVisible();
+  await expect(page.getByText("repository issue templates without sharing sensitive data")).toBeVisible();
+
+  await page.goto("/user-data.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("not a substitute for counsel-reviewed privacy terms")).toBeVisible();
+  await expect(page.getByText("GitHub issues and public reports")).toBeVisible();
+  await expect(page.getByText("Operational logs and third-party routes")).toBeVisible();
+  await expect(page.getByText("Do not submit restricted datasets")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Issue Templates" })).toHaveAttribute(
+    "href",
+    "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/issues/new/choose",
+  );
 });
 
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {

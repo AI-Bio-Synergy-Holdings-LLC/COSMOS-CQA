@@ -32,6 +32,8 @@ Public copy should mention that audio may be unsuitable for some reviewers, incl
 
 The visual workbench should also avoid implying safety certification. The project should preserve reduced-motion support, avoid flashing content, keep captions/status text available, and route accessibility feedback through the public contact route.
 
+Safety and accessibility reports should use the repository issue templates when the report can be public and non-confidential. Reports must not include personal health information, regulated data, restricted datasets, credentials, private keys, confidential screenshots, private source code, or medical/audiology advice.
+
 ## Claim Boundaries
 
 Do not claim that the sonic loop:

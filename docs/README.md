@@ -5,6 +5,7 @@ This directory holds the public research documentation for COSMOS-CQA.
 Start with:
 
 - `quickstart.md` for local use and hosted demo workflow.
+- `project-notes.md` for public execution notes and completed PR trails.
 - `public-portal.md` for the canonical public site and deployment surface.
 - `public-safety.md` for audio-first public safety and use boundaries.
 - `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
@@ -14,6 +15,7 @@ Start with:
 Core documents:
 
 - `canonical-v3-import.md` records the first stable legacy import.
+- `project-notes.md` records completed public hardening trails, including the PR #51 safety review trail.
 - `checklist-to-test-migration.md` defines the legacy checklist target migration plan.
 - `contracts.md` defines the first data contract set.
 - `core-pack-intake.md` defines the safe Core Pack intake lane before diagnostic import.
