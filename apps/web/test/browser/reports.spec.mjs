@@ -77,6 +77,61 @@ test("migrates SBOM download targets into browser automation", async ({ page }) 
   );
 });
 
+test("previews validation report data before JSON export", async ({ page }) => {
+  await openWorkbench(page);
+  await page.locator("#loadSample").click();
+  await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
+
+  const sbomDownloadPromise = page.waitForEvent("download");
+  await page.locator("#exportSBOM").click();
+  await sbomDownloadPromise;
+  await expect(page.locator("#reportViewerStatus")).toContainText("Export uses this preview source");
+  await expect(page.locator("#reportSummary")).toContainText("cosmos-cqa.contracts.v0.1.0");
+  await expect(page.locator("#reportSummary")).toContainText("Research-only public use");
+  await expect(page.locator("#reportChecks")).toContainText("diagnostic placeholders [pass]");
+  await expect(page.locator("#reportChecks")).toContainText("not scientific results");
+  await expect(page.locator("#reportArtifacts")).toContainText("artifact_core-pack");
+  await expect(page.locator("#reportDiagnostics")).toContainText("Kappa-y cross-correlation review placeholder");
+  await expect(page.locator("#reportDiagnostics")).toContainText("not a validated cosmology diagnostic");
+  await expect(page.locator("#reportDiagnostics")).toContainText("Limitations:");
+  await expect(page.locator("#reportSbomRefs")).toContainText("sbom_");
+  await expect(page.locator("#reportSbomRefs")).toContainText("CycloneDX 1.4");
+  await expect(page.locator("#reportProvenanceHashes")).toContainText("download:sbom.json");
+  await expect(page.locator("#reportLimitations")).toContainText("Research-only license");
+  await expect(page.locator("#reportLimitations")).toContainText("Diagnostic placeholders");
+
+  const preview = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
+  expect(preview).toEqual(
+    expect.objectContaining({
+      report_id: expect.stringMatching(/^rpt_/),
+      diagnostics: expect.arrayContaining([
+        expect.objectContaining({
+          diagnostic_id: "diag_kappa_y_crosscheck",
+          status: "placeholder",
+        }),
+      ]),
+      sbom_refs: expect.arrayContaining([
+        expect.objectContaining({
+          format: "CycloneDX",
+        }),
+      ]),
+      provenance_hashes: expect.arrayContaining([
+        expect.objectContaining({
+          subject: "download:sbom.json",
+        }),
+      ]),
+    }),
+  );
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportReport").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("validation-report.json");
+  const exported = JSON.parse(await download.createReadStream().then(readStreamText));
+  expect(exported).toEqual(preview);
+  await expect(page.locator("#caption")).toContainText("Validation report JSON exported.");
+});
+
 test("migrates built-in self-check targets into browser automation", async ({ page }) => {
   annotateTargets(BUILT_IN_TEST_TARGETS);
   await openWorkbench(page);

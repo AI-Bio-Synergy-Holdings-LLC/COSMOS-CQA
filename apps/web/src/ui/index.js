@@ -212,6 +212,143 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     notifyTestBridge("corePack.explorer.rendered", { manifest_id: manifest.manifest_id, summary });
   }
 
+  function refreshValidationReportPreview({ generatedAt = new Date().toISOString(), reportId } = {}) {
+    if (!dom.reportViewerStatus || !dom.reportSummary) {
+      return null;
+    }
+
+    const report = buildValidationReport({ generatedAt, reportId });
+    state.validationReportPreview = report;
+    renderValidationReportPreview(report);
+    notifyTestBridge("validationReport.previewed", { report });
+    return report;
+  }
+
+  function buildValidationReport({ generatedAt = new Date().toISOString(), reportId } = {}) {
+    return createValidationReport({
+      build,
+      labels: state.labels,
+      feedErrors: state.feedErrors,
+      checks: buildValidationChecks(),
+      artifacts: state.researchArtifacts,
+      sbomRefs: state.sbomRefs,
+      provenanceHashes: state.provenanceHashes,
+      diagnostics: state.diagnostics,
+      generatedAt,
+      reportId,
+    });
+  }
+
+  function renderValidationReportPreview(report = state.validationReportPreview) {
+    if (
+      !dom.reportViewerStatus ||
+      !dom.reportSummary ||
+      !dom.reportChecks ||
+      !dom.reportArtifacts ||
+      !dom.reportDiagnostics ||
+      !dom.reportSbomRefs ||
+      !dom.reportProvenanceHashes ||
+      !dom.reportLimitations
+    ) {
+      return;
+    }
+
+    clearValidationReportPreview();
+
+    if (!report) {
+      dom.reportViewerStatus.textContent = "Validation report preview has not been generated.";
+      appendEmptyState(dom.reportSummary, "Refresh the preview to inspect the validation report before export.");
+      return;
+    }
+
+    dom.reportViewerStatus.textContent = `${report.report_id} preview generated ${formatDate(report.generated_at)}. Export uses this preview source.`;
+    appendMetadataGrid(dom.reportSummary, [
+      ["Schema", report.schema_version],
+      ["Report ID", report.report_id],
+      ["Generated", formatDate(report.generated_at)],
+      ["Build", `${report.build.version} (${report.build.sha})`],
+      ["Labels", String(report.summary.label_count)],
+      ["Feed errors", String(report.summary.feed_error_count)],
+      ["Checks pass/fail", `${report.summary.pass_count} / ${report.summary.fail_count}`],
+      ["Research license", "Research-only public use; all other rights reserved."],
+    ]);
+
+    appendReferenceList(dom.reportChecks, report.checks || [], (check) => [
+      `${check.name} [${check.status}]`,
+      check.detail || "No detail recorded.",
+    ]);
+    appendReferenceList(dom.reportArtifacts, report.artifacts || [], (artifact) => [
+      artifact.artifact_id,
+      `${artifact.kind}; records=${artifact.record_count}; errors=${artifact.error_count}; ${artifact.source}; ${artifact.source_sha256}`,
+    ]);
+    appendReferenceList(dom.reportDiagnostics, report.diagnostics || [], (diagnostic) => [
+      `${diagnostic.name} [${diagnostic.status}]`,
+      `${diagnostic.caveat} Limitations: ${formatList(diagnostic.limitations)}`,
+    ]);
+    appendReferenceList(dom.reportSbomRefs, report.sbom_refs || [], (ref) => [
+      ref.sbom_id,
+      `${ref.format} ${ref.spec_version}; ${ref.path}; ${ref.checksum}`,
+    ]);
+    appendReferenceList(dom.reportProvenanceHashes, report.provenance_hashes || [], (hash) => [
+      hash.subject,
+      `${hash.algorithm}: ${hash.value}`,
+    ]);
+    appendReferenceList(dom.reportLimitations, validationReportLimitations(report), (limitation) => [
+      limitation.name,
+      limitation.detail,
+    ]);
+  }
+
+  function clearValidationReportPreview() {
+    dom.reportSummary.replaceChildren();
+    dom.reportChecks.replaceChildren();
+    dom.reportArtifacts.replaceChildren();
+    dom.reportDiagnostics.replaceChildren();
+    dom.reportSbomRefs.replaceChildren();
+    dom.reportProvenanceHashes.replaceChildren();
+    dom.reportLimitations.replaceChildren();
+  }
+
+  function validationReportLimitations(report) {
+    const limitations = [
+      {
+        name: "Research-only license",
+        detail: "Public use is limited to research; all other rights and IP remain reserved to AI-Bio Synergy Holdings LLC.",
+      },
+      {
+        name: "No production decision use",
+        detail: "This validation report is a research workbench artifact, not a production decision-system certification.",
+      },
+    ];
+
+    if (!report.artifacts?.length) {
+      limitations.push({
+        name: "No Core Pack artifact",
+        detail: "No Core Pack or feed artifact is attached to this report preview.",
+      });
+    }
+    if (!report.sbom_refs?.length) {
+      limitations.push({
+        name: "No SBOM reference",
+        detail: "Export or attach an SBOM reference before using this report as release evidence.",
+      });
+    }
+    if (!report.provenance_hashes?.length) {
+      limitations.push({
+        name: "No provenance hashes",
+        detail: "No SHA-256 provenance hashes are attached to this report preview.",
+      });
+    }
+    if (report.diagnostics?.length) {
+      limitations.push({
+        name: "Diagnostic placeholders",
+        detail: "Diagnostics in this preview are caveated placeholders and are not validated scientific results.",
+      });
+    }
+
+    return limitations;
+  }
+
   function clearCorePackExplorer() {
     dom.corePackManifestSummary.replaceChildren();
     dom.corePackTileList.replaceChildren();
@@ -528,6 +665,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     updatePRChart();
     recalcKPIs(false);
+    refreshValidationReportPreview();
     return label;
   }
 
@@ -764,6 +902,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.diagnostics = createDiagnosticPlaceholders({ manifest });
     renderCorePackExplorer();
     renderDiagnostics();
+    refreshValidationReportPreview();
   }
 
   function renderDiagnostics() {
@@ -818,6 +957,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       if (result.errors.length) {
         dom.feedStatus.textContent = `Core Pack rejected ${result.errors.length} intake check(s): ${result.errors[0].message}`;
         renderCorePackExplorer({ errors: result.errors.map((error) => error.message) });
+        refreshValidationReportPreview();
         return result;
       }
 
@@ -832,6 +972,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.feedStatus.textContent = result.errors.length
       ? `Loaded ${result.events.length} feed object(s); rejected ${result.errors.length} by contract. sha256:${hashLabel}`
       : `Loaded ${result.events.length} feed object(s) from research artifact. sha256:${hashLabel}`;
+    refreshValidationReportPreview();
     return result;
   }
 
@@ -1002,24 +1143,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     });
     upsertByKey(state.sbomRefs, "sbom_id", sbomRef);
     upsertByKey(state.provenanceHashes, "subject", sbomHash);
+    refreshValidationReportPreview({ generatedAt });
     downloadJson(sbom, "sbom.json");
     setCaption("SBOM exported. Provenance hash recorded.");
     notifyTestBridge("sbom.exported", { sbom, sbomRef, provenanceHash: sbomHash });
   }
 
   async function exportValidationReport() {
-    const generatedAt = new Date().toISOString();
-    const report = createValidationReport({
-      build,
-      labels: state.labels,
-      feedErrors: state.feedErrors,
-      checks: buildValidationChecks(),
-      artifacts: state.researchArtifacts,
-      sbomRefs: state.sbomRefs,
-      provenanceHashes: state.provenanceHashes,
-      diagnostics: state.diagnostics,
-      generatedAt,
-    });
+    const report = state.validationReportPreview || refreshValidationReportPreview();
     downloadJson(report, "validation-report.json");
     setCaption("Validation report JSON exported.");
     notifyTestBridge("validationReport.exported", { report });
@@ -1305,6 +1436,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       undoLastLabel(state);
       setCaption("Undid last label.");
       recalcKPIs();
+      refreshValidationReportPreview();
     });
     dom.calibBtn.addEventListener("click", startCalibFlow);
     dom.expertBtn.addEventListener("click", () => {
@@ -1315,6 +1447,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.exportCSV.addEventListener("click", exportLabelsCsv);
     dom.exportSBOM.addEventListener("click", exportSbom);
     dom.exportReport.addEventListener("click", exportValidationReport);
+    dom.refreshReportPreview.addEventListener("click", () => {
+      refreshValidationReportPreview();
+      setCaption("Validation report preview refreshed.");
+    });
     dom.runTests.addEventListener("click", runSelfChecks);
     dom.startCalib.addEventListener("click", startCalibFlow);
     dom.nextStep.addEventListener("click", nextCalibStep);
@@ -1339,6 +1475,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     addHotkeyToggle();
     const restoredBookmark = restoreBookmarkFromHash();
     recalcKPIs();
+    refreshValidationReportPreview();
     if (!restoredBookmark) {
       setCaption("Ready. Use keyboard or controls; captions appear here.");
     }
@@ -1483,6 +1620,7 @@ function bindDom(documentRef) {
     feedStatus: get("feedStatus"),
     exportSBOM: get("exportSBOM"),
     exportReport: get("exportReport"),
+    refreshReportPreview: get("refreshReportPreview"),
     runTests: get("runTests"),
     testLog: get("testLog"),
     exportCSV: get("exportCSV"),
@@ -1500,6 +1638,14 @@ function bindDom(documentRef) {
     corePackEvidenceRefs: get("corePackEvidenceRefs"),
     corePackSbomRefs: get("corePackSbomRefs"),
     corePackDiagnosticRefs: get("corePackDiagnosticRefs"),
+    reportViewerStatus: get("reportViewerStatus"),
+    reportSummary: get("reportSummary"),
+    reportChecks: get("reportChecks"),
+    reportArtifacts: get("reportArtifacts"),
+    reportDiagnostics: get("reportDiagnostics"),
+    reportSbomRefs: get("reportSbomRefs"),
+    reportProvenanceHashes: get("reportProvenanceHashes"),
+    reportLimitations: get("reportLimitations"),
   };
 }
 

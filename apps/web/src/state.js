@@ -25,6 +25,7 @@ export function createAppState() {
     diagnostics: [],
     sbomRefs: [],
     provenanceHashes: [],
+    validationReportPreview: null,
     simDisabled: false,
     usedKeyboard: false,
     seed: 12648430,

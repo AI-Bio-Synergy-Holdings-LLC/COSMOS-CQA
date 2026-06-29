@@ -242,8 +242,40 @@
           <span class="panel-status">Artifacts</span>
         </div>
         <div class="report-actions">
+          <button id="refreshReportPreview" type="button" class="pill">Refresh Validation Preview</button>
           <button id="exportSBOM" type="button" class="pill">Export SBOM</button>
           <button id="exportReport" type="button" class="pill">Export Validation Report JSON</button>
+        </div>
+        <div id="reportViewerStatus" class="small inspector-status">Validation report preview has not been generated.</div>
+        <div class="report-viewer" aria-label="Validation report viewer">
+          <div>
+            <div class="group-title explorer-title">Summary</div>
+            <div id="reportSummary" class="metadata-panel"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Checks</div>
+            <div id="reportChecks" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Research Artifacts</div>
+            <div id="reportArtifacts" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Diagnostics and Caveats</div>
+            <div id="reportDiagnostics" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">SBOM References</div>
+            <div id="reportSbomRefs" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Provenance Hashes</div>
+            <div id="reportProvenanceHashes" class="reference-list"></div>
+          </div>
+          <div>
+            <div class="group-title explorer-title">Known Limitations</div>
+            <div id="reportLimitations" class="reference-list"></div>
+          </div>
         </div>
         <div class="small license-note">
           Research-only public use; all other rights reserved. This workbench is not a production decision system.
