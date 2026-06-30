@@ -67,6 +67,10 @@
         <span class="rail-icon" aria-hidden="true">L</span>
         <span>Labels</span>
       </a>
+      <a class="workflow-link" href="#observationReviewWorkspace">
+        <span class="rail-icon" aria-hidden="true">Q</span>
+        <span>Review</span>
+      </a>
       <a class="workflow-link" href="#workspace-core-pack">
         <span class="rail-icon" aria-hidden="true">C</span>
         <span>Core Pack</span>
@@ -209,8 +213,11 @@
               <button id="bookmarkBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#128279;</span> Bookmark</button>
             </div>
           </section>
+          <div id="caption" class="caption status-caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
+        </div>
+      </div>
 
-          <section id="observationReviewWorkspace" class="control-group observation-review-workspace" aria-label="Observation review and QA workspace">
+      <section id="observationReviewWorkspace" class="control-group observation-review-workspace" aria-label="Observation review and QA workspace">
             <div class="group-title">Observation Review</div>
             <div id="observationReviewStatus" class="small inspector-status">No submitted observations yet.</div>
             <div id="observationReviewSummary" class="metadata-panel"></div>
@@ -291,10 +298,7 @@
               <div class="group-title explorer-title">Immutable Review Ledger</div>
               <div id="observationReviewLedger" class="reference-list compact-reference-list"></div>
             </div>
-          </section>
-          <div id="caption" class="caption status-caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
-        </div>
-      </div>
+      </section>
     </section>
 
     <aside class="research-inspector" aria-label="Research inspector">
