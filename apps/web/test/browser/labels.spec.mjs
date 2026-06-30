@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 
+import { transformSourceToViewportPoint } from "../../../../packages/core/src/observations/index.js";
 import { EXPERT_QUEUE_TARGETS, LABEL_WORKFLOW_TARGETS } from "./fixtures/legacy-targets.mjs";
 import {
   annotateTargets,
@@ -130,4 +131,90 @@ test("pins tile observation targets and requires notes before synced submission"
   await expect.poll(() => labelCount(page)).toBe(0);
   await expect.poll(() => observationCount(page)).toBe(0);
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(0);
+});
+
+test("keeps pinned source coordinates stable after viewer transforms", async ({ page }) => {
+  await openWorkbench(page);
+  await disableSimulation(page);
+
+  await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 100%; rotation 0 deg; pan 0, 0.");
+  await page.locator("#zoomInBtn").click();
+  await page.locator("#zoomInBtn").click();
+  await page.locator("#panRightBtn").click();
+  await page.locator("#panDownBtn").click();
+  await page.locator("#rotateRightBtn").click();
+  await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 150%; rotation 90 deg; pan 32, 32.");
+
+  const viewport = await page.locator("#tileCanvasWrap").boundingBox();
+  const clickPoint = transformSourceToViewportPoint({
+    xNorm: 0.42,
+    yNorm: 0.32,
+    width: viewport.width,
+    height: viewport.height,
+    transform: { zoom: 1.5, panX: 32, panY: 32, rotationDeg: 90 },
+  });
+  expect(clickPoint.x).toBeGreaterThan(0);
+  expect(clickPoint.x).toBeLessThan(viewport.width);
+  expect(clickPoint.y).toBeGreaterThan(0);
+  expect(clickPoint.y).toBeLessThan(viewport.height);
+
+  await page.locator("#tileCanvasWrap").click({ position: clickPoint });
+  await expect(page.locator("#tileObservationStatus")).toContainText("Pinned top center");
+  await expect(page.locator(".observation-marker.pending")).toHaveCount(1);
+
+  const pending = await page.evaluate(() => window.COSMOS_CQA_APP.state.pendingObservation);
+  expect(pending).toMatchObject({
+    zone_id: "r1c2",
+    zone_label: "top center",
+  });
+  expect(pending.x_norm).toBeGreaterThan(0.418);
+  expect(pending.x_norm).toBeLessThan(0.422);
+  expect(pending.y_norm).toBeGreaterThan(0.318);
+  expect(pending.y_norm).toBeLessThan(0.322);
+  await expect
+    .poll(async () => {
+      const viewportAfterPin = await page.locator("#tileCanvasWrap").boundingBox();
+      const marker = await page.locator(".observation-marker.pending").boundingBox();
+      if (!viewportAfterPin || !marker) {
+        return 999;
+      }
+
+      const markerCenter = {
+        x: marker.x + marker.width / 2,
+        y: marker.y + marker.height / 2,
+      };
+      const expectedMarkerPoint = transformSourceToViewportPoint({
+        xNorm: pending.x_norm,
+        yNorm: pending.y_norm,
+        width: viewportAfterPin.width,
+        height: viewportAfterPin.height,
+        transform: { zoom: 1.5, panX: 32, panY: 32, rotationDeg: 90 },
+      });
+
+      return Math.max(
+        Math.abs(markerCenter.x - (viewportAfterPin.x + expectedMarkerPoint.x)),
+        Math.abs(markerCenter.y - (viewportAfterPin.y + expectedMarkerPoint.y)),
+      );
+    })
+    .toBeLessThan(4);
+
+  await page.locator("#note").fill("transformed viewer click stays linked to source tile coordinates");
+  await page.locator("#submitBtn").click();
+  const observation = await firstStoredObservation(page);
+  expect(observation).toMatchObject({
+    zone_id: "r1c2",
+  });
+  expect(observation.x_norm).toBeGreaterThan(0.418);
+  expect(observation.x_norm).toBeLessThan(0.422);
+  expect(observation.y_norm).toBeGreaterThan(0.318);
+  expect(observation.y_norm).toBeLessThan(0.322);
+
+  await page.locator("#resetViewBtn").click();
+  await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 100%; rotation 0 deg; pan 0, 0.");
+  await expect.poll(() => page.evaluate(() => window.COSMOS_CQA_APP.state.viewerTransform)).toEqual({
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+    rotationDeg: 0,
+  });
 });

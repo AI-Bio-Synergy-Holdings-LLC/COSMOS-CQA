@@ -1,6 +1,20 @@
 import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
 
 export const TILE_OBSERVATION_GRID_SIZE = 3;
+export const DEFAULT_VIEWER_TRANSFORM = Object.freeze({
+  zoom: 1,
+  panX: 0,
+  panY: 0,
+  rotationDeg: 0,
+});
+export const VIEWER_TRANSFORM_LIMITS = Object.freeze({
+  minZoom: 1,
+  maxZoom: 4,
+  zoomStep: 0.25,
+  panStep: 32,
+  maxPan: 320,
+  rotationStepDeg: 90,
+});
 
 const ROW_LABELS = ["top", "middle", "bottom"];
 const COL_LABELS = ["left", "center", "right"];
@@ -26,6 +40,73 @@ export function normalizeObservationCoordinate(value) {
 
 export function roundObservationCoordinate(value) {
   return Number(normalizeObservationCoordinate(value).toFixed(4));
+}
+
+export function normalizeViewerTransform(transform = {}) {
+  return {
+    zoom: clampNumber(transform.zoom, VIEWER_TRANSFORM_LIMITS.minZoom, VIEWER_TRANSFORM_LIMITS.maxZoom, DEFAULT_VIEWER_TRANSFORM.zoom),
+    panX: clampNumber(transform.panX, -VIEWER_TRANSFORM_LIMITS.maxPan, VIEWER_TRANSFORM_LIMITS.maxPan, DEFAULT_VIEWER_TRANSFORM.panX),
+    panY: clampNumber(transform.panY, -VIEWER_TRANSFORM_LIMITS.maxPan, VIEWER_TRANSFORM_LIMITS.maxPan, DEFAULT_VIEWER_TRANSFORM.panY),
+    rotationDeg: normalizeRotation(transform.rotationDeg),
+  };
+}
+
+export function transformSourceToViewportPoint({ xNorm, yNorm, width = 1, height = width, transform = DEFAULT_VIEWER_TRANSFORM } = {}) {
+  const view = normalizeViewerTransform(transform);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const scaledX = (normalizeObservationCoordinate(xNorm) * width - centerX) * view.zoom;
+  const scaledY = (normalizeObservationCoordinate(yNorm) * height - centerY) * view.zoom;
+  const angle = toRadians(view.rotationDeg);
+  const rotatedX = scaledX * Math.cos(angle) - scaledY * Math.sin(angle);
+  const rotatedY = scaledX * Math.sin(angle) + scaledY * Math.cos(angle);
+
+  return {
+    x: centerX + rotatedX + view.panX,
+    y: centerY + rotatedY + view.panY,
+  };
+}
+
+export function createViewerTransformMatrix({ width = 1, height = width, transform = DEFAULT_VIEWER_TRANSFORM } = {}) {
+  const view = normalizeViewerTransform(transform);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const angle = toRadians(view.rotationDeg);
+  const a = view.zoom * Math.cos(angle);
+  const b = view.zoom * Math.sin(angle);
+  const c = -view.zoom * Math.sin(angle);
+  const d = view.zoom * Math.cos(angle);
+  const e = centerX + view.panX - (a * centerX + c * centerY);
+  const f = centerY + view.panY - (b * centerX + d * centerY);
+
+  return {
+    a,
+    b,
+    c,
+    d,
+    e,
+    f,
+    css: `matrix(${formatMatrixNumber(a)}, ${formatMatrixNumber(b)}, ${formatMatrixNumber(c)}, ${formatMatrixNumber(d)}, ${formatMatrixNumber(e)}, ${formatMatrixNumber(f)})`,
+  };
+}
+
+export function transformViewportPointToSource({ x, y, width = 1, height = width, transform = DEFAULT_VIEWER_TRANSFORM } = {}) {
+  const view = normalizeViewerTransform(transform);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const translatedX = Number(x || 0) - centerX - view.panX;
+  const translatedY = Number(y || 0) - centerY - view.panY;
+  const angle = toRadians(view.rotationDeg);
+  const sourceX = (translatedX * Math.cos(angle) + translatedY * Math.sin(angle)) / view.zoom + centerX;
+  const sourceY = (-translatedX * Math.sin(angle) + translatedY * Math.cos(angle)) / view.zoom + centerY;
+  const xRaw = sourceX / width;
+  const yRaw = sourceY / height;
+
+  return {
+    x_norm: roundObservationCoordinate(xRaw),
+    y_norm: roundObservationCoordinate(yRaw),
+    in_bounds: xRaw >= 0 && xRaw <= 1 && yRaw >= 0 && yRaw <= 1,
+  };
 }
 
 export function getTileObservationZone({ xNorm, yNorm, gridSize = TILE_OBSERVATION_GRID_SIZE }) {
@@ -140,4 +221,28 @@ function countRecords(records, getKey, getLabel) {
   }
 
   return [...counts.values()].sort((left, right) => right.count - left.count || left.key.localeCompare(right.key));
+}
+
+function clampNumber(value, min, max, fallback) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return fallback;
+  }
+  return Math.min(max, Math.max(min, numeric));
+}
+
+function normalizeRotation(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return DEFAULT_VIEWER_TRANSFORM.rotationDeg;
+  }
+  return ((numeric % 360) + 360) % 360;
+}
+
+function toRadians(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+
+function formatMatrixNumber(value) {
+  return Number(value.toFixed(6));
 }

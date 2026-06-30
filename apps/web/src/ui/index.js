@@ -33,11 +33,17 @@ import {
 import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
 import { createSbom, createSbomReference, createValidationReport, downloadBlob, downloadCsv, downloadJson } from "../reports/index.js";
 import {
+  DEFAULT_VIEWER_TRANSFORM,
   TILE_OBSERVATION_ZONE_CELLS,
+  VIEWER_TRANSFORM_LIMITS,
   createTileObservation,
+  createViewerTransformMatrix,
   getTileObservationZone,
+  normalizeViewerTransform,
   roundObservationCoordinate,
   summarizeTileObservations,
+  transformSourceToViewportPoint,
+  transformViewportPointToSource,
 } from "../observations/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
@@ -114,13 +120,26 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     renderCorePackExplorer();
     renderObservationOverlay();
     updateObservationSubmissionState();
+    renderViewerTransform();
   }
 
   function handleObservationPointer(event) {
-    const rect = dom.tileCanvas.getBoundingClientRect();
+    const rect = dom.tileCanvasWrap.getBoundingClientRect();
+    const source = transformViewportPointToSource({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+      transform: state.viewerTransform,
+    });
+    if (!source.in_bounds) {
+      setCaption("Click inside the transformed tile image to pin an observation target.");
+      return;
+    }
+
     pinObservationTarget({
-      xNorm: (event.clientX - rect.left) / rect.width,
-      yNorm: (event.clientY - rect.top) / rect.height,
+      xNorm: source.x_norm,
+      yNorm: source.y_norm,
     });
   }
 
@@ -148,6 +167,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     updateObservationSubmissionState();
     setCaption(`Observation target pinned in ${zone.zone_label}. Add a note, then submit.`);
     dom.note.focus();
+    scheduleObservationOverlayRender();
     notifyTestBridge("tileObservation.pinned", { pendingObservation: state.pendingObservation });
   }
 
@@ -191,11 +211,24 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
   }
 
+  function scheduleObservationOverlayRender() {
+    const requestFrame = windowRef.requestAnimationFrame || ((callback) => windowRef.setTimeout(callback, 0));
+    requestFrame(() => renderObservationOverlay());
+  }
+
   function appendObservationMarker(observation, status) {
+    const rect = dom.tileCanvasWrap.getBoundingClientRect();
+    const point = transformSourceToViewportPoint({
+      xNorm: observation.x_norm,
+      yNorm: observation.y_norm,
+      width: rect.width || 1,
+      height: rect.height || rect.width || 1,
+      transform: state.viewerTransform,
+    });
     const marker = documentRef.createElement("span");
     marker.className = `observation-marker ${status}`;
-    marker.style.setProperty("--x", String(observation.x_norm));
-    marker.style.setProperty("--y", String(observation.y_norm));
+    marker.style.left = `${point.x}px`;
+    marker.style.top = `${point.y}px`;
     marker.title = `${status === "pending" ? "Pending" : "Submitted"} observation: ${observation.zone_label}`;
     dom.tileObservationMarkers.appendChild(marker);
   }
@@ -226,6 +259,32 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.pendingObservation = null;
     renderObservationOverlay();
     return observation;
+  }
+
+  function adjustViewerTransform(patch) {
+    state.viewerTransform = normalizeViewerTransform({
+      ...state.viewerTransform,
+      ...patch,
+    });
+    renderViewerTransform();
+    renderObservationOverlay();
+  }
+
+  function renderViewerTransform() {
+    if (!dom.tileTransformLayer || !dom.viewerTransformStatus) {
+      return;
+    }
+
+    const view = normalizeViewerTransform(state.viewerTransform || DEFAULT_VIEWER_TRANSFORM);
+    const rect = dom.tileCanvasWrap.getBoundingClientRect();
+    const matrix = createViewerTransformMatrix({
+      width: rect.width || 1,
+      height: rect.height || rect.width || 1,
+      transform: view,
+    });
+    state.viewerTransform = view;
+    dom.tileTransformLayer.style.transform = matrix.css;
+    dom.viewerTransformStatus.textContent = `Zoom ${Math.round(view.zoom * 100)}%; rotation ${view.rotationDeg} deg; pan ${view.panX}, ${view.panY}.`;
   }
 
   function renderTilePassport(tile = tiles[state.idx]) {
@@ -2020,12 +2079,34 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       setCaption(dom.captionsChk.checked ? "Captions on." : "");
       recalcKPIs();
     });
-    dom.tileCanvas.addEventListener("click", handleObservationPointer);
+    dom.tileCanvasWrap.addEventListener("click", handleObservationPointer);
     dom.tileObservationOverlay.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         pinObservationTarget({ xNorm: 0.5, yNorm: 0.5 });
       }
+    });
+    dom.zoomOutBtn.addEventListener("click", () => {
+      adjustViewerTransform({ zoom: state.viewerTransform.zoom - VIEWER_TRANSFORM_LIMITS.zoomStep });
+      setCaption("Viewer zoomed out.");
+    });
+    dom.zoomInBtn.addEventListener("click", () => {
+      adjustViewerTransform({ zoom: state.viewerTransform.zoom + VIEWER_TRANSFORM_LIMITS.zoomStep });
+      setCaption("Viewer zoomed in.");
+    });
+    dom.panLeftBtn.addEventListener("click", () => adjustViewerTransform({ panX: state.viewerTransform.panX - VIEWER_TRANSFORM_LIMITS.panStep }));
+    dom.panRightBtn.addEventListener("click", () => adjustViewerTransform({ panX: state.viewerTransform.panX + VIEWER_TRANSFORM_LIMITS.panStep }));
+    dom.panUpBtn.addEventListener("click", () => adjustViewerTransform({ panY: state.viewerTransform.panY - VIEWER_TRANSFORM_LIMITS.panStep }));
+    dom.panDownBtn.addEventListener("click", () => adjustViewerTransform({ panY: state.viewerTransform.panY + VIEWER_TRANSFORM_LIMITS.panStep }));
+    dom.rotateLeftBtn.addEventListener("click", () =>
+      adjustViewerTransform({ rotationDeg: state.viewerTransform.rotationDeg - VIEWER_TRANSFORM_LIMITS.rotationStepDeg }),
+    );
+    dom.rotateRightBtn.addEventListener("click", () =>
+      adjustViewerTransform({ rotationDeg: state.viewerTransform.rotationDeg + VIEWER_TRANSFORM_LIMITS.rotationStepDeg }),
+    );
+    dom.resetViewBtn.addEventListener("click", () => {
+      adjustViewerTransform(DEFAULT_VIEWER_TRANSFORM);
+      setCaption("Viewer transform reset.");
     });
     dom.clearObservationBtn.addEventListener("click", () => clearPendingObservation());
     dom.note.addEventListener("input", updateObservationSubmissionState);
@@ -2066,6 +2147,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     });
     dom.fileInput.addEventListener("change", handleFileLoad);
     windowRef.addEventListener("hashchange", () => restoreBookmarkFromHash({ notifyMissing: true }));
+    windowRef.addEventListener("resize", renderViewerTransform);
   }
 
   function init() {
@@ -2190,6 +2272,8 @@ function bindDom(documentRef) {
   const get = (id) => documentRef.getElementById(id);
 
   return {
+    tileCanvasWrap: get("tileCanvasWrap"),
+    tileTransformLayer: get("tileTransformLayer"),
     tileCanvas: get("tileCanvas"),
     tileObservationOverlay: get("tileObservationOverlay"),
     tileObservationMarkers: get("tileObservationMarkers"),
@@ -2201,6 +2285,16 @@ function bindDom(documentRef) {
     overlaySel: get("overlaySel"),
     paletteSel: get("paletteSel"),
     fullscreenBtn: get("fullscreenBtn"),
+    zoomOutBtn: get("zoomOutBtn"),
+    zoomInBtn: get("zoomInBtn"),
+    panLeftBtn: get("panLeftBtn"),
+    panUpBtn: get("panUpBtn"),
+    panDownBtn: get("panDownBtn"),
+    panRightBtn: get("panRightBtn"),
+    rotateLeftBtn: get("rotateLeftBtn"),
+    rotateRightBtn: get("rotateRightBtn"),
+    resetViewBtn: get("resetViewBtn"),
+    viewerTransformStatus: get("viewerTransformStatus"),
     playBtn: get("playBtn"),
     loopBtn: get("loopBtn"),
     rateSel: get("rateSel"),

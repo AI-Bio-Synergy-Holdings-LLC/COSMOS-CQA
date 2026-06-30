@@ -9,7 +9,7 @@ The current entrypoint is `src/index.js`, with submodule entrypoints for:
 - `evidence`: research session and evidence bundle helpers
 - `feeds`: feed parsing, normalization, and validation helpers
 - `labels`: label export and CSV helpers
-- `observations`: spatial tile-observation coordinate, zone taxonomy, and summary helpers
+- `observations`: spatial tile-observation coordinate, viewer-transform mapping, zone taxonomy, and summary helpers
 - `metrics`: PR-AUC, reliability, latency, and accessibility helpers
 - `provenance`: build info and bookmark payload helpers
 - `research-artifacts`: feed/Core Pack payload classification, hashing, and artifact records
