@@ -32,7 +32,7 @@ The public project does not expose or imply proprietary future diagnostic claims
 
 Tile observation pins are interpreted as reviewer-authored source-tile location cues. The detailed note boundary is maintained in `docs/tile-observation-notes.md`.
 
-Observation review events record create, edit, delete, and restore workflow history. Reviewer confidence, review status, and adjudication/consensus placeholders are audit fields only; they do not establish validated detections or scientific consensus.
+Observation review events record create, edit, delete, restore, and adjudication-queue workflow history. Reviewer confidence, review status, queue decisions, and adjudication/consensus placeholders are audit fields only; they do not establish validated detections or scientific consensus.
 
 ## How The Sonic Loop Must Be Explained
 

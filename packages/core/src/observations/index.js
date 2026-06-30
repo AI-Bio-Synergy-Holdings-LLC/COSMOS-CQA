@@ -1,6 +1,7 @@
 import {
   ARTIFACT_CLASSES,
   CONTRACT_SCHEMA_VERSION,
+  OBSERVATION_ADJUDICATION_DECISIONS,
   OBSERVATION_CONSENSUS_STATUSES,
   OBSERVATION_REVIEW_CLAIM_BOUNDARY,
   OBSERVATION_REVIEW_EVENT_ACTIONS,
@@ -31,6 +32,29 @@ const OBSERVATION_CLAIM_BOUNDARY =
   "Reviewer-authored spatial target; interpret as a source-tile location cue, not measured sky coordinates or a validated detection.";
 const DEFAULT_REVIEW_STATUS = "pending-review";
 const DEFAULT_CONSENSUS_STATUS = "not-assessed";
+const ADJUDICATION_DECISION_CONFIG = Object.freeze({
+  defer: Object.freeze({
+    action: "adjudication-defer",
+    reviewStatus: "needs-adjudication",
+    consensusStatus: "needs-adjudication",
+    adjudicationState: "adjudication deferred placeholder; independent expert review still required before consensus claims",
+    summary: "Adjudication deferred; independent expert review remains required.",
+  }),
+  "request-second-review": Object.freeze({
+    action: "adjudication-second-review",
+    reviewStatus: "needs-adjudication",
+    consensusStatus: "needs-adjudication",
+    adjudicationState: "second-review requested placeholder; no validated scientific consensus claim",
+    summary: "Second review requested; consensus remains unresolved.",
+  }),
+  "mark-reviewed": Object.freeze({
+    action: "adjudication-reviewed",
+    reviewStatus: "reviewed",
+    consensusStatus: "single-reviewer",
+    adjudicationState: "single-reviewer QA completion only; not validated scientific consensus",
+    summary: "Observation marked reviewed after adjudication queue triage; no scientific consensus claim.",
+  }),
+});
 
 export const TILE_OBSERVATION_ZONE_CELLS = Object.freeze(
   ROW_LABELS.flatMap((rowLabel, rowIndex) =>
@@ -206,6 +230,7 @@ export function createObservationReviewEvent({
   revision = observation?.review_revision || 0,
   eventSummary,
   activeAfter = action !== "delete",
+  adjudicationDecision,
   adjudicationState = observation?.adjudication_state,
   adjudicationNote = observation?.adjudication_note,
 } = {}) {
@@ -215,6 +240,10 @@ export function createObservationReviewEvent({
   const normalizedAction = normalizeReviewChoice(action, OBSERVATION_REVIEW_EVENT_ACTIONS, "event action");
   const normalizedStatus = normalizeReviewChoice(reviewStatus, OBSERVATION_REVIEW_STATUSES, "status");
   const normalizedConsensus = normalizeReviewChoice(consensusStatus, OBSERVATION_CONSENSUS_STATUSES, "consensus status");
+  const normalizedDecision =
+    adjudicationDecision === undefined
+      ? undefined
+      : normalizeReviewChoice(adjudicationDecision, OBSERVATION_ADJUDICATION_DECISIONS, "adjudication decision");
   const normalizedEventIndex = Math.max(0, Number.parseInt(eventIndex, 10) || 0);
   const normalizedRevision = Math.max(0, Number.parseInt(revision, 10) || 0);
   const summary = String(eventSummary || defaultReviewEventSummary(normalizedAction, observation, normalizedStatus)).trim().slice(0, 512);
@@ -240,6 +269,7 @@ export function createObservationReviewEvent({
       event_summary: summary || "Observation review event recorded.",
       active_after: Boolean(activeAfter),
       claim_boundary: OBSERVATION_REVIEW_CLAIM_BOUNDARY,
+      adjudication_decision: normalizedDecision,
       adjudication_state: adjudicationState ? String(adjudicationState).slice(0, 256) : undefined,
       adjudication_note: adjudicationNote ? String(adjudicationNote).slice(0, 512) : undefined,
     }),
@@ -301,6 +331,45 @@ export function updateTileObservationReview({
     observation: nextObservation,
     label: nextLabel,
     edit_summary: reviewFields.edit_summary,
+  };
+}
+
+export function adjudicateTileObservationReview({
+  observation,
+  label,
+  decision = "defer",
+  note = "",
+  updatedAt = new Date().toISOString(),
+  updatedBy = observation?.volunteer_id || label?.volunteer_id || "local-reviewer",
+} = {}) {
+  const normalizedDecision = normalizeReviewChoice(decision, OBSERVATION_ADJUDICATION_DECISIONS, "adjudication decision");
+  const config = ADJUDICATION_DECISION_CONFIG[normalizedDecision];
+  const adjudicationNote = String(note || "").trim().slice(0, 512);
+  if (!adjudicationNote) {
+    throw new TypeError("Adjudication note is required before recording a queue decision.");
+  }
+  const result = updateTileObservationReview({
+    observation,
+    label,
+    updates: {
+      clazz: observation?.clazz,
+      severity: observation?.severity,
+      note: observation?.note || label?.note,
+      reviewStatus: config.reviewStatus,
+      reviewerConfidence: observation?.reviewer_confidence ?? label?.weight ?? 0.5,
+      consensusStatus: config.consensusStatus,
+      adjudicationState: config.adjudicationState,
+      adjudicationNote,
+    },
+    updatedAt,
+    updatedBy,
+  });
+
+  return {
+    ...result,
+    adjudication_decision: normalizedDecision,
+    event_action: config.action,
+    event_summary: `${config.summary} Note: ${adjudicationNote}`,
   };
 }
 
@@ -412,6 +481,15 @@ function defaultReviewEventSummary(action, observation, reviewStatus) {
   }
   if (action === "restore") {
     return `Observation restored to active evidence exports at ${zone}.`;
+  }
+  if (action === "adjudication-defer") {
+    return `Adjudication deferred at ${zone}; independent review remains required.`;
+  }
+  if (action === "adjudication-second-review") {
+    return `Second review requested at ${zone}; consensus remains unresolved.`;
+  }
+  if (action === "adjudication-reviewed") {
+    return `Observation marked reviewed from adjudication queue at ${zone}; no scientific consensus claim.`;
   }
   return `Observation review event recorded at ${zone}.`;
 }

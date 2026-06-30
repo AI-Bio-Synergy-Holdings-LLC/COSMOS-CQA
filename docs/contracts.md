@@ -19,7 +19,7 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 
 - `labelRecord`: local volunteer label records before export.
 - `tileObservation`: linked spatial observation target for a submitted label, with normalized tile coordinates, deterministic grid zone, zone taxonomy, required note, overlay/palette state, and timestamp.
-- `observationReviewEvent`: append-only review ledger event for create, edit, delete, and restore actions, with reviewer confidence, workflow status, consensus/adjudication placeholder state, active-export state, and claim-boundary text.
+- `observationReviewEvent`: append-only review ledger event for create, edit, delete, restore, and adjudication-queue placeholder actions, with reviewer confidence, workflow status, consensus/adjudication placeholder state, optional queue decision, active-export state, and claim-boundary text.
 - `observationQaMetric`: per-tile or per-zone QA metric row for active observation counts, reviewed counts, adjudication-needed counts, ledger event counts, and average reviewer confidence.
 - `tileObservationSummary`: derived observation evidence counts by tile, zone, row band, column band, radial band, class, severity, review status, consensus placeholder status, and QA metrics.
 - `labelExportRow`: flattened CSV export rows with optional expert adjudication and tile-observation fields.
@@ -43,7 +43,7 @@ Checklist targets may include `covered_by` entries that point to automated tests
 
 Research sessions are intended to capture what was loaded, selected, generated, and reviewed during a reproducible COSMOS-CQA workflow. Evidence bundles are the portable citation/review layer for those sessions. They do not certify scientific validity or production readiness on their own; claim boundaries remain governed by `docs/claim-boundaries.md` and `docs/scientific-scope.md`.
 
-Spatial observation notes are interpreted under `docs/tile-observation-notes.md`. They are reviewer-authored location cues inside the reviewed tile, not measured sky coordinates or validated detections. Observation review ledger fields are QA workflow records only; `needs-adjudication` and consensus placeholder values do not create scientific validation claims.
+Spatial observation notes are interpreted under `docs/tile-observation-notes.md`. They are reviewer-authored location cues inside the reviewed tile, not measured sky coordinates or validated detections. Observation review ledger fields are QA workflow records only; `needs-adjudication`, adjudication queue decisions, and consensus placeholder values do not create scientific validation claims.
 
 ## Verification
 

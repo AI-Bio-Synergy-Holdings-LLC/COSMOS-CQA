@@ -17,6 +17,7 @@ import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../.
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   DEFAULT_VIEWER_TRANSFORM,
+  adjudicateTileObservationReview,
   createObservationReviewEvent,
   createTileObservation,
   createTileObservationTaxonomy,
@@ -213,6 +214,40 @@ test("tile observation records link normalized targets to labels", () => {
   assert.equal(editedSummary.needs_adjudication_count, 1);
   assert.equal(editedSummary.zone_qa_metrics[0].ledger_event_count, 2);
 
+  const adjudication = adjudicateTileObservationReview({
+    observation: review.observation,
+    label: review.label,
+    decision: "mark-reviewed",
+    note: "queue triage complete after independent reviewer routing placeholder",
+    updatedAt: "2026-06-29T12:10:00.000Z",
+    updatedBy: "reviewer_contract",
+  });
+  assertContract("tileObservation", adjudication.observation);
+  assertContract("labelRecord", adjudication.label);
+  assert.equal(adjudication.event_action, "adjudication-reviewed");
+  assert.equal(adjudication.adjudication_decision, "mark-reviewed");
+  assert.equal(adjudication.observation.review_revision, 2);
+  assert.equal(adjudication.observation.review_status, "reviewed");
+  assert.equal(adjudication.observation.consensus_status, "single-reviewer");
+  assert.match(adjudication.observation.adjudication_state, /single-reviewer QA/);
+  const adjudicationEvent = createObservationReviewEvent({
+    action: adjudication.event_action,
+    observation: adjudication.observation,
+    label: adjudication.label,
+    eventIndex: 2,
+    eventTs: "2026-06-29T12:10:00.000Z",
+    eventSummary: adjudication.event_summary,
+    adjudicationDecision: adjudication.adjudication_decision,
+  });
+  assertContract("observationReviewEvent", adjudicationEvent);
+  assert.equal(adjudicationEvent.adjudication_decision, "mark-reviewed");
+  assert.equal(adjudicationEvent.review_status, "reviewed");
+  assert.equal(adjudicationEvent.consensus_status, "single-reviewer");
+  assert.throws(
+    () => adjudicateTileObservationReview({ observation: review.observation, label: review.label, decision: "defer", note: "" }),
+    /Adjudication note is required/,
+  );
+
   const rows = labelsToRows([label], [tile], [], [observation]);
   assert.equal(rows[0].observation_id, observation.observation_id);
   assert.equal(rows[0].observation_zone_label, "top center");
@@ -267,6 +302,7 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof createViewerTransformMatrix, "function");
   assert.equal(typeof transformViewportPointToSource, "function");
   assert.equal(typeof updateTileObservationReview, "function");
+  assert.equal(typeof adjudicateTileObservationReview, "function");
   assert.deepEqual(DEFAULT_VIEWER_TRANSFORM, { zoom: 1, panX: 0, panY: 0, rotationDeg: 0 });
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");

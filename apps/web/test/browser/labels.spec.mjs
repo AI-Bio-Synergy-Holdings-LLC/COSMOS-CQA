@@ -260,6 +260,11 @@ test("reviews submitted observations with synced edit delete restore and export 
   await expect(page.locator("#observationReviewAudit")).toContainText("edited revision 1");
   await expect(page.locator("#observationReviewAudit")).toContainText("needs-adjudication");
   await expect(page.locator("#observationReviewLedger")).toContainText("1: edit");
+  await expect(page.locator("#adjudicationQueueStatus")).toContainText("1 observation");
+  await expect(page.locator("#adjudicationQueueList .observation-review-row")).toHaveCount(1);
+  await expect(page.locator("#adjudicationQueueList .observation-review-row")).toHaveClass(/active/);
+  await expect(page.locator("#adjudicationQueueDetails")).toContainText("needs-adjudication");
+  await expect(page.locator("#adjudicationLedger")).toContainText("1: edit");
   await expect(page.locator("#evidenceObservations")).toContainText("review=edited:1");
   await expect(page.locator("#evidenceObservations")).toContainText("confidence=0.85");
   await expect(page.locator("#evidenceReviewLedger")).toContainText("not validated detections");
@@ -309,6 +314,61 @@ test("reviews submitted observations with synced edit delete restore and export 
   expect(report.observation_review_events.map((event) => event.action)).toEqual(["create", "edit"]);
   expect(report.checks.find((check) => check.name === "tile observation targets").detail).toContain("2 immutable review ledger event");
 
+  await expect(page.locator("#applyAdjudicationDecisionBtn")).toBeDisabled();
+  await page.locator("#adjudicationDecisionSel").selectOption("request-second-review");
+  await page.locator("#adjudicationNote").fill("request a second review before any consensus interpretation");
+  await page.locator("#applyAdjudicationDecisionBtn").click();
+  await expect(page.locator("#caption")).toContainText("request-second-review");
+  await expect(page.locator("#observationReviewAudit")).toContainText("edited revision 2");
+  await expect(page.locator("#observationReviewAudit")).toContainText("needs-adjudication");
+  await expect(page.locator("#adjudicationQueueStatus")).toContainText("1 observation");
+  await expect(page.locator("#observationReviewLedger")).toContainText("2: adjudication-second-review");
+  await expect(page.locator("#adjudicationLedger")).toContainText("decision=request-second-review");
+  const secondReviewObservation = await firstStoredObservation(page);
+  expect(secondReviewObservation).toMatchObject({
+    review_revision: 2,
+    review_status: "needs-adjudication",
+    consensus_status: "needs-adjudication",
+  });
+  expect(secondReviewObservation.adjudication_note).toContain("second review");
+
+  await page.locator("#adjudicationDecisionSel").selectOption("mark-reviewed");
+  await page.locator("#adjudicationNote").fill("triage complete as a single-reviewer QA workflow state only");
+  await page.locator("#applyAdjudicationDecisionBtn").click();
+  await expect(page.locator("#caption")).toContainText("mark-reviewed");
+  await expect(page.locator("#adjudicationQueueStatus")).toContainText("No observations are waiting");
+  await expect(page.locator("#adjudicationQueueDetails")).toContainText("No queued observation selected");
+  await expect(page.locator("#observationReviewAudit")).toContainText("edited revision 3");
+  await expect(page.locator("#observationReviewAudit")).toContainText("reviewed");
+  await expect(page.locator("#observationReviewLedger")).toContainText("3: adjudication-reviewed");
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("decision=mark-reviewed");
+  await expect(page.locator("#reportReviewLedger")).toContainText("adjudication-reviewed");
+  const adjudicatedObservation = await firstStoredObservation(page);
+  expect(adjudicatedObservation).toMatchObject({
+    review_revision: 3,
+    review_status: "reviewed",
+    consensus_status: "single-reviewer",
+  });
+  expect(adjudicatedObservation.adjudication_state).toContain("single-reviewer QA");
+  const eventsAfterAdjudication = await page.evaluate(() => JSON.parse(localStorage.getItem("observationReviewEvents") || "[]"));
+  expect(eventsAfterAdjudication.map((event) => event.action)).toEqual([
+    "create",
+    "edit",
+    "adjudication-second-review",
+    "adjudication-reviewed",
+  ]);
+  expect(eventsAfterAdjudication.at(-1)).toMatchObject({
+    adjudication_decision: "mark-reviewed",
+    review_status: "reviewed",
+    consensus_status: "single-reviewer",
+  });
+  const adjudicatedReport = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
+  expect(adjudicatedReport.observation_summary.review_status_counts[0]).toMatchObject({ key: "reviewed", count: 1 });
+  expect(adjudicatedReport.observation_summary.tile_qa_metrics[0]).toMatchObject({ key: "tile_001", ledger_event_count: 4, needs_adjudication_count: 0 });
+  expect(adjudicatedReport.checks.find((check) => check.name === "tile observation targets").detail).toContain(
+    "4 immutable review ledger event",
+  );
+
   await page.locator("#deleteObservationReviewBtn").click();
   await expect(page.locator("#caption")).toContainText("removed from active exports");
   await expect.poll(() => labelCount(page)).toBe(0);
@@ -316,10 +376,10 @@ test("reviews submitted observations with synced edit delete restore and export 
   await expect(page.locator("#observationReviewStatus")).toContainText("No submitted observations yet.");
   await expect(page.locator("#restoreObservationReviewBtn")).toBeEnabled();
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(0);
-  await expect(page.locator("#observationReviewLedger")).toContainText("2: delete");
+  await expect(page.locator("#observationReviewLedger")).toContainText("4: delete");
   const reportAfterDelete = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
   expect(reportAfterDelete.summary.observation_count).toBe(0);
-  expect(reportAfterDelete.summary.observation_review_event_count).toBe(3);
+  expect(reportAfterDelete.summary.observation_review_event_count).toBe(5);
   expect(reportAfterDelete.observation_review_events.at(-1)).toMatchObject({ action: "delete", active_after: false });
 
   await page.locator("#restoreObservationReviewBtn").click();
@@ -328,21 +388,29 @@ test("reviews submitted observations with synced edit delete restore and export 
   await expect.poll(() => observationCount(page)).toBe(1);
   await expect(page.locator(".observation-marker.selected")).toHaveCount(1);
   await expect(page.locator("#restoreObservationReviewBtn")).toBeDisabled();
-  await expect(page.locator("#observationReviewLedger")).toContainText("3: restore");
+  await expect(page.locator("#observationReviewLedger")).toContainText("5: restore");
   const restoredObservation = await firstStoredObservation(page);
   expect(restoredObservation).toMatchObject({
     review_state: "edited",
-    review_revision: 1,
-    review_status: "needs-adjudication",
+    review_revision: 3,
+    review_status: "reviewed",
+    consensus_status: "single-reviewer",
   });
 
   const bundle = await page.evaluate(() => window.COSMOS_CQA_APP.buildEvidenceBundle({ generatedAt: "2026-06-30T00:00:00.000Z" }));
   expect(bundle.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
   expect(bundle.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
-  expect(bundle.observation_summary.tile_qa_metrics[0]).toMatchObject({ key: "tile_001", ledger_event_count: 4, needs_adjudication_count: 1 });
-  expect(bundle.observation_review_events.map((event) => event.action)).toEqual(["create", "edit", "delete", "restore"]);
+  expect(bundle.observation_summary.tile_qa_metrics[0]).toMatchObject({ key: "tile_001", ledger_event_count: 6, needs_adjudication_count: 0 });
+  expect(bundle.observation_review_events.map((event) => event.action)).toEqual([
+    "create",
+    "edit",
+    "adjudication-second-review",
+    "adjudication-reviewed",
+    "delete",
+    "restore",
+  ]);
   expect(bundle.session.observation_review_events.map((event) => event.event_id)).toEqual(bundle.observation_review_events.map((event) => event.event_id));
-  expect(bundle.summary.observation_review_event_count).toBe(4);
+  expect(bundle.summary.observation_review_event_count).toBe(6);
 
   const sessionText = JSON.stringify(bundle.session);
   await page.evaluate(() => localStorage.clear());
@@ -350,8 +418,8 @@ test("reviews submitted observations with synced edit delete restore and export 
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
   const importResult = await page.evaluate((text) => window.COSMOS_CQA_APP.importResearchSessionText(text, { source: "browser-replay" }), sessionText);
   expect(importResult.ok).toBe(true);
-  await expect(page.locator("#evidenceReviewLedger")).toContainText("3: restore");
-  await expect(page.locator("#reportReviewLedger")).toContainText("needs-adjudication");
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("5: restore");
+  await expect(page.locator("#reportReviewLedger")).toContainText("adjudication-reviewed");
   const replayedEvents = await page.evaluate(() => window.COSMOS_CQA_APP.state.observationReviewEvents.map((event) => event.action));
-  expect(replayedEvents).toEqual(["create", "edit", "delete", "restore"]);
+  expect(replayedEvents).toEqual(["create", "edit", "adjudication-second-review", "adjudication-reviewed", "delete", "restore"]);
 });

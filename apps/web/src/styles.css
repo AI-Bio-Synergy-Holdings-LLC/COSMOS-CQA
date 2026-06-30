@@ -688,6 +688,30 @@ textarea:hover {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.adjudication-queue-panel {
+  border-top: 1px solid var(--border-soft);
+  display: grid;
+  gap: 9px;
+  padding-top: 10px;
+}
+
+.adjudication-queue-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.adjudication-detail-panel {
+  display: grid;
+  gap: 8px;
+}
+
+#adjudicationNote {
+  min-height: 72px;
+  resize: vertical;
+  width: 100%;
+}
+
 .compact-reference-list {
   max-height: 170px;
   overflow: auto;
@@ -1196,6 +1220,10 @@ details[open] summary {
 }
 
 @media (max-width: 760px) {
+  .app-header {
+    position: static;
+  }
+
   .research-shell {
     grid-template-areas:
       "rail"
@@ -1244,6 +1272,7 @@ details[open] summary {
   }
 
   .grid,
+  .adjudication-queue-grid,
   .observation-review-editor,
   .command-grid {
     grid-template-columns: 1fr;
