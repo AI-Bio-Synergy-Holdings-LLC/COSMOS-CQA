@@ -97,7 +97,11 @@ test("migrates remaining UI polish and responsive targets into browser automatio
   annotateTargets(UI_POLISH_TARGETS);
   await page.addInitScript(() => {
     Element.prototype.requestFullscreen = function requestFullscreen() {
-      window.__fullscreenRequestedFor = this.tagName;
+      window.__fullscreenRequestedFor = {
+        className: this.className,
+        id: this.id,
+        tagName: this.tagName,
+      };
       return Promise.resolve();
     };
   });
@@ -145,7 +149,12 @@ test("migrates remaining UI polish and responsive targets into browser automatio
   }
 
   await page.locator("#fullscreenBtn").click();
-  await expect.poll(() => page.evaluate(() => window.__fullscreenRequestedFor)).toBe("HTML");
+  await expect.poll(() => page.evaluate(() => window.__fullscreenRequestedFor)).toEqual({
+    className: "viewer",
+    id: "tileViewer",
+    tagName: "DIV",
+  });
+  await expect(page.locator("#caption")).toContainText("Tile viewer fullscreen requested.");
 
   await page.setViewportSize({ width: 390, height: 800 });
   await openWorkbench(page);

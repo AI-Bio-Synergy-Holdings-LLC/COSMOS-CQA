@@ -2057,7 +2057,20 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       drawTile(state.idx);
       recalcKPIs();
     });
-    dom.fullscreenBtn.addEventListener("click", () => documentRef.documentElement.requestFullscreen?.());
+    dom.fullscreenBtn.addEventListener("click", () => {
+      if (dom.tileViewer.requestFullscreen) {
+        const fullscreenRequest = dom.tileViewer.requestFullscreen();
+        if (fullscreenRequest?.then) {
+          fullscreenRequest
+            .then(() => setCaption("Tile viewer fullscreen requested."))
+            .catch(() => setCaption("Fullscreen is not available in this browser."));
+        } else {
+          setCaption("Tile viewer fullscreen requested.");
+        }
+      } else {
+        setCaption("Fullscreen is not available in this browser.");
+      }
+    });
     dom.playBtn.addEventListener("click", () => {
       audio.toggle();
       notifyTestBridge("audio.play", {
@@ -2272,6 +2285,7 @@ function bindDom(documentRef) {
   const get = (id) => documentRef.getElementById(id);
 
   return {
+    tileViewer: get("tileViewer"),
     tileCanvasWrap: get("tileCanvasWrap"),
     tileTransformLayer: get("tileTransformLayer"),
     tileCanvas: get("tileCanvas"),
