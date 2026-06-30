@@ -95,16 +95,18 @@
       </div>
       <div class="viewer">
         <div class="tile-stage">
-          <div class="tile-canvas-wrap">
-            <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
-            <div id="tileObservationOverlay" class="tile-observation-overlay" role="button" tabindex="0" aria-label="Pin an observation target on the tile">
-              <div class="zone-map" aria-hidden="true">
-                <span>top left</span><span>top center</span><span>top right</span>
-                <span>middle left</span><span>middle center</span><span>middle right</span>
-                <span>bottom left</span><span>bottom center</span><span>bottom right</span>
+          <div id="tileCanvasWrap" class="tile-canvas-wrap">
+            <div id="tileTransformLayer" class="tile-transform-layer">
+              <canvas id="tileCanvas" class="tile" width="512" height="512" aria-label="CMB/weak-lensing tile"></canvas>
+              <div id="tileObservationOverlay" class="tile-observation-overlay" role="button" tabindex="0" aria-label="Pin an observation target on the tile">
+                <div class="zone-map" aria-hidden="true">
+                  <span>top left</span><span>top center</span><span>top right</span>
+                  <span>middle left</span><span>middle center</span><span>middle right</span>
+                  <span>bottom left</span><span>bottom center</span><span>bottom right</span>
+                </div>
               </div>
-              <div id="tileObservationMarkers" class="tile-observation-markers" aria-hidden="true"></div>
             </div>
+            <div id="tileObservationMarkers" class="tile-observation-markers" aria-hidden="true"></div>
           </div>
           <div class="tile-observation-toolbar">
             <span id="tileObservationStatus" class="caption">Click a tile sector to pin an observation target before submitting a spatial note.</span>
@@ -140,6 +142,18 @@
                 <option value="cividis">Cividis (color-safe)</option>
               </select>
               <button id="fullscreenBtn" type="button" title="Fullscreen">Fullscreen</button>
+            </div>
+            <div class="viewer-tools" aria-label="Viewer transform controls">
+              <button id="zoomOutBtn" type="button" title="Zoom out">Zoom -</button>
+              <button id="zoomInBtn" type="button" title="Zoom in">Zoom +</button>
+              <button id="panLeftBtn" type="button" title="Pan left">Pan L</button>
+              <button id="panUpBtn" type="button" title="Pan up">Pan U</button>
+              <button id="panDownBtn" type="button" title="Pan down">Pan D</button>
+              <button id="panRightBtn" type="button" title="Pan right">Pan R</button>
+              <button id="rotateLeftBtn" type="button" title="Rotate left">Rot L</button>
+              <button id="rotateRightBtn" type="button" title="Rotate right">Rot R</button>
+              <button id="resetViewBtn" type="button" title="Reset viewer transform">Reset</button>
+              <span id="viewerTransformStatus" class="caption" aria-live="polite">Zoom 100%; rotation 0 deg; pan 0, 0.</span>
             </div>
           </section>
 

@@ -16,10 +16,15 @@ import {
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
+  DEFAULT_VIEWER_TRANSFORM,
   createTileObservation,
   createTileObservationTaxonomy,
+  createViewerTransformMatrix,
   getTileObservationZone,
+  normalizeViewerTransform,
   summarizeTileObservations,
+  transformSourceToViewportPoint,
+  transformViewportPointToSource,
 } from "../../../packages/core/src/observations/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
 import {
@@ -147,11 +152,49 @@ test("tile observation records link normalized targets to labels", () => {
   assert.ok(invalid.errors.some((error) => error.path === "tileObservation.note"));
 });
 
+test("viewer transforms round-trip source tile observation coordinates", () => {
+  const transform = normalizeViewerTransform({
+    zoom: 1.5,
+    panX: 32,
+    panY: 32,
+    rotationDeg: 90,
+  });
+  const viewport = transformSourceToViewportPoint({
+    xNorm: 0.42,
+    yNorm: 0.21,
+    width: 512,
+    height: 512,
+    transform,
+  });
+  const source = transformViewportPointToSource({
+    x: viewport.x,
+    y: viewport.y,
+    width: 512,
+    height: 512,
+    transform,
+  });
+
+  assert.deepEqual(transform, { zoom: 1.5, panX: 32, panY: 32, rotationDeg: 90 });
+  assert.match(createViewerTransformMatrix({ width: 512, height: 512, transform }).css, /^matrix\(/);
+  assert.equal(source.in_bounds, true);
+  assert.equal(source.x_norm, 0.42);
+  assert.equal(source.y_norm, 0.21);
+  assert.deepEqual(normalizeViewerTransform({ zoom: 20, panX: 999, panY: -999, rotationDeg: -90 }), {
+    zoom: 4,
+    panX: 320,
+    panY: -320,
+    rotationDeg: 270,
+  });
+});
+
 test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof assertContract, "function");
   assert.equal(typeof createVolunteerLabel, "function");
   assert.equal(typeof createTileObservation, "function");
   assert.equal(typeof summarizeTileObservations, "function");
+  assert.equal(typeof createViewerTransformMatrix, "function");
+  assert.equal(typeof transformViewportPointToSource, "function");
+  assert.deepEqual(DEFAULT_VIEWER_TRANSFORM, { zoom: 1, panX: 0, panY: 0, rotationDeg: 0 });
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");
   assert.equal(typeof createBookmarkPayload, "function");

@@ -116,10 +116,10 @@ test("migrates remaining UI polish and responsive targets into browser automatio
   await page.waitForTimeout(350);
   await expect.poll(() => cssValue(polishCard, "boxShadow")).not.toBe(cardShadow);
 
-  const canvasTransform = await cssValue(page.locator("#tileCanvas"), "transform");
+  const canvasShadow = await cssValue(page.locator("#tileCanvas"), "boxShadow");
   await page.locator("#tileCanvas").hover();
   await page.waitForTimeout(250);
-  await expect.poll(() => cssValue(page.locator("#tileCanvas"), "transform")).not.toBe(canvasTransform);
+  await expect.poll(() => cssValue(page.locator("#tileCanvas"), "boxShadow")).not.toBe(canvasShadow);
 
   const kpiTransform = await cssValue(page.locator(".kpi").first(), "transform");
   await page.locator(".kpi").first().hover();

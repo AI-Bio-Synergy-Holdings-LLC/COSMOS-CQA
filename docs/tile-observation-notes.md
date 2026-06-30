@@ -7,6 +7,7 @@ Tile observations are reviewer-authored spatial notes linked to a submitted labe
 - `x_norm` and `y_norm` are normalized source-tile coordinates from 0 to 1.
 - `zone_id` and `zone_label` identify the deterministic 3x3 review sector.
 - `zone_taxonomy` adds row band, column band, quadrant, radial band, and coordinate-percent context for summaries.
+- Viewer zoom, pan, and rotation are display transforms only. Submitted observations store normalized source-tile coordinates after the screen click is mapped back through the inverse viewer transform.
 - The pin is a location cue inside the reviewed tile. It is not a measured sky coordinate, source catalog position, physical parameter estimate, or validated detection.
 
 ## How To Write Notes
@@ -40,3 +41,9 @@ Observation summaries do not prove artifact presence, model performance, data qu
 - `evidenceBundle.observation_summary`: bundle-level observation summary when pins exist.
 
 These surfaces are additive and preserve replay. Source tile pixels are not modified.
+
+## Viewer Transforms
+
+The workbench supports zoom, pan, rotate, and reset controls for closer inspection. These controls do not change the tile pixels or the observation contract. Pins remain tied to source-tile coordinates, and marker placement is recalculated from the active viewer transform.
+
+Use reset when comparing observations across reviewers or when preparing screenshots for issue reports.
