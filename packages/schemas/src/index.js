@@ -57,6 +57,11 @@ export const schemas = {
       note: { type: "string", maxLength: 240 },
       weight: { type: "number", minimum: 0, maximum: 1 },
       ts: { type: "string", format: "date-time" },
+      review_state: { type: "string", enum: ["submitted", "edited"] },
+      review_revision: { type: "integer", minimum: 0 },
+      updated_at: { type: "string", format: "date-time" },
+      updated_by: { type: "string", minLength: 1, maxLength: 128 },
+      edit_summary: { type: "string", maxLength: 512 },
     },
   },
 
@@ -120,6 +125,11 @@ export const schemas = {
       overlay: { type: "string", enum: OVERLAY_TYPES },
       palette: { type: "string", enum: PALETTES },
       ts: { type: "string", format: "date-time" },
+      review_state: { type: "string", enum: ["submitted", "edited"] },
+      review_revision: { type: "integer", minimum: 0 },
+      updated_at: { type: "string", format: "date-time" },
+      updated_by: { type: "string", minLength: 1, maxLength: 128 },
+      edit_summary: { type: "string", maxLength: 512 },
     },
   },
 
@@ -129,8 +139,8 @@ export const schemas = {
     required: ["key", "label", "count"],
     additionalProperties: false,
     properties: {
-      key: { type: "string", minLength: 1, maxLength: 128 },
-      label: { type: "string", minLength: 1, maxLength: 128 },
+      key: { type: "string", minLength: 1, maxLength: 256 },
+      label: { type: "string", minLength: 1, maxLength: 256 },
       count: { type: "integer", minimum: 0 },
     },
   },
@@ -159,7 +169,15 @@ export const schemas = {
       observed_zone_count: { type: "integer", minimum: 0 },
       note_count: { type: "integer", minimum: 0 },
       dominant_zone_label: { type: "string", minLength: 1, maxLength: 128 },
+      tile_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
       zone_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      tile_zone_counts: {
         type: "array",
         items: { $ref: "observationCount" },
       },
@@ -180,6 +198,14 @@ export const schemas = {
         items: { $ref: "observationCount" },
       },
       severity_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      note_status_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      review_state_counts: {
         type: "array",
         items: { $ref: "observationCount" },
       },

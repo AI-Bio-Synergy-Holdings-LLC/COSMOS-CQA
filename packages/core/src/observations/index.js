@@ -1,4 +1,4 @@
-import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
+import { ARTIFACT_CLASSES, CONTRACT_SCHEMA_VERSION, SEVERITY_LEVELS, assertContract } from "../../../schemas/src/index.js";
 
 export const TILE_OBSERVATION_GRID_SIZE = 3;
 export const DEFAULT_VIEWER_TRANSFORM = Object.freeze({
@@ -178,6 +178,52 @@ export function createTileObservation({ tile, label, target, overlay = "none", p
   });
 }
 
+export function updateTileObservationReview({
+  observation,
+  label,
+  updates = {},
+  updatedAt = new Date().toISOString(),
+  updatedBy = observation?.volunteer_id || label?.volunteer_id || "local-reviewer",
+} = {}) {
+  const clazz = normalizeReviewChoice(updates.clazz ?? observation?.clazz ?? label?.clazz, ARTIFACT_CLASSES, "artifact class");
+  const severity = normalizeReviewChoice(updates.severity ?? observation?.severity ?? label?.severity, SEVERITY_LEVELS, "severity");
+  const note = String(updates.note ?? observation?.note ?? label?.note ?? "").trim().slice(0, 240);
+  if (!note) {
+    throw new TypeError("Observation review note is required before saving an edited observation.");
+  }
+
+  const reviewRevision = Math.max(0, Number(observation?.review_revision ?? label?.review_revision ?? 0) || 0) + 1;
+  const reviewFields = {
+    review_state: "edited",
+    review_revision: reviewRevision,
+    updated_at: updatedAt,
+    updated_by: String(updatedBy || "local-reviewer").slice(0, 128),
+    edit_summary: summarizeReviewChanges(observation, { clazz, severity, note }),
+  };
+  const nextObservation = assertContract("tileObservation", {
+    ...observation,
+    clazz,
+    severity,
+    note,
+    ...reviewFields,
+  });
+  const nextLabel = label
+    ? assertContract("labelRecord", {
+        ...label,
+        clazz,
+        severity,
+        note,
+        ...reviewFields,
+      })
+    : null;
+
+  return {
+    observation: nextObservation,
+    label: nextLabel,
+    edit_summary: reviewFields.edit_summary,
+  };
+}
+
 export function summarizeTileObservations(observations = []) {
   const records = observations.filter(Boolean);
   const zoneCounts = countRecords(records, (observation) => observation.zone_id, (observation) => observation.zone_label);
@@ -187,12 +233,28 @@ export function summarizeTileObservations(observations = []) {
     observed_tile_count: new Set(records.map((observation) => observation.tile_id)).size,
     observed_zone_count: zoneCounts.length,
     note_count: records.filter((observation) => String(observation.note || "").trim()).length,
+    tile_counts: countRecords(records, (observation) => observation.tile_id, (observation) => observation.tile_id),
     zone_counts: zoneCounts,
+    tile_zone_counts: countRecords(
+      records,
+      (observation) => `${observation.tile_id}:${observation.zone_id}`,
+      (observation) => `${observation.tile_id} ${observation.zone_label}`,
+    ),
     row_band_counts: countTaxonomy(records, "row_band"),
     column_band_counts: countTaxonomy(records, "column_band"),
     radial_band_counts: countTaxonomy(records, "radial_band"),
     class_counts: countRecords(records, (observation) => observation.clazz, (observation) => observation.clazz),
     severity_counts: countRecords(records, (observation) => observation.severity, (observation) => observation.severity),
+    note_status_counts: countRecords(
+      records,
+      (observation) => (String(observation.note || "").trim() ? "with_note" : "missing_note"),
+      (observation) => (String(observation.note || "").trim() ? "with note" : "missing note"),
+    ),
+    review_state_counts: countRecords(
+      records,
+      (observation) => observation.review_state || "submitted",
+      (observation) => observation.review_state || "submitted",
+    ),
   };
   const dominantZone = zoneCounts[0];
   if (dominantZone) {
@@ -200,6 +262,28 @@ export function summarizeTileObservations(observations = []) {
   }
 
   return assertContract("tileObservationSummary", summary);
+}
+
+function normalizeReviewChoice(value, allowed, label) {
+  const normalized = String(value || "");
+  if (!allowed.includes(normalized)) {
+    throw new TypeError(`Unsupported observation review ${label}: ${normalized || "blank"}`);
+  }
+  return normalized;
+}
+
+function summarizeReviewChanges(previous, next) {
+  const changes = [];
+  if (previous?.clazz !== next.clazz) {
+    changes.push(`class ${previous?.clazz || "unknown"} -> ${next.clazz}`);
+  }
+  if (previous?.severity !== next.severity) {
+    changes.push(`severity ${previous?.severity || "unknown"} -> ${next.severity}`);
+  }
+  if (String(previous?.note || "") !== next.note) {
+    changes.push("note updated");
+  }
+  return changes.length ? changes.join("; ") : "review metadata refreshed";
 }
 
 function countTaxonomy(records, key) {

@@ -9,6 +9,8 @@ export function createAppState() {
     labels: [],
     observations: [],
     pendingObservation: null,
+    selectedObservationId: "",
+    deletedObservationReview: null,
     viewerTransform: { zoom: 1, panX: 0, panY: 0, rotationDeg: 0 },
     expert: [],
     startTimes: {},

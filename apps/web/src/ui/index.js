@@ -44,6 +44,7 @@ import {
   summarizeTileObservations,
   transformSourceToViewportPoint,
   transformViewportPointToSource,
+  updateTileObservationReview,
 } from "../observations/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
@@ -119,6 +120,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     renderTilePassport(tile);
     renderCorePackExplorer();
     renderObservationOverlay();
+    renderObservationReviewWorkspace();
     updateObservationSubmissionState();
     renderViewerTransform();
   }
@@ -226,10 +228,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       transform: state.viewerTransform,
     });
     const marker = documentRef.createElement("span");
-    marker.className = `observation-marker ${status}`;
+    const selected = observation.observation_id && observation.observation_id === state.selectedObservationId;
+    marker.className = `observation-marker ${status}${selected ? " selected" : ""}`;
+    if (observation.observation_id) {
+      marker.dataset.observationId = observation.observation_id;
+    }
     marker.style.left = `${point.x}px`;
     marker.style.top = `${point.y}px`;
-    marker.title = `${status === "pending" ? "Pending" : "Submitted"} observation: ${observation.zone_label}`;
+    marker.title = `${selected ? "Selected " : ""}${status === "pending" ? "Pending" : "Submitted"} observation: ${observation.zone_label}`;
     dom.tileObservationMarkers.appendChild(marker);
   }
 
@@ -255,10 +261,207 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     });
 
     state.observations.push(observation);
+    state.selectedObservationId = observation.observation_id;
     saveObservations(state.observations);
     state.pendingObservation = null;
     renderObservationOverlay();
+    renderObservationReviewWorkspace();
     return observation;
+  }
+
+  function selectObservationForReview(observationId, { announce = true } = {}) {
+    const observation = state.observations.find((entry) => entry.observation_id === observationId);
+    if (!observation) {
+      state.selectedObservationId = "";
+      renderObservationOverlay();
+      renderObservationReviewWorkspace();
+      return null;
+    }
+
+    state.selectedObservationId = observation.observation_id;
+    const tileIndex = tiles.findIndex((tile) => tile.meta.tile_id === observation.tile_id);
+    if (tileIndex >= 0 && tileIndex !== state.idx) {
+      drawTile(tileIndex);
+    } else {
+      renderObservationOverlay();
+      renderObservationReviewWorkspace();
+    }
+
+    if (announce) {
+      setCaption(`Selected ${observation.observation_id} on ${observation.tile_id} at ${observation.zone_label}.`);
+    }
+    notifyTestBridge("tileObservation.selected", { observation });
+    return observation;
+  }
+
+  function saveSelectedObservationReview() {
+    const observationIndex = state.observations.findIndex((entry) => entry.observation_id === state.selectedObservationId);
+    if (observationIndex < 0) {
+      setCaption("Select an observation before saving review changes.");
+      return null;
+    }
+
+    const observation = state.observations[observationIndex];
+    const labelIndex = state.labels.findIndex((entry) => entry.label_id === observation.label_id);
+    const label = labelIndex >= 0 ? state.labels[labelIndex] : null;
+    let result;
+    try {
+      result = updateTileObservationReview({
+        observation,
+        label,
+        updates: {
+          clazz: dom.reviewClassSel.value,
+          severity: dom.reviewSevSel.value,
+          note: dom.reviewNote.value,
+        },
+        updatedBy: state.volunteerId,
+      });
+    } catch (error) {
+      setCaption(error.message);
+      return null;
+    }
+
+    state.observations[observationIndex] = result.observation;
+    if (labelIndex >= 0 && result.label) {
+      state.labels[labelIndex] = result.label;
+    }
+    saveLabels(state.labels);
+    saveObservations(state.observations);
+    renderObservationOverlay();
+    renderObservationReviewWorkspace();
+    refreshValidationReportPreview();
+    setCaption(`Observation review saved: ${result.edit_summary}.`);
+    notifyTestBridge("tileObservation.reviewSaved", result);
+    return result;
+  }
+
+  function deleteSelectedObservationReview() {
+    const observationIndex = state.observations.findIndex((entry) => entry.observation_id === state.selectedObservationId);
+    if (observationIndex < 0) {
+      setCaption("Select an observation before deleting it from active evidence.");
+      return null;
+    }
+
+    const [observation] = state.observations.splice(observationIndex, 1);
+    const labelIndex = state.labels.findIndex((entry) => entry.label_id === observation.label_id);
+    const [label] = labelIndex >= 0 ? state.labels.splice(labelIndex, 1) : [null];
+    state.deletedObservationReview = {
+      observation: cloneJson(observation),
+      label: label ? cloneJson(label) : null,
+      deleted_at: new Date().toISOString(),
+      deleted_by: state.volunteerId,
+    };
+    state.selectedObservationId = "";
+    saveLabels(state.labels);
+    saveObservations(state.observations);
+    renderObservationOverlay();
+    renderObservationReviewWorkspace();
+    refreshValidationReportPreview();
+    setCaption(`${observation.observation_id} removed from active exports; Undo Delete can restore it this session.`);
+    notifyTestBridge("tileObservation.reviewDeleted", state.deletedObservationReview);
+    return state.deletedObservationReview;
+  }
+
+  function restoreDeletedObservationReview() {
+    const deleted = state.deletedObservationReview;
+    if (!deleted?.observation) {
+      setCaption("No deleted observation is available to restore.");
+      return null;
+    }
+
+    if (deleted.label && !state.labels.some((label) => label.label_id === deleted.label.label_id)) {
+      state.labels.push(cloneJson(deleted.label));
+    }
+    if (!state.observations.some((observation) => observation.observation_id === deleted.observation.observation_id)) {
+      state.observations.push(cloneJson(deleted.observation));
+    }
+    state.selectedObservationId = deleted.observation.observation_id;
+    state.deletedObservationReview = null;
+    saveLabels(state.labels);
+    saveObservations(state.observations);
+    selectObservationForReview(state.selectedObservationId, { announce: false });
+    refreshValidationReportPreview();
+    setCaption(`${state.selectedObservationId} restored to active evidence exports.`);
+    notifyTestBridge("tileObservation.reviewRestored", { observation_id: state.selectedObservationId });
+    return state.selectedObservationId;
+  }
+
+  function renderObservationReviewWorkspace() {
+    if (!dom.observationReviewStatus || !dom.observationReviewList || !dom.observationReviewSummary) {
+      return;
+    }
+
+    let selected = getSelectedObservation();
+    if (state.selectedObservationId && !selected) {
+      state.selectedObservationId = "";
+      selected = null;
+    }
+    const summary = summarizeTileObservations(state.observations);
+    dom.observationReviewList.replaceChildren();
+    dom.observationReviewSummary.replaceChildren();
+    dom.observationReviewStatus.textContent = state.observations.length
+      ? `${state.observations.length} submitted observation(s) ready for QA review.`
+      : "No submitted observations yet.";
+    appendMetadataGrid(dom.observationReviewSummary, [
+      ["Active observations", String(state.observations.length)],
+      ["Tiles", String(summary.observed_tile_count)],
+      ["Zones", String(summary.observed_zone_count)],
+      ["Note status", formatCountSummary(summary.note_status_counts)],
+      ["Review states", formatCountSummary(summary.review_state_counts)],
+    ]);
+
+    if (!state.observations.length) {
+      appendEmptyState(dom.observationReviewList, "Submit a spatial observation before opening QA review.");
+    }
+    for (const observation of state.observations) {
+      const button = documentRef.createElement("button");
+      button.type = "button";
+      button.className = observation.observation_id === state.selectedObservationId ? "observation-review-row active" : "observation-review-row";
+      button.dataset.observationId = observation.observation_id;
+      button.innerHTML = `
+        <strong>${escapeHtml(observation.tile_id)} - ${escapeHtml(observation.zone_label)}</strong>
+        <span>${escapeHtml(observation.clazz)} / ${escapeHtml(observation.severity)} - x=${observation.x_norm}, y=${observation.y_norm}</span>
+        <span>rev ${observation.review_revision || 0}; ${escapeHtml(observation.review_state || "submitted")}; ${escapeHtml(truncateText(observation.note, 82))}</span>
+      `;
+      button.addEventListener("click", () => selectObservationForReview(observation.observation_id));
+      dom.observationReviewList.appendChild(button);
+    }
+
+    setObservationReviewEditor(selected);
+  }
+
+  function setObservationReviewEditor(observation) {
+    const disabled = !observation;
+    dom.reviewClassSel.disabled = disabled;
+    dom.reviewSevSel.disabled = disabled;
+    dom.reviewNote.disabled = disabled;
+    dom.saveObservationReviewBtn.disabled = disabled || !String(observation?.note || "").trim();
+    dom.deleteObservationReviewBtn.disabled = disabled;
+    dom.restoreObservationReviewBtn.disabled = !state.deletedObservationReview;
+
+    if (observation) {
+      dom.reviewClassSel.value = observation.clazz;
+      dom.reviewSevSel.value = observation.severity;
+      dom.reviewNote.value = observation.note || "";
+      dom.observationReviewAudit.textContent = `${observation.observation_id}: ${observation.review_state || "submitted"} revision ${
+        observation.review_revision || 0
+      }; synced label ${observation.label_id}.`;
+    } else {
+      dom.reviewClassSel.value = "stripe";
+      dom.reviewSevSel.value = "medium";
+      dom.reviewNote.value = "";
+      dom.observationReviewAudit.textContent = state.deletedObservationReview
+        ? `${state.deletedObservationReview.observation.observation_id} was deleted from active exports and can be restored.`
+        : "Select an observation to review its synced label and evidence fields.";
+    }
+  }
+
+  function updateObservationReviewControls() {
+    dom.saveObservationReviewBtn.disabled = !state.selectedObservationId || !dom.reviewNote.value.trim();
+  }
+
+  function getSelectedObservation() {
+    return state.observations.find((entry) => entry.observation_id === state.selectedObservationId) || null;
   }
 
   function adjustViewerTransform(patch) {
@@ -574,6 +777,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         `y=${observation.y_norm}`,
         `class=${observation.clazz}`,
         `severity=${observation.severity}`,
+        `review=${observation.review_state || "submitted"}:${observation.review_revision || 0}`,
+        observation.updated_at ? `updated=${formatDate(observation.updated_at)}` : "",
+        observation.edit_summary ? `edit=${observation.edit_summary}` : "",
       ]
         .filter(Boolean)
         .join("; "),
@@ -696,9 +902,12 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Observed zones", String(summary.observed_zone_count)],
       ["Notes", String(summary.note_count)],
       ["Dominant zone", summary.dominant_zone_label || "n/a"],
+      ["Tiles", formatCountSummary(summary.tile_counts)],
       ["Row bands", formatCountSummary(summary.row_band_counts)],
       ["Column bands", formatCountSummary(summary.column_band_counts)],
       ["Radial bands", formatCountSummary(summary.radial_band_counts)],
+      ["Note status", formatCountSummary(summary.note_status_counts)],
+      ["Review states", formatCountSummary(summary.review_state_counts)],
     ]);
   }
 
@@ -708,9 +917,17 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
 
     return [
+      ...summary.tile_counts.map((entry) => ({
+        title: `Tile ${entry.label}`,
+        detail: `${entry.count} pinned observation target(s).`,
+      })),
       ...summary.zone_counts.map((entry) => ({
         title: `Zone ${entry.label}`,
         detail: `${entry.count} pinned observation target(s).`,
+      })),
+      ...summary.tile_zone_counts.map((entry) => ({
+        title: `Tile-zone ${entry.label}`,
+        detail: `${entry.count} linked observation target(s).`,
       })),
       ...summary.class_counts.map((entry) => ({
         title: `Class ${entry.label}`,
@@ -718,6 +935,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       })),
       ...summary.severity_counts.map((entry) => ({
         title: `Severity ${entry.label}`,
+        detail: `${entry.count} linked observation label(s).`,
+      })),
+      ...summary.note_status_counts.map((entry) => ({
+        title: `Note status ${entry.label}`,
         detail: `${entry.count} linked observation label(s).`,
       })),
     ];
@@ -1689,6 +1910,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.labels = cloneJson(session.labels);
     state.observations = cloneJson(session.observations || []);
     state.pendingObservation = null;
+    state.selectedObservationId = state.observations.at(-1)?.observation_id || "";
+    state.deletedObservationReview = null;
     state.expert = [];
     state.scores = scoresFromLabels(state.labels);
     state.feedErrors = [];
@@ -1718,6 +1941,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     renderExpertPane();
     renderDiagnostics();
+    renderObservationReviewWorkspace();
     renderValidationReportPreview();
     recalcKPIs();
 
@@ -1814,7 +2038,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         name: "tile observation targets",
         status: hasObservations ? "pass" : "warn",
         detail: hasObservations
-          ? `${state.observations.length} linked tile observation target(s) include normalized coordinates and notes.`
+          ? `${state.observations.length} linked tile observation target(s) include normalized coordinates, notes, and ${
+              state.observations.filter((observation) => observation.review_state === "edited").length
+            } edited review record(s).`
           : "No tile observation targets are linked to labels in this session.",
       },
       {
@@ -2123,13 +2349,21 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     });
     dom.clearObservationBtn.addEventListener("click", () => clearPendingObservation());
     dom.note.addEventListener("input", updateObservationSubmissionState);
+    dom.reviewNote.addEventListener("input", updateObservationReviewControls);
+    dom.saveObservationReviewBtn.addEventListener("click", saveSelectedObservationReview);
+    dom.deleteObservationReviewBtn.addEventListener("click", deleteSelectedObservationReview);
+    dom.restoreObservationReviewBtn.addEventListener("click", restoreDeletedObservationReview);
     dom.submitBtn.addEventListener("click", () => onCalibSubmit(submitLabel()));
     dom.undoBtn.addEventListener("click", () => {
       const removedLabel = undoLastLabel(state);
       if (removedLabel) {
         removeObservationForLabel(state, removedLabel.label_id);
+        if (!state.observations.some((observation) => observation.observation_id === state.selectedObservationId)) {
+          state.selectedObservationId = "";
+        }
       }
       renderObservationOverlay();
+      renderObservationReviewWorkspace();
       setCaption("Undid last label.");
       recalcKPIs();
       refreshValidationReportPreview();
@@ -2318,6 +2552,16 @@ function bindDom(documentRef) {
     note: get("note"),
     submitBtn: get("submitBtn"),
     undoBtn: get("undoBtn"),
+    observationReviewStatus: get("observationReviewStatus"),
+    observationReviewSummary: get("observationReviewSummary"),
+    observationReviewList: get("observationReviewList"),
+    reviewClassSel: get("reviewClassSel"),
+    reviewSevSel: get("reviewSevSel"),
+    reviewNote: get("reviewNote"),
+    saveObservationReviewBtn: get("saveObservationReviewBtn"),
+    deleteObservationReviewBtn: get("deleteObservationReviewBtn"),
+    restoreObservationReviewBtn: get("restoreObservationReviewBtn"),
+    observationReviewAudit: get("observationReviewAudit"),
     calibBtn: get("calibBtn"),
     expertBtn: get("expertBtn"),
     bookmarkBtn: get("bookmarkBtn"),
@@ -2405,6 +2649,20 @@ function upsertByKey(items, key, value) {
 
 function safeId(value) {
   return String(value).replace(/[^A-Za-z0-9._:-]+/g, "_");
+}
+
+function truncateText(value, maxLength) {
+  const text = String(value || "");
+  return text.length > maxLength ? `${text.slice(0, Math.max(0, maxLength - 3))}...` : text;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function cloneJson(value) {

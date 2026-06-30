@@ -461,6 +461,15 @@ canvas.tile:hover {
   box-shadow: 0 0 0 3px rgba(67, 214, 197, 0.24), 0 0 0 10px rgba(67, 214, 197, 0.08);
 }
 
+.observation-marker.selected {
+  background: var(--accent);
+  border-color: #06100f;
+  height: 18px;
+  width: 18px;
+  z-index: 4;
+  box-shadow: 0 0 0 3px rgba(67, 214, 197, 0.42), 0 0 0 12px rgba(67, 214, 197, 0.12);
+}
+
 .tile-observation-toolbar {
   align-items: center;
   display: flex;
@@ -618,6 +627,58 @@ textarea:hover {
   font-size: 12px;
   line-height: 1.45;
   margin: 0;
+}
+
+.observation-review-workspace {
+  gap: 10px;
+}
+
+.observation-review-list {
+  display: grid;
+  gap: 7px;
+  max-height: 220px;
+  min-height: 42px;
+  overflow: auto;
+}
+
+.observation-review-row {
+  align-items: start;
+  display: grid;
+  gap: 3px;
+  justify-items: start;
+  min-height: 58px;
+  text-align: left;
+  white-space: normal;
+}
+
+.observation-review-row.active {
+  border-color: rgba(67, 214, 197, 0.72);
+  box-shadow: 0 0 0 1px rgba(67, 214, 197, 0.2), 0 12px 24px rgba(67, 214, 197, 0.1);
+}
+
+.observation-review-row strong,
+.observation-review-row span {
+  display: block;
+}
+
+.observation-review-editor {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.review-note-field {
+  grid-column: 1 / -1;
+}
+
+#reviewNote {
+  min-height: 74px;
+  resize: vertical;
+  width: 100%;
+}
+
+.observation-review-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .cmd-icon {
@@ -1171,6 +1232,7 @@ details[open] summary {
   }
 
   .grid,
+  .observation-review-editor,
   .command-grid {
     grid-template-columns: 1fr;
   }

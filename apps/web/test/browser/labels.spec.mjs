@@ -218,3 +218,89 @@ test("keeps pinned source coordinates stable after viewer transforms", async ({ 
     rotationDeg: 0,
   });
 });
+
+test("reviews submitted observations with synced edit delete restore and export summaries", async ({ page }) => {
+  await openWorkbench(page);
+  await disableSimulation(page);
+
+  await page.locator("#zoomInBtn").click();
+  await page.locator("#panRightBtn").click();
+  await page.locator("#rotateRightBtn").click();
+  const viewport = await page.locator("#tileCanvasWrap").boundingBox();
+  const clickPoint = transformSourceToViewportPoint({
+    xNorm: 0.42,
+    yNorm: 0.32,
+    width: viewport.width,
+    height: viewport.height,
+    transform: { zoom: 1.25, panX: 32, panY: 0, rotationDeg: 90 },
+  });
+  await page.locator("#tileCanvasWrap").click({ position: clickPoint });
+  await page.locator("#note").fill("review workspace transformed pin in top center zone");
+  await page.locator("#submitBtn").click();
+
+  await expect(page.locator("#observationReviewStatus")).toContainText("1 submitted observation");
+  await expect(page.locator(".observation-review-row")).toHaveCount(1);
+  await page.locator(".observation-review-row").click();
+  await expect(page.locator(".observation-review-row")).toHaveClass(/active/);
+  await expect(page.locator(".observation-marker.selected")).toHaveCount(1);
+  await expect(page.locator("#observationReviewAudit")).toContainText("synced label");
+
+  await page.locator("#reviewClassSel").selectOption("dipole");
+  await page.locator("#reviewSevSel").selectOption("high");
+  await page.locator("#reviewNote").fill("reviewed transformed target; stronger dipole interpretation with clear top center note");
+  await page.locator("#saveObservationReviewBtn").click();
+  await expect(page.locator("#caption")).toContainText("Observation review saved");
+  await expect(page.locator("#observationReviewAudit")).toContainText("edited revision 1");
+  await expect(page.locator("#evidenceObservations")).toContainText("review=edited:1");
+  await expect(page.locator("#reportObservationSummary")).toContainText("Review states");
+  await expect(page.locator("#reportObservations")).toContainText("Tile tile_001");
+
+  const reviewedLabel = await firstStoredLabel(page);
+  const reviewedObservation = await firstStoredObservation(page);
+  expect(reviewedLabel).toMatchObject({
+    clazz: "dipole",
+    severity: "high",
+    review_state: "edited",
+    review_revision: 1,
+  });
+  expect(reviewedObservation).toMatchObject({
+    clazz: "dipole",
+    severity: "high",
+    review_state: "edited",
+    review_revision: 1,
+  });
+  expect(reviewedLabel.note).toBe(reviewedObservation.note);
+  expect(reviewedObservation.edit_summary).toContain("class stripe -> dipole");
+
+  const report = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
+  expect(report.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
+  expect(report.observation_summary.note_status_counts[0]).toMatchObject({ key: "with_note", count: 1 });
+  expect(report.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
+  expect(report.checks.find((check) => check.name === "tile observation targets").detail).toContain("1 edited review record");
+
+  const bundle = await page.evaluate(() => window.COSMOS_CQA_APP.buildEvidenceBundle({ generatedAt: "2026-06-30T00:00:00.000Z" }));
+  expect(bundle.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
+  expect(bundle.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
+
+  await page.locator("#deleteObservationReviewBtn").click();
+  await expect(page.locator("#caption")).toContainText("removed from active exports");
+  await expect.poll(() => labelCount(page)).toBe(0);
+  await expect.poll(() => observationCount(page)).toBe(0);
+  await expect(page.locator("#observationReviewStatus")).toContainText("No submitted observations yet.");
+  await expect(page.locator("#restoreObservationReviewBtn")).toBeEnabled();
+  await expect(page.locator(".observation-marker.submitted")).toHaveCount(0);
+  const reportAfterDelete = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
+  expect(reportAfterDelete.summary.observation_count).toBeUndefined();
+
+  await page.locator("#restoreObservationReviewBtn").click();
+  await expect(page.locator("#caption")).toContainText("restored to active evidence exports");
+  await expect.poll(() => labelCount(page)).toBe(1);
+  await expect.poll(() => observationCount(page)).toBe(1);
+  await expect(page.locator(".observation-marker.selected")).toHaveCount(1);
+  await expect(page.locator("#restoreObservationReviewBtn")).toBeDisabled();
+  const restoredObservation = await firstStoredObservation(page);
+  expect(restoredObservation).toMatchObject({
+    review_state: "edited",
+    review_revision: 1,
+  });
+});

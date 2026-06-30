@@ -29,9 +29,21 @@ Avoid personal data, medical claims, private identifiers, unsupported diagnostic
 
 ## How To Interpret Summaries
 
-Observation summaries aggregate reviewer-authored pins into counts by tile, zone, row band, column band, radial band, class, and severity. These summaries can help reviewers find repeated attention patterns, compare review sessions, and inspect whether observations cluster in particular sectors.
+Observation summaries aggregate reviewer-authored pins into counts by tile, zone, tile-zone pair, row band, column band, radial band, class, severity, note status, and review state. These summaries can help reviewers find repeated attention patterns, compare review sessions, and inspect whether observations cluster in particular sectors.
 
 Observation summaries do not prove artifact presence, model performance, data quality, or scientific validity. They are evidence about the review process and should be interpreted alongside tile passports, provenance hashes, validation reports, diagnostic caveats, and claim-boundary documents.
+
+## Review And QA Edits
+
+The Observation Review workspace lets a reviewer select a submitted pin, highlight its tile marker, revise the synced class/severity/note fields, and remove the observation from active exports when it should not be carried forward. Saved edits add review metadata to the active label and observation records:
+
+- `review_state`
+- `review_revision`
+- `updated_at`
+- `updated_by`
+- `edit_summary`
+
+Deleting an observation removes the synced label and observation from active report, session, CSV, and evidence-bundle exports. The in-session Undo Delete control restores the exact deleted pair while the page remains open. This is a local QA workflow, not a provenance claim that the original observation never existed.
 
 ## Contract Surfaces
 
