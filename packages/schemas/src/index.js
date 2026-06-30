@@ -13,6 +13,11 @@ export const DIAGNOSTIC_IMPLEMENTATION_STATES = ["not-implemented", "documentati
 export const DIAGNOSTIC_RESULT_STATUSES = ["placeholder", "review-required"];
 export const DIAGNOSTIC_RESULT_IMPLEMENTATION_STATES = ["placeholder"];
 export const RESEARCH_ARTIFACT_KINDS = ["feed", "core-pack", "sbom", "validation-report"];
+export const OBSERVATION_REVIEW_STATUSES = ["pending-review", "reviewed", "needs-adjudication"];
+export const OBSERVATION_CONSENSUS_STATUSES = ["not-assessed", "single-reviewer", "needs-adjudication", "consensus-placeholder"];
+export const OBSERVATION_REVIEW_EVENT_ACTIONS = ["create", "edit", "delete", "restore"];
+export const OBSERVATION_REVIEW_CLAIM_BOUNDARY =
+  "Observation review events are research audit records only; they are not validated detections, clinical findings, or scientific consensus claims.";
 
 const idPattern = "^[A-Za-z0-9._:-]+$";
 const checksumPattern = "^(sha256:[A-Za-z0-9._:-]+|)$";
@@ -62,6 +67,11 @@ export const schemas = {
       updated_at: { type: "string", format: "date-time" },
       updated_by: { type: "string", minLength: 1, maxLength: 128 },
       edit_summary: { type: "string", maxLength: 512 },
+      review_status: { type: "string", enum: OBSERVATION_REVIEW_STATUSES },
+      reviewer_confidence: { type: "number", minimum: 0, maximum: 1 },
+      consensus_status: { type: "string", enum: OBSERVATION_CONSENSUS_STATUSES },
+      adjudication_state: { type: "string", maxLength: 256 },
+      adjudication_note: { type: "string", maxLength: 512 },
     },
   },
 
@@ -130,6 +140,11 @@ export const schemas = {
       updated_at: { type: "string", format: "date-time" },
       updated_by: { type: "string", minLength: 1, maxLength: 128 },
       edit_summary: { type: "string", maxLength: 512 },
+      review_status: { type: "string", enum: OBSERVATION_REVIEW_STATUSES },
+      reviewer_confidence: { type: "number", minimum: 0, maximum: 1 },
+      consensus_status: { type: "string", enum: OBSERVATION_CONSENSUS_STATUSES },
+      adjudication_state: { type: "string", maxLength: 256 },
+      adjudication_note: { type: "string", maxLength: 512 },
     },
   },
 
@@ -142,6 +157,78 @@ export const schemas = {
       key: { type: "string", minLength: 1, maxLength: 256 },
       label: { type: "string", minLength: 1, maxLength: 256 },
       count: { type: "integer", minimum: 0 },
+    },
+  },
+
+  observationQaMetric: {
+    $id: "cosmos-cqa/observation-qa-metric.schema.json",
+    type: "object",
+    required: [
+      "key",
+      "label",
+      "observation_count",
+      "reviewed_count",
+      "needs_adjudication_count",
+      "ledger_event_count",
+      "average_reviewer_confidence",
+    ],
+    additionalProperties: false,
+    properties: {
+      key: { type: "string", minLength: 1, maxLength: 256 },
+      label: { type: "string", minLength: 1, maxLength: 256 },
+      observation_count: { type: "integer", minimum: 0 },
+      reviewed_count: { type: "integer", minimum: 0 },
+      needs_adjudication_count: { type: "integer", minimum: 0 },
+      ledger_event_count: { type: "integer", minimum: 0 },
+      average_reviewer_confidence: { type: "number", minimum: 0, maximum: 1 },
+    },
+  },
+
+  observationReviewEvent: {
+    $id: "cosmos-cqa/observation-review-event.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "event_id",
+      "event_index",
+      "observation_id",
+      "label_id",
+      "tile_id",
+      "zone_id",
+      "zone_label",
+      "action",
+      "reviewer_id",
+      "review_status",
+      "reviewer_confidence",
+      "consensus_status",
+      "revision",
+      "event_ts",
+      "event_summary",
+      "active_after",
+      "claim_boundary",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      event_id: { type: "string", pattern: "^orev_[A-Za-z0-9._:-]+$" },
+      event_index: { type: "integer", minimum: 0 },
+      observation_id: { type: "string", pattern: "^obs_[A-Za-z0-9._:-]+$" },
+      label_id: { type: "string", pattern: "^lbl_[a-z0-9]{4,}$" },
+      tile_id: { type: "string", minLength: 1, maxLength: 128, pattern: idPattern },
+      zone_id: { type: "string", minLength: 1, maxLength: 64, pattern: idPattern },
+      zone_label: { type: "string", minLength: 1, maxLength: 128 },
+      action: { type: "string", enum: OBSERVATION_REVIEW_EVENT_ACTIONS },
+      reviewer_id: { type: "string", minLength: 1, maxLength: 128 },
+      review_status: { type: "string", enum: OBSERVATION_REVIEW_STATUSES },
+      reviewer_confidence: { type: "number", minimum: 0, maximum: 1 },
+      consensus_status: { type: "string", enum: OBSERVATION_CONSENSUS_STATUSES },
+      revision: { type: "integer", minimum: 0 },
+      event_ts: { type: "string", format: "date-time" },
+      event_summary: { type: "string", minLength: 1, maxLength: 512 },
+      active_after: { type: "boolean" },
+      claim_boundary: { type: "string", minLength: 80, maxLength: 512 },
+      adjudication_state: { type: "string", maxLength: 256 },
+      adjudication_note: { type: "string", maxLength: 512 },
     },
   },
 
@@ -208,6 +295,26 @@ export const schemas = {
       review_state_counts: {
         type: "array",
         items: { $ref: "observationCount" },
+      },
+      review_status_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      consensus_status_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      review_event_count: { type: "integer", minimum: 0 },
+      reviewed_observation_count: { type: "integer", minimum: 0 },
+      needs_adjudication_count: { type: "integer", minimum: 0 },
+      average_reviewer_confidence: { type: "number", minimum: 0, maximum: 1 },
+      tile_qa_metrics: {
+        type: "array",
+        items: { $ref: "observationQaMetric" },
+      },
+      zone_qa_metrics: {
+        type: "array",
+        items: { $ref: "observationQaMetric" },
       },
     },
   },
@@ -723,6 +830,7 @@ export const schemas = {
           observed_tile_count: { type: "integer", minimum: 0 },
           observed_zone_count: { type: "integer", minimum: 0 },
           observation_note_count: { type: "integer", minimum: 0 },
+          observation_review_event_count: { type: "integer", minimum: 0 },
           feed_error_count: { type: "integer", minimum: 0 },
           pass_count: { type: "integer", minimum: 0 },
           fail_count: { type: "integer", minimum: 0 },
@@ -758,6 +866,10 @@ export const schemas = {
         items: { $ref: "diagnosticResult" },
       },
       observation_summary: { $ref: "tileObservationSummary" },
+      observation_review_events: {
+        type: "array",
+        items: { $ref: "observationReviewEvent" },
+      },
     },
   },
 
@@ -815,6 +927,10 @@ export const schemas = {
         type: "array",
         items: { $ref: "tileObservation" },
       },
+      observation_review_events: {
+        type: "array",
+        items: { $ref: "observationReviewEvent" },
+      },
       diagnostics: {
         type: "array",
         items: { $ref: "diagnosticResult" },
@@ -866,6 +982,10 @@ export const schemas = {
       },
       session: { $ref: "researchSession" },
       observation_summary: { $ref: "tileObservationSummary" },
+      observation_review_events: {
+        type: "array",
+        items: { $ref: "observationReviewEvent" },
+      },
       summary: {
         type: "object",
         required: [
@@ -886,6 +1006,7 @@ export const schemas = {
           observed_tile_count: { type: "integer", minimum: 0 },
           observed_zone_count: { type: "integer", minimum: 0 },
           observation_note_count: { type: "integer", minimum: 0 },
+          observation_review_event_count: { type: "integer", minimum: 0 },
           diagnostic_count: { type: "integer", minimum: 0 },
           report_count: { type: "integer", minimum: 0 },
           provenance_hash_count: { type: "integer", minimum: 0 },

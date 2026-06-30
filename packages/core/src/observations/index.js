@@ -1,4 +1,13 @@
-import { ARTIFACT_CLASSES, CONTRACT_SCHEMA_VERSION, SEVERITY_LEVELS, assertContract } from "../../../schemas/src/index.js";
+import {
+  ARTIFACT_CLASSES,
+  CONTRACT_SCHEMA_VERSION,
+  OBSERVATION_CONSENSUS_STATUSES,
+  OBSERVATION_REVIEW_CLAIM_BOUNDARY,
+  OBSERVATION_REVIEW_EVENT_ACTIONS,
+  OBSERVATION_REVIEW_STATUSES,
+  SEVERITY_LEVELS,
+  assertContract,
+} from "../../../schemas/src/index.js";
 
 export const TILE_OBSERVATION_GRID_SIZE = 3;
 export const DEFAULT_VIEWER_TRANSFORM = Object.freeze({
@@ -20,6 +29,8 @@ const ROW_LABELS = ["top", "middle", "bottom"];
 const COL_LABELS = ["left", "center", "right"];
 const OBSERVATION_CLAIM_BOUNDARY =
   "Reviewer-authored spatial target; interpret as a source-tile location cue, not measured sky coordinates or a validated detection.";
+const DEFAULT_REVIEW_STATUS = "pending-review";
+const DEFAULT_CONSENSUS_STATUS = "not-assessed";
 
 export const TILE_OBSERVATION_ZONE_CELLS = Object.freeze(
   ROW_LABELS.flatMap((rowLabel, rowIndex) =>
@@ -175,7 +186,64 @@ export function createTileObservation({ tile, label, target, overlay = "none", p
     overlay,
     palette,
     ts: generatedAt,
+    review_status: DEFAULT_REVIEW_STATUS,
+    reviewer_confidence: clampNumber(label?.weight, 0, 1, 0.5),
+    consensus_status: DEFAULT_CONSENSUS_STATUS,
+    adjudication_state: "single-reviewer placeholder; not validated consensus",
   });
+}
+
+export function createObservationReviewEvent({
+  action,
+  observation,
+  label,
+  eventIndex = 0,
+  eventTs = new Date().toISOString(),
+  reviewerId = observation?.updated_by || observation?.volunteer_id || label?.volunteer_id || "local-reviewer",
+  reviewStatus = observation?.review_status || DEFAULT_REVIEW_STATUS,
+  reviewerConfidence = observation?.reviewer_confidence ?? label?.weight ?? 0.5,
+  consensusStatus = observation?.consensus_status || consensusStatusForReview(reviewStatus),
+  revision = observation?.review_revision || 0,
+  eventSummary,
+  activeAfter = action !== "delete",
+  adjudicationState = observation?.adjudication_state,
+  adjudicationNote = observation?.adjudication_note,
+} = {}) {
+  if (!observation?.observation_id) {
+    throw new TypeError("Observation review events require a linked tile observation.");
+  }
+  const normalizedAction = normalizeReviewChoice(action, OBSERVATION_REVIEW_EVENT_ACTIONS, "event action");
+  const normalizedStatus = normalizeReviewChoice(reviewStatus, OBSERVATION_REVIEW_STATUSES, "status");
+  const normalizedConsensus = normalizeReviewChoice(consensusStatus, OBSERVATION_CONSENSUS_STATUSES, "consensus status");
+  const normalizedEventIndex = Math.max(0, Number.parseInt(eventIndex, 10) || 0);
+  const normalizedRevision = Math.max(0, Number.parseInt(revision, 10) || 0);
+  const summary = String(eventSummary || defaultReviewEventSummary(normalizedAction, observation, normalizedStatus)).trim().slice(0, 512);
+
+  return assertContract(
+    "observationReviewEvent",
+    withoutUndefined({
+      schema_version: CONTRACT_SCHEMA_VERSION,
+      event_id: `orev_${normalizedEventIndex}_${safeId(observation.observation_id)}_${normalizedAction}_${safeId(eventTs)}`,
+      event_index: normalizedEventIndex,
+      observation_id: observation.observation_id,
+      label_id: observation.label_id,
+      tile_id: observation.tile_id,
+      zone_id: observation.zone_id,
+      zone_label: observation.zone_label,
+      action: normalizedAction,
+      reviewer_id: String(reviewerId || "local-reviewer").slice(0, 128),
+      review_status: normalizedStatus,
+      reviewer_confidence: roundConfidence(reviewerConfidence),
+      consensus_status: normalizedConsensus,
+      revision: normalizedRevision,
+      event_ts: eventTs,
+      event_summary: summary || "Observation review event recorded.",
+      active_after: Boolean(activeAfter),
+      claim_boundary: OBSERVATION_REVIEW_CLAIM_BOUNDARY,
+      adjudication_state: adjudicationState ? String(adjudicationState).slice(0, 256) : undefined,
+      adjudication_note: adjudicationNote ? String(adjudicationNote).slice(0, 512) : undefined,
+    }),
+  );
 }
 
 export function updateTileObservationReview({
@@ -187,6 +255,13 @@ export function updateTileObservationReview({
 } = {}) {
   const clazz = normalizeReviewChoice(updates.clazz ?? observation?.clazz ?? label?.clazz, ARTIFACT_CLASSES, "artifact class");
   const severity = normalizeReviewChoice(updates.severity ?? observation?.severity ?? label?.severity, SEVERITY_LEVELS, "severity");
+  const reviewStatus = normalizeReviewChoice(updates.reviewStatus ?? observation?.review_status ?? "reviewed", OBSERVATION_REVIEW_STATUSES, "status");
+  const reviewerConfidence = roundConfidence(updates.reviewerConfidence ?? observation?.reviewer_confidence ?? label?.weight ?? 0.5);
+  const consensusStatus = normalizeReviewChoice(
+    updates.consensusStatus ?? consensusStatusForReview(reviewStatus),
+    OBSERVATION_CONSENSUS_STATUSES,
+    "consensus status",
+  );
   const note = String(updates.note ?? observation?.note ?? label?.note ?? "").trim().slice(0, 240);
   if (!note) {
     throw new TypeError("Observation review note is required before saving an edited observation.");
@@ -199,6 +274,11 @@ export function updateTileObservationReview({
     updated_at: updatedAt,
     updated_by: String(updatedBy || "local-reviewer").slice(0, 128),
     edit_summary: summarizeReviewChanges(observation, { clazz, severity, note }),
+    review_status: reviewStatus,
+    reviewer_confidence: reviewerConfidence,
+    consensus_status: consensusStatus,
+    adjudication_state: updates.adjudicationState || adjudicationStateForReview(reviewStatus, consensusStatus),
+    adjudication_note: updates.adjudicationNote ? String(updates.adjudicationNote).slice(0, 512) : undefined,
   };
   const nextObservation = assertContract("tileObservation", {
     ...observation,
@@ -224,8 +304,9 @@ export function updateTileObservationReview({
   };
 }
 
-export function summarizeTileObservations(observations = []) {
+export function summarizeTileObservations(observations = [], reviewEvents = []) {
   const records = observations.filter(Boolean);
+  const events = reviewEvents.filter(Boolean);
   const zoneCounts = countRecords(records, (observation) => observation.zone_id, (observation) => observation.zone_label);
   const summary = {
     schema_version: CONTRACT_SCHEMA_VERSION,
@@ -255,6 +336,38 @@ export function summarizeTileObservations(observations = []) {
       (observation) => observation.review_state || "submitted",
       (observation) => observation.review_state || "submitted",
     ),
+    review_status_counts: countRecords(
+      records,
+      (observation) => observation.review_status || DEFAULT_REVIEW_STATUS,
+      (observation) => observation.review_status || DEFAULT_REVIEW_STATUS,
+    ),
+    consensus_status_counts: countRecords(
+      records,
+      (observation) => observation.consensus_status || DEFAULT_CONSENSUS_STATUS,
+      (observation) => observation.consensus_status || DEFAULT_CONSENSUS_STATUS,
+    ),
+    review_event_count: events.length,
+    reviewed_observation_count: records.filter((observation) => observation.review_status === "reviewed").length,
+    needs_adjudication_count: records.filter(
+      (observation) => observation.review_status === "needs-adjudication" || observation.consensus_status === "needs-adjudication",
+    ).length,
+    average_reviewer_confidence: averageConfidence(records),
+    tile_qa_metrics: createQaMetrics({
+      records,
+      events,
+      recordKey: (observation) => observation.tile_id,
+      recordLabel: (observation) => observation.tile_id,
+      eventKey: (event) => event.tile_id,
+      eventLabel: (event) => event.tile_id,
+    }),
+    zone_qa_metrics: createQaMetrics({
+      records,
+      events,
+      recordKey: (observation) => observation.zone_id,
+      recordLabel: (observation) => observation.zone_label,
+      eventKey: (event) => event.zone_id,
+      eventLabel: (event) => event.zone_label,
+    }),
   };
   const dominantZone = zoneCounts[0];
   if (dominantZone) {
@@ -284,6 +397,104 @@ function summarizeReviewChanges(previous, next) {
     changes.push("note updated");
   }
   return changes.length ? changes.join("; ") : "review metadata refreshed";
+}
+
+function defaultReviewEventSummary(action, observation, reviewStatus) {
+  const zone = observation?.zone_label || observation?.zone_id || "unknown zone";
+  if (action === "create") {
+    return `Observation submitted at ${zone}; review status ${reviewStatus}.`;
+  }
+  if (action === "edit") {
+    return observation?.edit_summary || `Observation review edited at ${zone}; review status ${reviewStatus}.`;
+  }
+  if (action === "delete") {
+    return `Observation removed from active exports at ${zone}; ledger event retained.`;
+  }
+  if (action === "restore") {
+    return `Observation restored to active evidence exports at ${zone}.`;
+  }
+  return `Observation review event recorded at ${zone}.`;
+}
+
+function consensusStatusForReview(reviewStatus) {
+  if (reviewStatus === "reviewed") {
+    return "single-reviewer";
+  }
+  if (reviewStatus === "needs-adjudication") {
+    return "needs-adjudication";
+  }
+  return DEFAULT_CONSENSUS_STATUS;
+}
+
+function adjudicationStateForReview(reviewStatus, consensusStatus) {
+  if (reviewStatus === "needs-adjudication" || consensusStatus === "needs-adjudication") {
+    return "adjudication placeholder; requires independent expert review before consensus claims";
+  }
+  if (reviewStatus === "reviewed") {
+    return "single-reviewer QA only; not validated scientific consensus";
+  }
+  return "pending QA review; not validated scientific consensus";
+}
+
+function createQaMetrics({ records, events, recordKey, recordLabel, eventKey, eventLabel }) {
+  const groupedRecords = groupBy(records, recordKey);
+  const groupedEvents = groupBy(events, eventKey);
+  const labels = new Map();
+  for (const record of records) {
+    labels.set(String(recordKey(record) || "unknown"), String(recordLabel(record) || recordKey(record) || "unknown"));
+  }
+  for (const event of events) {
+    labels.set(String(eventKey(event) || "unknown"), String(eventLabel(event) || eventKey(event) || "unknown"));
+  }
+
+  return [...labels.keys()]
+    .map((key) => {
+      const groupRecords = groupedRecords.get(key) || [];
+      const groupEvents = groupedEvents.get(key) || [];
+      return {
+        key,
+        label: labels.get(key) || key,
+        observation_count: groupRecords.length,
+        reviewed_count: groupRecords.filter((observation) => observation.review_status === "reviewed").length,
+        needs_adjudication_count: groupRecords.filter(
+          (observation) => observation.review_status === "needs-adjudication" || observation.consensus_status === "needs-adjudication",
+        ).length,
+        ledger_event_count: groupEvents.length,
+        average_reviewer_confidence: averageConfidence(groupRecords),
+      };
+    })
+    .sort((left, right) => right.ledger_event_count - left.ledger_event_count || right.observation_count - left.observation_count || left.key.localeCompare(right.key));
+}
+
+function groupBy(records, getKey) {
+  const groups = new Map();
+  for (const record of records) {
+    const key = String(getKey(record) || "unknown");
+    const group = groups.get(key) || [];
+    group.push(record);
+    groups.set(key, group);
+  }
+  return groups;
+}
+
+function averageConfidence(records) {
+  const values = records.map((record) => Number(record.reviewer_confidence)).filter((value) => Number.isFinite(value));
+  if (!values.length) {
+    return 0;
+  }
+  return roundConfidence(values.reduce((total, value) => total + value, 0) / values.length);
+}
+
+function roundConfidence(value) {
+  return Number(clampNumber(value, 0, 1, 0.5).toFixed(2));
+}
+
+function withoutUndefined(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined));
+}
+
+function safeId(value) {
+  return String(value || "event").replace(/[^A-Za-z0-9._:-]+/g, "_");
 }
 
 function countTaxonomy(records, key) {

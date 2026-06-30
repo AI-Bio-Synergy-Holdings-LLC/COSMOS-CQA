@@ -9,6 +9,7 @@ test("shows a clear empty evidence workspace before artifact import", async ({ p
   await expect(page.locator("#provenance-title")).toHaveText("Evidence Workspace");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("No imported or exported evidence artifacts yet");
   await expect(page.locator("#evidenceSummary")).toContainText("Artifacts");
+  await expect(page.locator("#evidenceSummary")).toContainText("Review events");
   await expect(page.locator("#evidenceSummary")).toContainText("Provenance hashes");
   await expect(page.locator("#evidenceSummary")).toContainText("SBOM refs");
   await expect(page.locator("#evidenceArtifacts")).toContainText("No references declared.");
@@ -65,14 +66,17 @@ test("visualizes pinned observation evidence in reports and bundles", async ({ p
   await page.locator("#submitBtn").click();
 
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 tile observation");
+  await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 review event");
   await expect(page.locator("#evidenceObservationMap .observation-zone-cell.active")).toHaveCount(1);
   await expect(page.locator("#evidenceObservationMap .observation-zone-cell.active")).toContainText("top center");
   await expect(page.locator("#evidenceObservationSummary")).toContainText("Dominant zone");
   await expect(page.locator("#evidenceObservationSummary")).toContainText("top center");
   await expect(page.locator("#evidenceObservations")).toContainText("radial=mid-field");
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("0: create");
   await expect(page.locator("#reportSummary")).toContainText("Tile observations");
   await expect(page.locator("#reportObservationSummary")).toContainText("Row bands");
   await expect(page.locator("#reportObservations")).toContainText("Zone top center");
+  await expect(page.locator("#reportReviewLedger")).toContainText("0: create");
 
   const preview = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
   expect(preview.summary).toMatchObject({
@@ -81,6 +85,7 @@ test("visualizes pinned observation evidence in reports and bundles", async ({ p
     observed_tile_count: 1,
     observed_zone_count: 1,
     observation_note_count: 1,
+    observation_review_event_count: 1,
   });
   expect(preview.observation_summary).toMatchObject({
     observation_count: 1,
@@ -93,6 +98,8 @@ test("visualizes pinned observation evidence in reports and bundles", async ({ p
     observed_tile_count: 1,
     observed_zone_count: 1,
     observation_note_count: 1,
+    observation_review_event_count: 1,
   });
   expect(bundle.observation_summary.zone_counts[0]).toMatchObject({ key: "r1c2", label: "top center", count: 1 });
+  expect(bundle.observation_review_events).toHaveLength(1);
 });
