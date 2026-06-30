@@ -8,7 +8,7 @@ test("exposes the redesigned research workbench shell and default public workspa
 
   const workflow = page.getByRole("navigation", { name: "Workbench workflow" });
   await expect(workflow).toBeVisible();
-  for (const label of ["Tiles", "Labels", "Core Pack", "Diagnostics", "Reports", "Provenance"]) {
+  for (const label of ["Tiles", "Labels", "Review", "Core Pack", "Diagnostics", "Reports", "Provenance"]) {
     await expect(workflow.getByRole("link", { name: new RegExp(label) })).toBeVisible();
   }
 
@@ -45,6 +45,14 @@ test("keeps the research console hierarchy and responsive visual system coherent
   expect(Math.abs(tileBox.width - tileBox.height)).toBeLessThan(2);
   expect(controlsBox.width).toBeGreaterThan(280);
   expect(inspectorBox.width).toBeGreaterThan(300);
+
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await openWorkbench(page);
+  const largeCanvasBox = await page.locator("#tileCanvas").boundingBox();
+  const largeViewerBox = await page.locator(".viewer").boundingBox();
+  const largeTileStageBox = await page.locator(".tile-stage").boundingBox();
+  expect(largeCanvasBox.width).toBeGreaterThanOrEqual(760);
+  expect(largeViewerBox.height - largeTileStageBox.height).toBeLessThan(80);
 
   await page.setViewportSize({ width: 1500, height: 900 });
   await openWorkbench(page);

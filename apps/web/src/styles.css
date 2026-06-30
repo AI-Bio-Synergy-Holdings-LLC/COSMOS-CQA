@@ -330,9 +330,10 @@ h2 {
 }
 
 .viewer {
+  align-items: start;
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(300px, 520px) minmax(280px, 1fr);
+  grid-template-columns: minmax(560px, min(54vw, 860px)) minmax(320px, 1fr);
   padding: 14px;
 }
 
@@ -352,7 +353,7 @@ h2 {
   border: 1px solid transparent;
   border-radius: var(--radius);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  max-width: 640px;
+  max-width: 880px;
   min-width: 0;
   padding: 9px;
   width: 100%;
@@ -495,6 +496,7 @@ canvas.tile:hover {
 }
 
 .controls {
+  align-self: start;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -632,6 +634,7 @@ textarea:hover {
 
 .observation-review-workspace {
   gap: 10px;
+  margin: 0 14px 14px;
 }
 
 .observation-review-list {
@@ -819,6 +822,7 @@ textarea:hover {
 
 #workspace-tiles,
 #workspace-labels,
+#observationReviewWorkspace,
 #workspace-core-pack,
 #workspace-diagnostics,
 #workspace-provenance,
