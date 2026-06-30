@@ -3,7 +3,7 @@
 COSMOS-CQA uses two linked evidence workspace contracts:
 
 - `researchSession` captures replayable working state: loaded artifacts, selected tiles, labels, tile observations, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata.
-- `evidenceBundle` wraps a session for export, citation, and expert review with schema version, generated timestamp, steward, research-only license notice, limitations, claim-boundary references, and summary counts.
+- `evidenceBundle` wraps a session for export, citation, and expert review with schema version, generated timestamp, steward, research-only license notice, limitations, claim-boundary references, summary counts, and derived tile-observation summaries when pins exist.
 
 These contracts make Phase 3 evidence work durable without turning prototype diagnostics or browser state into unsupported scientific claims.
 
@@ -29,6 +29,8 @@ Reusable helpers live in `packages/core/src/evidence/`, and canonical schemas li
 The browser workbench can export a `researchSession` JSON file and import a valid session file. Invalid session imports are rejected before state mutation so the current review state remains intact. Session JSON restores contracted evidence metadata; external source artifacts may still need to be available or reloaded when a selected tile image is not already present in the workbench.
 
 The Evidence Workspace in the browser UI makes this model inspectable during review. It lists imported/exported research artifacts, linked tile observations, provenance hashes, SBOM references, loaded Core Packs, diagnostic placeholder records, and validation checks, with validation report IDs shown alongside related artifacts and references.
+
+Pinned observation evidence is visualized as a 3x3 zone map and a derived summary by tile, zone, row band, column band, radial band, class, and severity. These summaries show review attention patterns only. The interpretation boundary is documented in `docs/tile-observation-notes.md`.
 
 Evidence bundle exports are schema-validated JSON artifacts suitable for research archive comparison. The golden Core Pack fixture records the serialized bundle hash, steward, research-only license notice, limitations, report summary counts, diagnostics, provenance subjects, and SBOM references so future refactors can prove the archive shape stayed stable.
 

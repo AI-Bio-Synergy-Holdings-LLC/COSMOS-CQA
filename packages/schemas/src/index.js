@@ -60,6 +60,22 @@ export const schemas = {
     },
   },
 
+  tileObservationTaxonomy: {
+    $id: "cosmos-cqa/tile-observation-taxonomy.schema.json",
+    type: "object",
+    required: ["grid_size", "row_band", "column_band", "quadrant", "radial_band", "coordinate_percent", "interpretation"],
+    additionalProperties: false,
+    properties: {
+      grid_size: { type: "integer", minimum: 1, maximum: 9 },
+      row_band: { type: "string", minLength: 1, maxLength: 64 },
+      column_band: { type: "string", minLength: 1, maxLength: 64 },
+      quadrant: { type: "string", minLength: 1, maxLength: 64 },
+      radial_band: { type: "string", minLength: 1, maxLength: 64 },
+      coordinate_percent: { type: "string", minLength: 1, maxLength: 64 },
+      interpretation: { type: "string", minLength: 80, maxLength: 512 },
+    },
+  },
+
   tileObservation: {
     $id: "cosmos-cqa/tile-observation.schema.json",
     type: "object",
@@ -97,12 +113,76 @@ export const schemas = {
       zone_label: { type: "string", minLength: 1, maxLength: 128 },
       zone_row: { type: "integer", minimum: 1, maximum: 9 },
       zone_col: { type: "integer", minimum: 1, maximum: 9 },
+      zone_taxonomy: { $ref: "tileObservationTaxonomy" },
       clazz: { type: "string", enum: ARTIFACT_CLASSES },
       severity: { type: "string", enum: SEVERITY_LEVELS },
       note: { type: "string", minLength: 1, maxLength: 240 },
       overlay: { type: "string", enum: OVERLAY_TYPES },
       palette: { type: "string", enum: PALETTES },
       ts: { type: "string", format: "date-time" },
+    },
+  },
+
+  observationCount: {
+    $id: "cosmos-cqa/observation-count.schema.json",
+    type: "object",
+    required: ["key", "label", "count"],
+    additionalProperties: false,
+    properties: {
+      key: { type: "string", minLength: 1, maxLength: 128 },
+      label: { type: "string", minLength: 1, maxLength: 128 },
+      count: { type: "integer", minimum: 0 },
+    },
+  },
+
+  tileObservationSummary: {
+    $id: "cosmos-cqa/tile-observation-summary.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "observation_count",
+      "observed_tile_count",
+      "observed_zone_count",
+      "note_count",
+      "zone_counts",
+      "row_band_counts",
+      "column_band_counts",
+      "radial_band_counts",
+      "class_counts",
+      "severity_counts",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      observation_count: { type: "integer", minimum: 0 },
+      observed_tile_count: { type: "integer", minimum: 0 },
+      observed_zone_count: { type: "integer", minimum: 0 },
+      note_count: { type: "integer", minimum: 0 },
+      dominant_zone_label: { type: "string", minLength: 1, maxLength: 128 },
+      zone_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      row_band_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      column_band_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      radial_band_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      class_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
+      severity_counts: {
+        type: "array",
+        items: { $ref: "observationCount" },
+      },
     },
   },
 
@@ -613,6 +693,10 @@ export const schemas = {
         additionalProperties: false,
         properties: {
           label_count: { type: "integer", minimum: 0 },
+          observation_count: { type: "integer", minimum: 0 },
+          observed_tile_count: { type: "integer", minimum: 0 },
+          observed_zone_count: { type: "integer", minimum: 0 },
+          observation_note_count: { type: "integer", minimum: 0 },
           feed_error_count: { type: "integer", minimum: 0 },
           pass_count: { type: "integer", minimum: 0 },
           fail_count: { type: "integer", minimum: 0 },
@@ -647,6 +731,7 @@ export const schemas = {
         type: "array",
         items: { $ref: "diagnosticResult" },
       },
+      observation_summary: { $ref: "tileObservationSummary" },
     },
   },
 
@@ -754,6 +839,7 @@ export const schemas = {
         items: { type: "string", minLength: 1, maxLength: 2048 },
       },
       session: { $ref: "researchSession" },
+      observation_summary: { $ref: "tileObservationSummary" },
       summary: {
         type: "object",
         required: [
@@ -771,6 +857,9 @@ export const schemas = {
           selected_tile_count: { type: "integer", minimum: 0 },
           label_count: { type: "integer", minimum: 0 },
           observation_count: { type: "integer", minimum: 0 },
+          observed_tile_count: { type: "integer", minimum: 0 },
+          observed_zone_count: { type: "integer", minimum: 0 },
+          observation_note_count: { type: "integer", minimum: 0 },
           diagnostic_count: { type: "integer", minimum: 0 },
           report_count: { type: "integer", minimum: 0 },
           provenance_hash_count: { type: "integer", minimum: 0 },

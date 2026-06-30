@@ -1,4 +1,5 @@
 import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
+import { summarizeTileObservations } from "../observations/index.js";
 import { createBuildInfo } from "../provenance/index.js";
 
 export const VALIDATION_REPORT_LICENSE = "Research-only public use; all other rights reserved.";
@@ -59,6 +60,7 @@ export function createValidationReport({
   feedErrors = [],
   checks = [],
   artifacts = [],
+  observations = [],
   sbomRefs = [],
   provenanceHashes = [],
   diagnostics = [],
@@ -74,6 +76,7 @@ export function createValidationReport({
   }));
   const passCount = normalizedChecks.filter((check) => check.status === "pass").length;
   const failCount = normalizedChecks.filter((check) => check.status === "fail").length;
+  const observationSummary = observations.length ? summarizeTileObservations(observations) : null;
 
   const report = {
     schema_version: CONTRACT_SCHEMA_VERSION,
@@ -93,6 +96,13 @@ export function createValidationReport({
 
   if (artifacts.length) {
     report.artifacts = artifacts;
+  }
+  if (observationSummary) {
+    report.summary.observation_count = observationSummary.observation_count;
+    report.summary.observed_tile_count = observationSummary.observed_tile_count;
+    report.summary.observed_zone_count = observationSummary.observed_zone_count;
+    report.summary.observation_note_count = observationSummary.note_count;
+    report.observation_summary = observationSummary;
   }
   if (sbomRefs.length) {
     report.sbom_refs = sbomRefs;

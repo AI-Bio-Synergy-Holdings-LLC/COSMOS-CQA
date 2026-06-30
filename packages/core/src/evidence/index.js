@@ -1,4 +1,5 @@
 import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
+import { summarizeTileObservations } from "../observations/index.js";
 import { createBuildInfo } from "../provenance/index.js";
 
 export const EVIDENCE_BUNDLE_STEWARD = "AI-Bio Synergy Holdings LLC";
@@ -57,7 +58,7 @@ export function createEvidenceBundle({
   claimBoundaryRefs = ["docs/claim-boundaries.md", "docs/scientific-scope.md"],
   session = createResearchSession({ createdAt: generatedAt, updatedAt: generatedAt }),
 } = {}) {
-  return assertContract("evidenceBundle", {
+  const bundle = {
     schema_version: CONTRACT_SCHEMA_VERSION,
     bundle_id: bundleId,
     generated_at: generatedAt,
@@ -68,7 +69,13 @@ export function createEvidenceBundle({
     claim_boundary_refs: claimBoundaryRefs,
     session,
     summary: summarizeResearchSession(session),
-  });
+  };
+
+  if (session.observations?.length) {
+    bundle.observation_summary = summarizeTileObservations(session.observations);
+  }
+
+  return assertContract("evidenceBundle", bundle);
 }
 
 export function normalizeEvidenceBundle(bundle) {
@@ -91,6 +98,9 @@ export function normalizeEvidenceBundle(bundle) {
 
   normalized.session = normalizeResearchSession(validBundle.session);
   normalized.summary = summarizeResearchSession(normalized.session);
+  if (normalized.session.observations?.length) {
+    normalized.observation_summary = summarizeTileObservations(normalized.session.observations);
+  }
   return assertContract("evidenceBundle", normalized);
 }
 
@@ -141,7 +151,11 @@ export function summarizeResearchSession(session) {
   };
 
   if (session.observations !== undefined) {
-    summary.observation_count = session.observations.length;
+    const observationSummary = summarizeTileObservations(session.observations);
+    summary.observation_count = observationSummary.observation_count;
+    summary.observed_tile_count = observationSummary.observed_tile_count;
+    summary.observed_zone_count = observationSummary.observed_zone_count;
+    summary.observation_note_count = observationSummary.note_count;
   }
 
   return summary;

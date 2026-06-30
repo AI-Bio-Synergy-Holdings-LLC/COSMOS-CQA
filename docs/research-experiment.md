@@ -25,10 +25,12 @@ COSMOS-CQA exposes the research workflow fundamentals needed to audit the public
 
 - Data contract: Core Pack manifests identify tiles, passports, evidence references, SBOM references, diagnostic placeholders, and release stewardship.
 - Tile passport: each tile can carry dataset context, coordinates, checksum, sidecars, provenance, and truth-policy language.
-- Review sidecars: overlays, palettes, captions, and sonic loops provide alternate ways to inspect the same review object.
+- Review sidecars: overlays, palettes, captions, spatial observation pins, and sonic loops provide alternate ways to inspect the same review object.
 - Evidence chain: tile observations, labels, bookmarks, reports, hashes, sessions, and bundles preserve what happened during review.
 
 The public project does not expose or imply proprietary future diagnostic claims.
+
+Tile observation pins are interpreted as reviewer-authored source-tile location cues. The detailed note boundary is maintained in `docs/tile-observation-notes.md`.
 
 ## How The Sonic Loop Must Be Explained
 

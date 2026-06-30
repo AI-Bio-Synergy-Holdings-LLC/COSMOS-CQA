@@ -16,7 +16,7 @@ The current entrypoint is `src/index.js`.
 
 ## Covered Shapes
 
-- label records, tile observations, and label export rows
+- label records, tile observations, tile-observation summaries, and label export rows
 - feed tile and expert events
 - bookmark provenance payloads
 - provenance hashes

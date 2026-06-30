@@ -32,7 +32,13 @@ import {
 } from "../evidence/index.js";
 import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
 import { createSbom, createSbomReference, createValidationReport, downloadBlob, downloadCsv, downloadJson } from "../reports/index.js";
-import { createTileObservation, getTileObservationZone, roundObservationCoordinate } from "../observations/index.js";
+import {
+  TILE_OBSERVATION_ZONE_CELLS,
+  createTileObservation,
+  getTileObservationZone,
+  roundObservationCoordinate,
+  summarizeTileObservations,
+} from "../observations/index.js";
 import { applyPalette, createAudioController, drawOverlay, makeAudioMapForTile } from "../sidecars/index.js";
 import { createDemoTiles, synthTile } from "../tile-synthesis/index.js";
 
@@ -355,6 +361,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       feedErrors: state.feedErrors,
       checks: buildValidationChecks(),
       artifacts: state.researchArtifacts,
+      observations: state.observations,
       sbomRefs: state.sbomRefs,
       provenanceHashes: state.provenanceHashes,
       diagnostics: state.diagnostics,
@@ -368,6 +375,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       !dom.reportViewerStatus ||
       !dom.reportSummary ||
       !dom.reportChecks ||
+      !dom.reportObservationSummary ||
+      !dom.reportObservations ||
       !dom.reportArtifacts ||
       !dom.reportDiagnostics ||
       !dom.reportSbomRefs ||
@@ -387,7 +396,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
 
     dom.reportViewerStatus.textContent = `${report.report_id} preview generated ${formatDate(report.generated_at)}. Export uses this preview source.`;
-    appendMetadataGrid(dom.reportSummary, [
+    const reportSummaryRows = [
       ["Schema", report.schema_version],
       ["Report ID", report.report_id],
       ["Generated", formatDate(report.generated_at)],
@@ -396,12 +405,20 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Feed errors", String(report.summary.feed_error_count)],
       ["Checks pass/fail", `${report.summary.pass_count} / ${report.summary.fail_count}`],
       ["Research license", report.license],
-    ]);
+    ];
+    if (report.summary.observation_count !== undefined) {
+      reportSummaryRows.splice(5, 0, ["Tile observations", String(report.summary.observation_count)]);
+      reportSummaryRows.splice(6, 0, ["Observed tiles", String(report.summary.observed_tile_count)]);
+      reportSummaryRows.splice(7, 0, ["Observed zones", String(report.summary.observed_zone_count)]);
+    }
+    appendMetadataGrid(dom.reportSummary, reportSummaryRows);
 
     appendReferenceList(dom.reportChecks, report.checks || [], (check) => [
       `${check.name} [${check.status}]`,
       check.detail || "No detail recorded.",
     ]);
+    renderObservationSummary(dom.reportObservationSummary, report.observation_summary);
+    appendReferenceList(dom.reportObservations, observationSummaryReferences(report.observation_summary), (entry) => [entry.title, entry.detail]);
     appendReferenceList(dom.reportArtifacts, report.artifacts || [], (artifact) => [
       artifact.artifact_id,
       `${artifact.kind}; records=${artifact.record_count}; errors=${artifact.error_count}; ${artifact.source}; ${artifact.source_sha256}`,
@@ -430,6 +447,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       !dom.evidenceWorkspaceStatus ||
       !dom.evidenceSummary ||
       !dom.evidenceArtifacts ||
+      !dom.evidenceObservationMap ||
+      !dom.evidenceObservationSummary ||
       !dom.evidenceObservations ||
       !dom.evidenceProvenanceHashes ||
       !dom.evidenceSbomRefs ||
@@ -443,6 +462,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     clearEvidenceWorkspace();
 
     const report = state.validationReportPreview;
+    const observationSummary = summarizeTileObservations(state.observations);
     const hasEvidence = Boolean(
       state.researchArtifacts.length ||
         state.provenanceHashes.length ||
@@ -466,6 +486,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Validation report", report?.report_id || "preview not generated"],
       ["Validation checks", hasEvidence && report?.checks ? String(report.checks.length) : "0"],
     ]);
+    renderObservationMap(dom.evidenceObservationMap, observationSummary);
+    renderObservationSummary(dom.evidenceObservationSummary, observationSummary);
 
     appendReferenceList(dom.evidenceArtifacts, state.researchArtifacts, (artifact) => [
       artifact.artifact_id,
@@ -484,7 +506,18 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     ]);
     appendReferenceList(dom.evidenceObservations, state.observations, (observation) => [
       `${observation.observation_id} -> ${observation.label_id}`,
-      `tile=${observation.tile_id}; zone=${observation.zone_label}; x=${observation.x_norm}; y=${observation.y_norm}; class=${observation.clazz}; severity=${observation.severity}`,
+      [
+        `tile=${observation.tile_id}`,
+        `zone=${observation.zone_label}`,
+        observation.zone_taxonomy ? `row=${observation.zone_taxonomy.row_band}` : "",
+        observation.zone_taxonomy ? `radial=${observation.zone_taxonomy.radial_band}` : "",
+        `x=${observation.x_norm}`,
+        `y=${observation.y_norm}`,
+        `class=${observation.clazz}`,
+        `severity=${observation.severity}`,
+      ]
+        .filter(Boolean)
+        .join("; "),
     ]);
     appendReferenceList(dom.evidenceProvenanceHashes, state.provenanceHashes, (hash) => [
       hash.subject,
@@ -517,6 +550,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function clearEvidenceWorkspace() {
     dom.evidenceSummary.replaceChildren();
     dom.evidenceArtifacts.replaceChildren();
+    dom.evidenceObservationMap.replaceChildren();
+    dom.evidenceObservationSummary.replaceChildren();
     dom.evidenceObservations.replaceChildren();
     dom.evidenceProvenanceHashes.replaceChildren();
     dom.evidenceSbomRefs.replaceChildren();
@@ -528,6 +563,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function clearValidationReportPreview() {
     dom.reportSummary.replaceChildren();
     dom.reportChecks.replaceChildren();
+    dom.reportObservationSummary.replaceChildren();
+    dom.reportObservations.replaceChildren();
     dom.reportArtifacts.replaceChildren();
     dom.reportDiagnostics.replaceChildren();
     dom.reportSbomRefs.replaceChildren();
@@ -568,6 +605,67 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
 
     return limitations;
+  }
+
+  function renderObservationMap(container, summary) {
+    container.replaceChildren();
+    const counts = new Map((summary?.zone_counts || []).map((entry) => [entry.key, entry.count]));
+
+    for (const zone of TILE_OBSERVATION_ZONE_CELLS) {
+      const count = counts.get(zone.zone_id) || 0;
+      const cell = documentRef.createElement("div");
+      cell.className = count ? "observation-zone-cell active" : "observation-zone-cell";
+      const label = documentRef.createElement("strong");
+      const value = documentRef.createElement("span");
+      label.textContent = zone.zone_label;
+      value.textContent = String(count);
+      cell.append(label, value);
+      container.appendChild(cell);
+    }
+  }
+
+  function renderObservationSummary(container, summary) {
+    container.replaceChildren();
+    if (!summary?.observation_count) {
+      appendEmptyState(container, "No pinned observation summary recorded.");
+      return;
+    }
+
+    appendMetadataGrid(container, [
+      ["Pinned observations", String(summary.observation_count)],
+      ["Observed tiles", String(summary.observed_tile_count)],
+      ["Observed zones", String(summary.observed_zone_count)],
+      ["Notes", String(summary.note_count)],
+      ["Dominant zone", summary.dominant_zone_label || "n/a"],
+      ["Row bands", formatCountSummary(summary.row_band_counts)],
+      ["Column bands", formatCountSummary(summary.column_band_counts)],
+      ["Radial bands", formatCountSummary(summary.radial_band_counts)],
+    ]);
+  }
+
+  function observationSummaryReferences(summary) {
+    if (!summary?.observation_count) {
+      return [];
+    }
+
+    return [
+      ...summary.zone_counts.map((entry) => ({
+        title: `Zone ${entry.label}`,
+        detail: `${entry.count} pinned observation target(s).`,
+      })),
+      ...summary.class_counts.map((entry) => ({
+        title: `Class ${entry.label}`,
+        detail: `${entry.count} linked observation label(s).`,
+      })),
+      ...summary.severity_counts.map((entry) => ({
+        title: `Severity ${entry.label}`,
+        detail: `${entry.count} linked observation label(s).`,
+      })),
+    ];
+  }
+
+  function formatCountSummary(entries = []) {
+    return entries.length ? entries.map((entry) => `${entry.label}=${entry.count}`).join(", ") : "n/a";
   }
 
   function clearCorePackExplorer() {
@@ -1489,8 +1587,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       type: "application/json",
       filename: "cosmos-cqa-evidence-bundle.json",
     });
+    const observationText = bundle.summary.observation_count !== undefined ? `, ${bundle.summary.observation_count} observation(s)` : "";
     renderSessionStatus(
-      `Exported ${bundle.bundle_id}: ${bundle.summary.artifact_count} artifact(s), ${bundle.summary.report_count} report(s), ${bundle.summary.sbom_ref_count} SBOM ref(s).`,
+      `Exported ${bundle.bundle_id}: ${bundle.summary.artifact_count} artifact(s)${observationText}, ${bundle.summary.report_count} report(s), ${bundle.summary.sbom_ref_count} SBOM ref(s).`,
     );
     setCaption("Evidence bundle JSON exported.");
     notifyTestBridge("evidenceBundle.exported", { bundle, contents });
@@ -2166,6 +2265,8 @@ function bindDom(documentRef) {
     reportViewerStatus: get("reportViewerStatus"),
     reportSummary: get("reportSummary"),
     reportChecks: get("reportChecks"),
+    reportObservationSummary: get("reportObservationSummary"),
+    reportObservations: get("reportObservations"),
     reportArtifacts: get("reportArtifacts"),
     reportDiagnostics: get("reportDiagnostics"),
     reportSbomRefs: get("reportSbomRefs"),
@@ -2174,6 +2275,8 @@ function bindDom(documentRef) {
     evidenceWorkspaceStatus: get("evidenceWorkspaceStatus"),
     evidenceSummary: get("evidenceSummary"),
     evidenceArtifacts: get("evidenceArtifacts"),
+    evidenceObservationMap: get("evidenceObservationMap"),
+    evidenceObservationSummary: get("evidenceObservationSummary"),
     evidenceObservations: get("evidenceObservations"),
     evidenceProvenanceHashes: get("evidenceProvenanceHashes"),
     evidenceSbomRefs: get("evidenceSbomRefs"),
