@@ -28,7 +28,7 @@ The browser source uses these first-class app modules:
 - `contracts`: compatibility re-export for package schemas;
 - `feeds`: compatibility re-export for package feed helpers;
 - `labels`: browser persistence plus package label/CSV helpers;
-- `observations`: spatial tile-observation coordinate, viewer-transform mapping, zone taxonomy, review-revision, and summary helpers;
+- `observations`: spatial tile-observation coordinate, viewer-transform mapping, zone taxonomy, review-revision, immutable review-event ledger, QA metric, and summary helpers;
 - `metrics`: compatibility re-export for package metric helpers;
 - `expert-review`: expert queue scoring, confirm/override, and adjudication persistence;
 - `provenance`: browser test bridge/clipboard helpers plus package bookmark helpers;

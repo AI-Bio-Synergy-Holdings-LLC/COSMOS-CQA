@@ -239,6 +239,8 @@ test("reviews submitted observations with synced edit delete restore and export 
   await page.locator("#submitBtn").click();
 
   await expect(page.locator("#observationReviewStatus")).toContainText("1 submitted observation");
+  await expect(page.locator("#observationReviewSummary")).toContainText("Review events");
+  await expect(page.locator("#observationReviewLedger")).toContainText("0: create");
   await expect(page.locator(".observation-review-row")).toHaveCount(1);
   await page.locator(".observation-review-row").click();
   await expect(page.locator(".observation-review-row")).toHaveClass(/active/);
@@ -247,13 +249,24 @@ test("reviews submitted observations with synced edit delete restore and export 
 
   await page.locator("#reviewClassSel").selectOption("dipole");
   await page.locator("#reviewSevSel").selectOption("high");
+  await page.locator("#reviewStatusSel").selectOption("needs-adjudication");
+  await page.locator("#reviewConfidenceInput").evaluate((input) => {
+    input.value = "0.85";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
   await page.locator("#reviewNote").fill("reviewed transformed target; stronger dipole interpretation with clear top center note");
   await page.locator("#saveObservationReviewBtn").click();
   await expect(page.locator("#caption")).toContainText("Observation review saved");
   await expect(page.locator("#observationReviewAudit")).toContainText("edited revision 1");
+  await expect(page.locator("#observationReviewAudit")).toContainText("needs-adjudication");
+  await expect(page.locator("#observationReviewLedger")).toContainText("1: edit");
   await expect(page.locator("#evidenceObservations")).toContainText("review=edited:1");
+  await expect(page.locator("#evidenceObservations")).toContainText("confidence=0.85");
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("not validated detections");
   await expect(page.locator("#reportObservationSummary")).toContainText("Review states");
+  await expect(page.locator("#reportObservationSummary")).toContainText("Needs adjudication");
   await expect(page.locator("#reportObservations")).toContainText("Tile tile_001");
+  await expect(page.locator("#reportReviewLedger")).toContainText("1: edit");
 
   const reviewedLabel = await firstStoredLabel(page);
   const reviewedObservation = await firstStoredObservation(page);
@@ -262,25 +275,39 @@ test("reviews submitted observations with synced edit delete restore and export 
     severity: "high",
     review_state: "edited",
     review_revision: 1,
+    review_status: "needs-adjudication",
+    reviewer_confidence: 0.85,
+    consensus_status: "needs-adjudication",
   });
   expect(reviewedObservation).toMatchObject({
     clazz: "dipole",
     severity: "high",
     review_state: "edited",
     review_revision: 1,
+    review_status: "needs-adjudication",
+    reviewer_confidence: 0.85,
+    consensus_status: "needs-adjudication",
   });
   expect(reviewedLabel.note).toBe(reviewedObservation.note);
   expect(reviewedObservation.edit_summary).toContain("class stripe -> dipole");
+  expect(reviewedObservation.adjudication_state).toContain("adjudication placeholder");
+  const eventsAfterEdit = await page.evaluate(() => JSON.parse(localStorage.getItem("observationReviewEvents") || "[]"));
+  expect(eventsAfterEdit.map((event) => event.action)).toEqual(["create", "edit"]);
+  expect(eventsAfterEdit[1]).toMatchObject({
+    review_status: "needs-adjudication",
+    reviewer_confidence: 0.85,
+    active_after: true,
+  });
+  expect(eventsAfterEdit[1].claim_boundary).toContain("not validated detections");
 
   const report = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
   expect(report.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
   expect(report.observation_summary.note_status_counts[0]).toMatchObject({ key: "with_note", count: 1 });
   expect(report.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
-  expect(report.checks.find((check) => check.name === "tile observation targets").detail).toContain("1 edited review record");
-
-  const bundle = await page.evaluate(() => window.COSMOS_CQA_APP.buildEvidenceBundle({ generatedAt: "2026-06-30T00:00:00.000Z" }));
-  expect(bundle.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
-  expect(bundle.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
+  expect(report.observation_summary.review_status_counts[0]).toMatchObject({ key: "needs-adjudication", count: 1 });
+  expect(report.observation_summary.tile_qa_metrics[0]).toMatchObject({ key: "tile_001", ledger_event_count: 2, needs_adjudication_count: 1 });
+  expect(report.observation_review_events.map((event) => event.action)).toEqual(["create", "edit"]);
+  expect(report.checks.find((check) => check.name === "tile observation targets").detail).toContain("2 immutable review ledger event");
 
   await page.locator("#deleteObservationReviewBtn").click();
   await expect(page.locator("#caption")).toContainText("removed from active exports");
@@ -289,8 +316,11 @@ test("reviews submitted observations with synced edit delete restore and export 
   await expect(page.locator("#observationReviewStatus")).toContainText("No submitted observations yet.");
   await expect(page.locator("#restoreObservationReviewBtn")).toBeEnabled();
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(0);
+  await expect(page.locator("#observationReviewLedger")).toContainText("2: delete");
   const reportAfterDelete = await page.evaluate(() => window.COSMOS_CQA_APP.state.validationReportPreview);
-  expect(reportAfterDelete.summary.observation_count).toBeUndefined();
+  expect(reportAfterDelete.summary.observation_count).toBe(0);
+  expect(reportAfterDelete.summary.observation_review_event_count).toBe(3);
+  expect(reportAfterDelete.observation_review_events.at(-1)).toMatchObject({ action: "delete", active_after: false });
 
   await page.locator("#restoreObservationReviewBtn").click();
   await expect(page.locator("#caption")).toContainText("restored to active evidence exports");
@@ -298,9 +328,30 @@ test("reviews submitted observations with synced edit delete restore and export 
   await expect.poll(() => observationCount(page)).toBe(1);
   await expect(page.locator(".observation-marker.selected")).toHaveCount(1);
   await expect(page.locator("#restoreObservationReviewBtn")).toBeDisabled();
+  await expect(page.locator("#observationReviewLedger")).toContainText("3: restore");
   const restoredObservation = await firstStoredObservation(page);
   expect(restoredObservation).toMatchObject({
     review_state: "edited",
     review_revision: 1,
+    review_status: "needs-adjudication",
   });
+
+  const bundle = await page.evaluate(() => window.COSMOS_CQA_APP.buildEvidenceBundle({ generatedAt: "2026-06-30T00:00:00.000Z" }));
+  expect(bundle.observation_summary.tile_counts[0]).toMatchObject({ key: "tile_001", count: 1 });
+  expect(bundle.observation_summary.review_state_counts[0]).toMatchObject({ key: "edited", count: 1 });
+  expect(bundle.observation_summary.tile_qa_metrics[0]).toMatchObject({ key: "tile_001", ledger_event_count: 4, needs_adjudication_count: 1 });
+  expect(bundle.observation_review_events.map((event) => event.action)).toEqual(["create", "edit", "delete", "restore"]);
+  expect(bundle.session.observation_review_events.map((event) => event.event_id)).toEqual(bundle.observation_review_events.map((event) => event.event_id));
+  expect(bundle.summary.observation_review_event_count).toBe(4);
+
+  const sessionText = JSON.stringify(bundle.session);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
+  const importResult = await page.evaluate((text) => window.COSMOS_CQA_APP.importResearchSessionText(text, { source: "browser-replay" }), sessionText);
+  expect(importResult.ok).toBe(true);
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("3: restore");
+  await expect(page.locator("#reportReviewLedger")).toContainText("needs-adjudication");
+  const replayedEvents = await page.evaluate(() => window.COSMOS_CQA_APP.state.observationReviewEvents.map((event) => event.action));
+  expect(replayedEvents).toEqual(["create", "edit", "delete", "restore"]);
 });

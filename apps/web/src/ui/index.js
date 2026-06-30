@@ -1,7 +1,16 @@
 import { createExpertDecision, enqueueExpert, getRecentScores, saveExpertDecisions } from "../expert-review/index.js";
 import { summarizeCorePackManifest, tilePassportToTileMeta } from "../core-pack/index.js";
 import { createDiagnosticPlaceholders } from "../diagnostics/index.js";
-import { buildCSV, createVolunteerLabel, labelsToRows, removeObservationForLabel, saveLabels, saveObservations, undoLastLabel } from "../labels/index.js";
+import {
+  buildCSV,
+  createVolunteerLabel,
+  labelsToRows,
+  removeObservationForLabel,
+  saveLabels,
+  saveObservationReviewEvents,
+  saveObservations,
+  undoLastLabel,
+} from "../labels/index.js";
 import {
   calculateAccessibilityCoverage,
   calculateMedianLatency,
@@ -36,6 +45,7 @@ import {
   DEFAULT_VIEWER_TRANSFORM,
   TILE_OBSERVATION_ZONE_CELLS,
   VIEWER_TRANSFORM_LIMITS,
+  createObservationReviewEvent,
   createTileObservation,
   createViewerTransformMatrix,
   getTileObservationZone,
@@ -260,9 +270,16 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       generatedAt: label.ts,
     });
 
+    syncLabelReviewFields(label, observation);
     state.observations.push(observation);
     state.selectedObservationId = observation.observation_id;
     saveObservations(state.observations);
+    appendObservationReviewEvent({
+      action: "create",
+      observation,
+      label,
+      eventSummary: `Observation submitted at ${observation.zone_label}; pending QA review.`,
+    });
     state.pendingObservation = null;
     renderObservationOverlay();
     renderObservationReviewWorkspace();
@@ -313,6 +330,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
           clazz: dom.reviewClassSel.value,
           severity: dom.reviewSevSel.value,
           note: dom.reviewNote.value,
+          reviewStatus: dom.reviewStatusSel.value,
+          reviewerConfidence: dom.reviewConfidenceInput.value,
         },
         updatedBy: state.volunteerId,
       });
@@ -325,13 +344,19 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (labelIndex >= 0 && result.label) {
       state.labels[labelIndex] = result.label;
     }
+    const event = appendObservationReviewEvent({
+      action: "edit",
+      observation: result.observation,
+      label: result.label || label,
+      eventSummary: result.edit_summary,
+    });
     saveLabels(state.labels);
     saveObservations(state.observations);
     renderObservationOverlay();
     renderObservationReviewWorkspace();
     refreshValidationReportPreview();
     setCaption(`Observation review saved: ${result.edit_summary}.`);
-    notifyTestBridge("tileObservation.reviewSaved", result);
+    notifyTestBridge("tileObservation.reviewSaved", { ...result, event });
     return result;
   }
 
@@ -351,6 +376,13 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       deleted_at: new Date().toISOString(),
       deleted_by: state.volunteerId,
     };
+    const event = appendObservationReviewEvent({
+      action: "delete",
+      observation,
+      label,
+      eventSummary: `${observation.observation_id} removed from active exports; review ledger retained.`,
+      activeAfter: false,
+    });
     state.selectedObservationId = "";
     saveLabels(state.labels);
     saveObservations(state.observations);
@@ -358,7 +390,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     renderObservationReviewWorkspace();
     refreshValidationReportPreview();
     setCaption(`${observation.observation_id} removed from active exports; Undo Delete can restore it this session.`);
-    notifyTestBridge("tileObservation.reviewDeleted", state.deletedObservationReview);
+    notifyTestBridge("tileObservation.reviewDeleted", { ...state.deletedObservationReview, event });
     return state.deletedObservationReview;
   }
 
@@ -376,18 +408,27 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       state.observations.push(cloneJson(deleted.observation));
     }
     state.selectedObservationId = deleted.observation.observation_id;
+    const restoredObservation = state.observations.find((observation) => observation.observation_id === state.selectedObservationId);
+    const restoredLabel = state.labels.find((label) => label.label_id === restoredObservation?.label_id) || null;
+    const event = appendObservationReviewEvent({
+      action: "restore",
+      observation: restoredObservation,
+      label: restoredLabel,
+      eventSummary: `${state.selectedObservationId} restored to active evidence exports.`,
+      activeAfter: true,
+    });
     state.deletedObservationReview = null;
     saveLabels(state.labels);
     saveObservations(state.observations);
     selectObservationForReview(state.selectedObservationId, { announce: false });
     refreshValidationReportPreview();
     setCaption(`${state.selectedObservationId} restored to active evidence exports.`);
-    notifyTestBridge("tileObservation.reviewRestored", { observation_id: state.selectedObservationId });
+    notifyTestBridge("tileObservation.reviewRestored", { observation_id: state.selectedObservationId, event });
     return state.selectedObservationId;
   }
 
   function renderObservationReviewWorkspace() {
-    if (!dom.observationReviewStatus || !dom.observationReviewList || !dom.observationReviewSummary) {
+    if (!dom.observationReviewStatus || !dom.observationReviewList || !dom.observationReviewSummary || !dom.observationReviewLedger) {
       return;
     }
 
@@ -396,9 +437,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       state.selectedObservationId = "";
       selected = null;
     }
-    const summary = summarizeTileObservations(state.observations);
+    const summary = summarizeTileObservations(state.observations, state.observationReviewEvents);
     dom.observationReviewList.replaceChildren();
     dom.observationReviewSummary.replaceChildren();
+    dom.observationReviewLedger.replaceChildren();
     dom.observationReviewStatus.textContent = state.observations.length
       ? `${state.observations.length} submitted observation(s) ready for QA review.`
       : "No submitted observations yet.";
@@ -408,6 +450,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Zones", String(summary.observed_zone_count)],
       ["Note status", formatCountSummary(summary.note_status_counts)],
       ["Review states", formatCountSummary(summary.review_state_counts)],
+      ["Review status", formatCountSummary(summary.review_status_counts)],
+      ["Consensus", formatCountSummary(summary.consensus_status_counts)],
+      ["Review events", String(summary.review_event_count)],
+      ["Needs adjudication", String(summary.needs_adjudication_count)],
+      ["Avg confidence", formatConfidence(summary.average_reviewer_confidence)],
     ]);
 
     if (!state.observations.length) {
@@ -421,12 +468,15 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       button.innerHTML = `
         <strong>${escapeHtml(observation.tile_id)} - ${escapeHtml(observation.zone_label)}</strong>
         <span>${escapeHtml(observation.clazz)} / ${escapeHtml(observation.severity)} - x=${observation.x_norm}, y=${observation.y_norm}</span>
-        <span>rev ${observation.review_revision || 0}; ${escapeHtml(observation.review_state || "submitted")}; ${escapeHtml(truncateText(observation.note, 82))}</span>
+        <span>rev ${observation.review_revision || 0}; ${escapeHtml(observation.review_status || "pending-review")}; conf ${formatConfidence(
+          observation.reviewer_confidence ?? 0.5,
+        )}; ${escapeHtml(truncateText(observation.note, 82))}</span>
       `;
       button.addEventListener("click", () => selectObservationForReview(observation.observation_id));
       dom.observationReviewList.appendChild(button);
     }
 
+    appendReferenceList(dom.observationReviewLedger, state.observationReviewEvents, formatReviewEventReference);
     setObservationReviewEditor(selected);
   }
 
@@ -434,6 +484,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     const disabled = !observation;
     dom.reviewClassSel.disabled = disabled;
     dom.reviewSevSel.disabled = disabled;
+    dom.reviewStatusSel.disabled = disabled;
+    dom.reviewConfidenceInput.disabled = disabled;
     dom.reviewNote.disabled = disabled;
     dom.saveObservationReviewBtn.disabled = disabled || !String(observation?.note || "").trim();
     dom.deleteObservationReviewBtn.disabled = disabled;
@@ -442,13 +494,21 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (observation) {
       dom.reviewClassSel.value = observation.clazz;
       dom.reviewSevSel.value = observation.severity;
+      dom.reviewStatusSel.value = observation.review_status || "pending-review";
+      dom.reviewConfidenceInput.value = String(observation.reviewer_confidence ?? 0.5);
+      dom.reviewConfidenceValue.textContent = formatConfidence(observation.reviewer_confidence ?? 0.5);
       dom.reviewNote.value = observation.note || "";
       dom.observationReviewAudit.textContent = `${observation.observation_id}: ${observation.review_state || "submitted"} revision ${
         observation.review_revision || 0
-      }; synced label ${observation.label_id}.`;
+      }; ${observation.review_status || "pending-review"}; consensus=${observation.consensus_status || "not-assessed"}; synced label ${
+        observation.label_id
+      }.`;
     } else {
       dom.reviewClassSel.value = "stripe";
       dom.reviewSevSel.value = "medium";
+      dom.reviewStatusSel.value = "pending-review";
+      dom.reviewConfidenceInput.value = "0.5";
+      dom.reviewConfidenceValue.textContent = "0.50";
       dom.reviewNote.value = "";
       dom.observationReviewAudit.textContent = state.deletedObservationReview
         ? `${state.deletedObservationReview.observation.observation_id} was deleted from active exports and can be restored.`
@@ -457,11 +517,35 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function updateObservationReviewControls() {
+    dom.reviewConfidenceValue.textContent = formatConfidence(dom.reviewConfidenceInput.value);
     dom.saveObservationReviewBtn.disabled = !state.selectedObservationId || !dom.reviewNote.value.trim();
   }
 
   function getSelectedObservation() {
     return state.observations.find((entry) => entry.observation_id === state.selectedObservationId) || null;
+  }
+
+  function appendObservationReviewEvent({ action, observation, label, eventSummary, activeAfter = action !== "delete" }) {
+    const event = createObservationReviewEvent({
+      action,
+      observation,
+      label,
+      eventIndex: state.observationReviewEvents.length,
+      reviewerId: state.volunteerId,
+      eventSummary,
+      activeAfter,
+    });
+    state.observationReviewEvents.push(event);
+    saveObservationReviewEvents(state.observationReviewEvents);
+    notifyTestBridge("tileObservation.reviewEvent", { event });
+    return event;
+  }
+
+  function syncLabelReviewFields(label, observation) {
+    label.review_status = observation.review_status;
+    label.reviewer_confidence = observation.reviewer_confidence;
+    label.consensus_status = observation.consensus_status;
+    label.adjudication_state = observation.adjudication_state;
   }
 
   function adjustViewerTransform(patch) {
@@ -624,6 +708,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       checks: buildValidationChecks(),
       artifacts: state.researchArtifacts,
       observations: state.observations,
+      observationReviewEvents: state.observationReviewEvents,
       sbomRefs: state.sbomRefs,
       provenanceHashes: state.provenanceHashes,
       diagnostics: state.diagnostics,
@@ -639,6 +724,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       !dom.reportChecks ||
       !dom.reportObservationSummary ||
       !dom.reportObservations ||
+      !dom.reportReviewLedger ||
       !dom.reportArtifacts ||
       !dom.reportDiagnostics ||
       !dom.reportSbomRefs ||
@@ -681,6 +767,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     ]);
     renderObservationSummary(dom.reportObservationSummary, report.observation_summary);
     appendReferenceList(dom.reportObservations, observationSummaryReferences(report.observation_summary), (entry) => [entry.title, entry.detail]);
+    appendReferenceList(dom.reportReviewLedger, report.observation_review_events || [], formatReviewEventReference);
     appendReferenceList(dom.reportArtifacts, report.artifacts || [], (artifact) => [
       artifact.artifact_id,
       `${artifact.kind}; records=${artifact.record_count}; errors=${artifact.error_count}; ${artifact.source}; ${artifact.source_sha256}`,
@@ -712,6 +799,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       !dom.evidenceObservationMap ||
       !dom.evidenceObservationSummary ||
       !dom.evidenceObservations ||
+      !dom.evidenceReviewLedger ||
       !dom.evidenceProvenanceHashes ||
       !dom.evidenceSbomRefs ||
       !dom.evidenceCorePacks ||
@@ -724,23 +812,25 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     clearEvidenceWorkspace();
 
     const report = state.validationReportPreview;
-    const observationSummary = summarizeTileObservations(state.observations);
+    const observationSummary = summarizeTileObservations(state.observations, state.observationReviewEvents);
     const hasEvidence = Boolean(
       state.researchArtifacts.length ||
         state.provenanceHashes.length ||
         state.sbomRefs.length ||
         state.corePacks.length ||
         state.observations.length ||
+        state.observationReviewEvents.length ||
         state.diagnostics.length,
     );
 
     dom.evidenceWorkspaceStatus.textContent = hasEvidence
-      ? `Evidence workspace has ${state.researchArtifacts.length} artifact(s), ${state.observations.length} tile observation(s), ${state.provenanceHashes.length} provenance hash(es), ${state.sbomRefs.length} SBOM reference(s), and ${state.diagnostics.length} diagnostic record(s).`
+      ? `Evidence workspace has ${state.researchArtifacts.length} artifact(s), ${state.observations.length} tile observation(s), ${state.observationReviewEvents.length} review event(s), ${state.provenanceHashes.length} provenance hash(es), ${state.sbomRefs.length} SBOM reference(s), and ${state.diagnostics.length} diagnostic record(s).`
       : "No imported or exported evidence artifacts yet. Load a Core Pack, import a feed, export an SBOM, or import a research session.";
 
     appendMetadataGrid(dom.evidenceSummary, [
       ["Artifacts", String(state.researchArtifacts.length)],
       ["Tile observations", String(state.observations.length)],
+      ["Review events", String(state.observationReviewEvents.length)],
       ["Provenance hashes", String(state.provenanceHashes.length)],
       ["SBOM refs", String(state.sbomRefs.length)],
       ["Core Packs", String(state.corePacks.length)],
@@ -778,12 +868,16 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         `class=${observation.clazz}`,
         `severity=${observation.severity}`,
         `review=${observation.review_state || "submitted"}:${observation.review_revision || 0}`,
+        `status=${observation.review_status || "pending-review"}`,
+        `confidence=${formatConfidence(observation.reviewer_confidence ?? 0.5)}`,
+        `consensus=${observation.consensus_status || "not-assessed"}`,
         observation.updated_at ? `updated=${formatDate(observation.updated_at)}` : "",
         observation.edit_summary ? `edit=${observation.edit_summary}` : "",
       ]
         .filter(Boolean)
         .join("; "),
     ]);
+    appendReferenceList(dom.evidenceReviewLedger, state.observationReviewEvents, formatReviewEventReference);
     appendReferenceList(dom.evidenceProvenanceHashes, state.provenanceHashes, (hash) => [
       hash.subject,
       `${hash.algorithm}: ${hash.value}; generated=${formatDate(hash.generated_at)}${report?.report_id ? `; report=${report.report_id}` : ""}`,
@@ -818,6 +912,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.evidenceObservationMap.replaceChildren();
     dom.evidenceObservationSummary.replaceChildren();
     dom.evidenceObservations.replaceChildren();
+    dom.evidenceReviewLedger.replaceChildren();
     dom.evidenceProvenanceHashes.replaceChildren();
     dom.evidenceSbomRefs.replaceChildren();
     dom.evidenceCorePacks.replaceChildren();
@@ -830,6 +925,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.reportChecks.replaceChildren();
     dom.reportObservationSummary.replaceChildren();
     dom.reportObservations.replaceChildren();
+    dom.reportReviewLedger.replaceChildren();
     dom.reportArtifacts.replaceChildren();
     dom.reportDiagnostics.replaceChildren();
     dom.reportSbomRefs.replaceChildren();
@@ -908,6 +1004,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Radial bands", formatCountSummary(summary.radial_band_counts)],
       ["Note status", formatCountSummary(summary.note_status_counts)],
       ["Review states", formatCountSummary(summary.review_state_counts)],
+      ["Review status", formatCountSummary(summary.review_status_counts)],
+      ["Consensus", formatCountSummary(summary.consensus_status_counts)],
+      ["Review events", String(summary.review_event_count || 0)],
+      ["Needs adjudication", String(summary.needs_adjudication_count || 0)],
+      ["Avg confidence", formatConfidence(summary.average_reviewer_confidence || 0)],
     ]);
   }
 
@@ -941,11 +1042,43 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         title: `Note status ${entry.label}`,
         detail: `${entry.count} linked observation label(s).`,
       })),
+      ...(summary.tile_qa_metrics || []).map((entry) => ({
+        title: `Tile QA ${entry.label}`,
+        detail: `${entry.observation_count} active observation(s); ${entry.ledger_event_count} review event(s); ${entry.reviewed_count} reviewed; ${entry.needs_adjudication_count} needs adjudication; avg confidence ${formatConfidence(entry.average_reviewer_confidence)}.`,
+      })),
+      ...(summary.zone_qa_metrics || []).map((entry) => ({
+        title: `Zone QA ${entry.label}`,
+        detail: `${entry.observation_count} active observation(s); ${entry.ledger_event_count} review event(s); ${entry.reviewed_count} reviewed; ${entry.needs_adjudication_count} needs adjudication; avg confidence ${formatConfidence(entry.average_reviewer_confidence)}.`,
+      })),
     ];
   }
 
   function formatCountSummary(entries = []) {
     return entries.length ? entries.map((entry) => `${entry.label}=${entry.count}`).join(", ") : "n/a";
+  }
+
+  function formatConfidence(value) {
+    return Number(value || 0).toFixed(2);
+  }
+
+  function formatReviewEventReference(event) {
+    return [
+      `${event.event_index}: ${event.action} ${event.observation_id}`,
+      [
+        `tile=${event.tile_id}`,
+        `zone=${event.zone_label}`,
+        `status=${event.review_status}`,
+        `confidence=${formatConfidence(event.reviewer_confidence)}`,
+        `consensus=${event.consensus_status}`,
+        `revision=${event.revision}`,
+        `active_after=${event.active_after}`,
+        `ts=${formatDate(event.event_ts)}`,
+        event.event_summary,
+        event.claim_boundary,
+      ]
+        .filter(Boolean)
+        .join("; "),
+    ];
   }
 
   function clearCorePackExplorer() {
@@ -1810,6 +1943,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       selectedTiles: [createSelectedTileSnapshot({ generatedAt })],
       labels: state.labels,
       observations: state.observations,
+      observationReviewEvents: state.observationReviewEvents,
       diagnostics: state.diagnostics,
       reports: report ? [report] : [],
       provenanceHashes: state.provenanceHashes,
@@ -1909,6 +2043,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.researchSessionCreatedAt = session.created_at;
     state.labels = cloneJson(session.labels);
     state.observations = cloneJson(session.observations || []);
+    state.observationReviewEvents = cloneJson(session.observation_review_events || []);
     state.pendingObservation = null;
     state.selectedObservationId = state.observations.at(-1)?.observation_id || "";
     state.deletedObservationReview = null;
@@ -1927,6 +2062,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     saveLabels(state.labels);
     saveObservations(state.observations);
+    saveObservationReviewEvents(state.observationReviewEvents);
     saveExpertDecisions(state.expert);
 
     setControlValue(dom.overlaySel, plan.overlay);
@@ -2027,6 +2163,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     const hasHashes = state.provenanceHashes.length > 0;
     const hasDiagnostics = state.diagnostics.length > 0;
     const hasObservations = state.observations.length > 0;
+    const hasReviewEvents = state.observationReviewEvents.length > 0;
 
     return [
       {
@@ -2036,11 +2173,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       },
       {
         name: "tile observation targets",
-        status: hasObservations ? "pass" : "warn",
-        detail: hasObservations
+        status: hasObservations || hasReviewEvents ? "pass" : "warn",
+        detail: hasObservations || hasReviewEvents
           ? `${state.observations.length} linked tile observation target(s) include normalized coordinates, notes, and ${
               state.observations.filter((observation) => observation.review_state === "edited").length
-            } edited review record(s).`
+            } edited review record(s); ${state.observationReviewEvents.length} immutable review ledger event(s) attached.`
           : "No tile observation targets are linked to labels in this session.",
       },
       {
@@ -2350,6 +2487,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.clearObservationBtn.addEventListener("click", () => clearPendingObservation());
     dom.note.addEventListener("input", updateObservationSubmissionState);
     dom.reviewNote.addEventListener("input", updateObservationReviewControls);
+    dom.reviewStatusSel.addEventListener("change", updateObservationReviewControls);
+    dom.reviewConfidenceInput.addEventListener("input", updateObservationReviewControls);
     dom.saveObservationReviewBtn.addEventListener("click", saveSelectedObservationReview);
     dom.deleteObservationReviewBtn.addEventListener("click", deleteSelectedObservationReview);
     dom.restoreObservationReviewBtn.addEventListener("click", restoreDeletedObservationReview);
@@ -2357,7 +2496,16 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.undoBtn.addEventListener("click", () => {
       const removedLabel = undoLastLabel(state);
       if (removedLabel) {
-        removeObservationForLabel(state, removedLabel.label_id);
+        const removedObservation = removeObservationForLabel(state, removedLabel.label_id);
+        if (removedObservation) {
+          appendObservationReviewEvent({
+            action: "delete",
+            observation: removedObservation,
+            label: removedLabel,
+            eventSummary: `${removedObservation.observation_id} removed by label undo; review ledger retained.`,
+            activeAfter: false,
+          });
+        }
         if (!state.observations.some((observation) => observation.observation_id === state.selectedObservationId)) {
           state.selectedObservationId = "";
         }
@@ -2557,11 +2705,15 @@ function bindDom(documentRef) {
     observationReviewList: get("observationReviewList"),
     reviewClassSel: get("reviewClassSel"),
     reviewSevSel: get("reviewSevSel"),
+    reviewStatusSel: get("reviewStatusSel"),
+    reviewConfidenceInput: get("reviewConfidenceInput"),
+    reviewConfidenceValue: get("reviewConfidenceValue"),
     reviewNote: get("reviewNote"),
     saveObservationReviewBtn: get("saveObservationReviewBtn"),
     deleteObservationReviewBtn: get("deleteObservationReviewBtn"),
     restoreObservationReviewBtn: get("restoreObservationReviewBtn"),
     observationReviewAudit: get("observationReviewAudit"),
+    observationReviewLedger: get("observationReviewLedger"),
     calibBtn: get("calibBtn"),
     expertBtn: get("expertBtn"),
     bookmarkBtn: get("bookmarkBtn"),
@@ -2619,6 +2771,7 @@ function bindDom(documentRef) {
     reportChecks: get("reportChecks"),
     reportObservationSummary: get("reportObservationSummary"),
     reportObservations: get("reportObservations"),
+    reportReviewLedger: get("reportReviewLedger"),
     reportArtifacts: get("reportArtifacts"),
     reportDiagnostics: get("reportDiagnostics"),
     reportSbomRefs: get("reportSbomRefs"),
@@ -2630,6 +2783,7 @@ function bindDom(documentRef) {
     evidenceObservationMap: get("evidenceObservationMap"),
     evidenceObservationSummary: get("evidenceObservationSummary"),
     evidenceObservations: get("evidenceObservations"),
+    evidenceReviewLedger: get("evidenceReviewLedger"),
     evidenceProvenanceHashes: get("evidenceProvenanceHashes"),
     evidenceSbomRefs: get("evidenceSbomRefs"),
     evidenceCorePacks: get("evidenceCorePacks"),

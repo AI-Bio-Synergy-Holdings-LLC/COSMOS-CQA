@@ -174,6 +174,12 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   });
   expect(exportedSession.labels).toHaveLength(1);
   expect(exportedSession.observations).toHaveLength(1);
+  expect(exportedSession.observation_review_events).toHaveLength(1);
+  expect(exportedSession.observation_review_events[0]).toMatchObject({
+    action: "create",
+    active_after: true,
+    observation_id: exportedSession.observations[0].observation_id,
+  });
   expect(exportedSession.observations[0]).toMatchObject({
     label_id: exportedSession.labels[0].label_id,
     tile_id: "demo_corepack_tile_001",
@@ -190,8 +196,13 @@ test("saves imports and deterministically reloads research sessions", async ({ p
     observed_tile_count: 1,
     observed_zone_count: 1,
     observation_note_count: 1,
+    observation_review_event_count: 1,
   });
   expect(exportedSession.reports[0].observation_summary.dominant_zone_label).toBe("bottom right");
+  expect(exportedSession.reports[0].observation_summary.tile_qa_metrics[0]).toMatchObject({
+    key: "demo_corepack_tile_001",
+    ledger_event_count: 1,
+  });
   await expect(page.locator("#sessionStatus")).toContainText("Exported");
 
   await page.evaluate(() => localStorage.clear());
@@ -219,8 +230,11 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   await expect(page.locator("#reportViewerStatus")).toContainText(exportedSession.reports[0].report_id);
   await expect(page.locator("#caption")).toContainText("Research session imported and restored.");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 tile observation");
+  await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 review event");
   await expect(page.locator("#evidenceObservationSummary")).toContainText("bottom right");
+  await expect(page.locator("#evidenceReviewLedger")).toContainText("0: create");
   await expect(page.locator("#reportObservationSummary")).toContainText("bottom right");
+  await expect(page.locator("#reportReviewLedger")).toContainText("0: create");
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(1);
   expect(await labelCount(page)).toBe(1);
 
@@ -228,6 +242,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
     artifactCount: window.COSMOS_CQA_APP.state.researchArtifacts.length,
     labelNote: window.COSMOS_CQA_APP.state.labels[0].note,
     observationZone: window.COSMOS_CQA_APP.state.observations[0].zone_label,
+    reviewEventAction: window.COSMOS_CQA_APP.state.observationReviewEvents[0].action,
     diagnosticCount: window.COSMOS_CQA_APP.state.diagnostics.length,
     reportId: window.COSMOS_CQA_APP.state.validationReportPreview.report_id,
   }));
@@ -235,6 +250,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
     artifactCount: 1,
     labelNote: "session roundtrip browser test bottom right observation",
     observationZone: "bottom right",
+    reviewEventAction: "create",
     diagnosticCount: 2,
     reportId: exportedSession.reports[0].report_id,
   });

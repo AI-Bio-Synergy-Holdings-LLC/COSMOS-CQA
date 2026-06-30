@@ -17,6 +17,7 @@ import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../.
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
 import {
   DEFAULT_VIEWER_TRANSFORM,
+  createObservationReviewEvent,
   createTileObservation,
   createTileObservationTaxonomy,
   createViewerTransformMatrix,
@@ -146,6 +147,32 @@ test("tile observation records link normalized targets to labels", () => {
   assert.deepEqual(summary.tile_zone_counts[0], { key: "tile_001:r1c2", label: "tile_001 top center", count: 1 });
   assert.deepEqual(summary.note_status_counts[0], { key: "with_note", label: "with note", count: 1 });
   assert.deepEqual(summary.review_state_counts[0], { key: "submitted", label: "submitted", count: 1 });
+  assert.deepEqual(summary.review_status_counts[0], { key: "pending-review", label: "pending-review", count: 1 });
+  assert.deepEqual(summary.consensus_status_counts[0], { key: "not-assessed", label: "not-assessed", count: 1 });
+  assert.equal(summary.review_event_count, 0);
+  assert.equal(summary.average_reviewer_confidence, 0.85);
+  assert.deepEqual(summary.tile_qa_metrics[0], {
+    key: "tile_001",
+    label: "tile_001",
+    observation_count: 1,
+    reviewed_count: 0,
+    needs_adjudication_count: 0,
+    ledger_event_count: 0,
+    average_reviewer_confidence: 0.85,
+  });
+
+  const createEvent = createObservationReviewEvent({
+    action: "create",
+    observation,
+    label,
+    eventIndex: 0,
+    eventTs: "2026-06-29T11:00:00.000Z",
+    eventSummary: "contract create event",
+  });
+  assertContract("observationReviewEvent", createEvent);
+  assert.equal(createEvent.action, "create");
+  assert.equal(createEvent.active_after, true);
+  assert.match(createEvent.claim_boundary, /not validated detections/);
 
   const review = updateTileObservationReview({
     observation,
@@ -154,6 +181,8 @@ test("tile observation records link normalized targets to labels", () => {
       clazz: "dipole",
       severity: "high",
       note: "reviewed spatial target top center with stronger dipole interpretation",
+      reviewStatus: "needs-adjudication",
+      reviewerConfidence: 0.7,
     },
     updatedAt: "2026-06-29T12:00:00.000Z",
     updatedBy: "reviewer_contract",
@@ -162,11 +191,27 @@ test("tile observation records link normalized targets to labels", () => {
   assertContract("labelRecord", review.label);
   assert.equal(review.observation.review_revision, 1);
   assert.equal(review.observation.review_state, "edited");
+  assert.equal(review.observation.review_status, "needs-adjudication");
+  assert.equal(review.observation.reviewer_confidence, 0.7);
+  assert.equal(review.observation.consensus_status, "needs-adjudication");
+  assert.match(review.observation.adjudication_state, /adjudication placeholder/);
   assert.equal(review.label.clazz, "dipole");
   assert.equal(review.label.note, review.observation.note);
   assert.match(review.observation.edit_summary, /class stripe -> dipole/);
-  const editedSummary = summarizeTileObservations([review.observation]);
+  const editEvent = createObservationReviewEvent({
+    action: "edit",
+    observation: review.observation,
+    label: review.label,
+    eventIndex: 1,
+    eventTs: "2026-06-29T12:00:00.000Z",
+    eventSummary: review.edit_summary,
+  });
+  const editedSummary = summarizeTileObservations([review.observation], [createEvent, editEvent]);
   assert.deepEqual(editedSummary.review_state_counts[0], { key: "edited", label: "edited", count: 1 });
+  assert.deepEqual(editedSummary.review_status_counts[0], { key: "needs-adjudication", label: "needs-adjudication", count: 1 });
+  assert.equal(editedSummary.review_event_count, 2);
+  assert.equal(editedSummary.needs_adjudication_count, 1);
+  assert.equal(editedSummary.zone_qa_metrics[0].ledger_event_count, 2);
 
   const rows = labelsToRows([label], [tile], [], [observation]);
   assert.equal(rows[0].observation_id, observation.observation_id);
@@ -217,6 +262,7 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof assertContract, "function");
   assert.equal(typeof createVolunteerLabel, "function");
   assert.equal(typeof createTileObservation, "function");
+  assert.equal(typeof createObservationReviewEvent, "function");
   assert.equal(typeof summarizeTileObservations, "function");
   assert.equal(typeof createViewerTransformMatrix, "function");
   assert.equal(typeof transformViewportPointToSource, "function");
@@ -336,10 +382,19 @@ test("report exports satisfy SBOM and validation report contracts", () => {
       ...getTileObservationZone({ xNorm: 0.42, yNorm: 0.21 }),
     },
   });
+  const reviewEvent = createObservationReviewEvent({
+    action: "create",
+    observation,
+    label,
+    eventIndex: 0,
+    eventTs: "2026-06-28T00:05:00.000Z",
+    eventSummary: "report export create event",
+  });
   const report = createValidationReport({
     build: createBuildInfo({ dev: false }),
     labels: [label],
     observations: [observation],
+    observationReviewEvents: [reviewEvent],
     feedErrors: [{ message: "bad feed" }],
     checks: [
       { name: "label schema", status: "pass", detail: "label contract valid" },
@@ -357,7 +412,10 @@ test("report exports satisfy SBOM and validation report contracts", () => {
   assert.equal(report.summary.observation_count, 1);
   assert.equal(report.summary.observed_zone_count, 1);
   assert.equal(report.summary.observation_note_count, 1);
+  assert.equal(report.summary.observation_review_event_count, 1);
+  assert.equal(report.observation_review_events[0].event_id, reviewEvent.event_id);
   assert.equal(report.observation_summary.dominant_zone_label, "top center");
+  assert.equal(report.observation_summary.review_event_count, 1);
 });
 
 test("tile passport and core pack manifests satisfy evidence contracts", () => {
@@ -535,12 +593,21 @@ test("research sessions preserve linked tile observations as additive evidence",
     },
     generatedAt,
   });
+  const reviewEvent = createObservationReviewEvent({
+    action: "create",
+    observation,
+    label,
+    eventIndex: 0,
+    eventTs: generatedAt,
+    eventSummary: "session export create event",
+  });
   const session = createResearchSession({
     sessionId: "session_observation_contract",
     createdAt: generatedAt,
     updatedAt: generatedAt,
     labels: [label],
     observations: [observation],
+    observationReviewEvents: [reviewEvent],
   });
   const bundle = createEvidenceBundle({
     bundleId: "bundle_observation_contract",
@@ -551,12 +618,18 @@ test("research sessions preserve linked tile observations as additive evidence",
   assertContract("researchSession", session);
   assertContract("evidenceBundle", bundle);
   assert.equal(session.observations[0].label_id, label.label_id);
+  assert.equal(session.observation_review_events[0].event_id, reviewEvent.event_id);
+  assert.equal(bundle.observation_review_events[0].event_id, reviewEvent.event_id);
   assert.equal(bundle.summary.observation_count, 1);
+  assert.equal(bundle.summary.observation_review_event_count, 1);
   assert.equal(bundle.summary.observed_tile_count, 1);
   assert.equal(bundle.summary.observed_zone_count, 1);
   assert.equal(bundle.summary.observation_note_count, 1);
   assert.equal(bundle.observation_summary.zone_counts[0].label, "top center");
+  assert.equal(bundle.observation_summary.review_event_count, 1);
+  assert.equal(bundle.observation_summary.tile_qa_metrics[0].ledger_event_count, 1);
   assert.equal(summarizeResearchSession(session).observation_count, 1);
+  assert.equal(summarizeResearchSession(session).observation_review_event_count, 1);
 });
 
 test("research session and evidence bundle reject malformed required fields", () => {

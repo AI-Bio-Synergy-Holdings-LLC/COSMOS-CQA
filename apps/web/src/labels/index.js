@@ -8,6 +8,10 @@ export function saveObservations(observations, storage = localStorage) {
   storage.setItem("tileObservations", JSON.stringify(observations));
 }
 
+export function saveObservationReviewEvents(events, storage = localStorage) {
+  storage.setItem("observationReviewEvents", JSON.stringify(events));
+}
+
 export function undoLastLabel(state, storage = localStorage) {
   const removed = state.labels.pop();
   saveLabels(state.labels, storage);

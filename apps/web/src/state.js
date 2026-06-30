@@ -8,6 +8,7 @@ export function createAppState() {
     weight: 0.5,
     labels: [],
     observations: [],
+    observationReviewEvents: [],
     pendingObservation: null,
     selectedObservationId: "",
     deletedObservationReview: null,

@@ -21,6 +21,7 @@ export function createResearchSession({
   selectedTiles = [],
   labels = [],
   observations = [],
+  observationReviewEvents = [],
   diagnostics = [],
   reports = [],
   provenanceHashes = [],
@@ -43,6 +44,9 @@ export function createResearchSession({
 
   if (observations.length) {
     session.observations = observations;
+  }
+  if (observationReviewEvents.length) {
+    session.observation_review_events = observationReviewEvents;
   }
 
   return assertContract("researchSession", session);
@@ -72,7 +76,12 @@ export function createEvidenceBundle({
   };
 
   if (session.observations?.length) {
-    bundle.observation_summary = summarizeTileObservations(session.observations);
+    bundle.observation_summary = summarizeTileObservations(session.observations, session.observation_review_events || []);
+  } else if (session.observation_review_events?.length) {
+    bundle.observation_summary = summarizeTileObservations([], session.observation_review_events);
+  }
+  if (session.observation_review_events?.length) {
+    bundle.observation_review_events = session.observation_review_events;
   }
 
   return assertContract("evidenceBundle", bundle);
@@ -98,8 +107,14 @@ export function normalizeEvidenceBundle(bundle) {
 
   normalized.session = normalizeResearchSession(validBundle.session);
   normalized.summary = summarizeResearchSession(normalized.session);
-  if (normalized.session.observations?.length) {
-    normalized.observation_summary = summarizeTileObservations(normalized.session.observations);
+  if (normalized.session.observations?.length || normalized.session.observation_review_events?.length) {
+    normalized.observation_summary = summarizeTileObservations(
+      normalized.session.observations || [],
+      normalized.session.observation_review_events || [],
+    );
+  }
+  if (normalized.session.observation_review_events?.length) {
+    normalized.observation_review_events = cloneJson(normalized.session.observation_review_events);
   }
   return assertContract("evidenceBundle", normalized);
 }
@@ -151,11 +166,14 @@ export function summarizeResearchSession(session) {
   };
 
   if (session.observations !== undefined) {
-    const observationSummary = summarizeTileObservations(session.observations);
+    const observationSummary = summarizeTileObservations(session.observations, session.observation_review_events || []);
     summary.observation_count = observationSummary.observation_count;
     summary.observed_tile_count = observationSummary.observed_tile_count;
     summary.observed_zone_count = observationSummary.observed_zone_count;
     summary.observation_note_count = observationSummary.note_count;
+  }
+  if (session.observation_review_events !== undefined) {
+    summary.observation_review_event_count = session.observation_review_events.length;
   }
 
   return summary;
@@ -180,6 +198,9 @@ export function normalizeResearchSession(session) {
 
   if (validSession.observations !== undefined) {
     normalized.observations = cloneJson(validSession.observations);
+  }
+  if (validSession.observation_review_events !== undefined) {
+    normalized.observation_review_events = cloneJson(validSession.observation_review_events);
   }
 
   return normalized;

@@ -556,6 +556,7 @@ textarea {
 
 select,
 input[type="text"],
+input[type="range"],
 textarea {
   width: 100%;
 }
@@ -671,6 +672,12 @@ textarea:hover {
   grid-column: 1 / -1;
 }
 
+#reviewConfidenceValue {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  padding-left: 4px;
+}
+
 #reviewNote {
   min-height: 74px;
   resize: vertical;
@@ -679,6 +686,11 @@ textarea:hover {
 
 .observation-review-actions {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.compact-reference-list {
+  max-height: 170px;
+  overflow: auto;
 }
 
 .cmd-icon {

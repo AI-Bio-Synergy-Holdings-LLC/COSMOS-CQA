@@ -8,7 +8,7 @@ COSMOS-CQA is available for research-only public use under the project-specific 
 
 The modeled experiment is a research-infrastructure experiment:
 
-Can visual tiles, sidecar views, spatial tile observations, labels, evidence bundles, provenance hashes, and deterministic replay help researchers and public contributors review artifact candidates in a way that is auditable after the session ends?
+Can visual tiles, sidecar views, spatial tile observations, observation review ledgers, labels, evidence bundles, provenance hashes, and deterministic replay help researchers and public contributors review artifact candidates in a way that is auditable after the session ends?
 
 The current public sample uses synthetic Core Pack material to exercise this workflow safely. It models a quality-assurance surface that could support future artifact review for public cosmology data cultures around CMB maps, weak-lensing products, survey images, and catalog release evidence.
 
@@ -26,11 +26,13 @@ COSMOS-CQA exposes the research workflow fundamentals needed to audit the public
 - Data contract: Core Pack manifests identify tiles, passports, evidence references, SBOM references, diagnostic placeholders, and release stewardship.
 - Tile passport: each tile can carry dataset context, coordinates, checksum, sidecars, provenance, and truth-policy language.
 - Review sidecars: overlays, palettes, captions, spatial observation pins, and sonic loops provide alternate ways to inspect the same review object.
-- Evidence chain: tile observations, labels, bookmarks, reports, hashes, sessions, and bundles preserve what happened during review.
+- Evidence chain: tile observations, observation review events, labels, bookmarks, reports, hashes, sessions, and bundles preserve what happened during review.
 
 The public project does not expose or imply proprietary future diagnostic claims.
 
 Tile observation pins are interpreted as reviewer-authored source-tile location cues. The detailed note boundary is maintained in `docs/tile-observation-notes.md`.
+
+Observation review events record create, edit, delete, and restore workflow history. Reviewer confidence, review status, and adjudication/consensus placeholders are audit fields only; they do not establish validated detections or scientific consensus.
 
 ## How The Sonic Loop Must Be Explained
 

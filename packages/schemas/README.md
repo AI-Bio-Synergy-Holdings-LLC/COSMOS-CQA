@@ -8,7 +8,7 @@ The current entrypoint is `src/index.js`.
 
 - `CONTRACT_SCHEMA_VERSION`
 - schema constants for artifact classes, severities, overlays, palettes, expert classes, and checklist states
-- schema constants for diagnostic concept status, diagnostic result status, implementation gates, and research artifact kinds
+- schema constants for diagnostic concept status, diagnostic result status, implementation gates, research artifact kinds, observation review statuses, consensus placeholders, and review event actions
 - `schemas`
 - `validateContract(name, value)`
 - `assertContract(name, value)`
@@ -16,7 +16,7 @@ The current entrypoint is `src/index.js`.
 
 ## Covered Shapes
 
-- label records, tile observations, tile-observation summaries, and label export rows
+- label records, tile observations, observation review events, observation QA metrics, tile-observation summaries, and label export rows
 - feed tile and expert events
 - bookmark provenance payloads
 - provenance hashes

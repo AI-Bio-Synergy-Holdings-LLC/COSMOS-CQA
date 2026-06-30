@@ -29,7 +29,7 @@ Avoid personal data, medical claims, private identifiers, unsupported diagnostic
 
 ## How To Interpret Summaries
 
-Observation summaries aggregate reviewer-authored pins into counts by tile, zone, tile-zone pair, row band, column band, radial band, class, severity, note status, and review state. These summaries can help reviewers find repeated attention patterns, compare review sessions, and inspect whether observations cluster in particular sectors.
+Observation summaries aggregate reviewer-authored pins into counts by tile, zone, tile-zone pair, row band, column band, radial band, class, severity, note status, review state, review status, consensus placeholder status, and QA metrics. These summaries can help reviewers find repeated attention patterns, compare review sessions, and inspect whether observations cluster in particular sectors.
 
 Observation summaries do not prove artifact presence, model performance, data quality, or scientific validity. They are evidence about the review process and should be interpreted alongside tile passports, provenance hashes, validation reports, diagnostic caveats, and claim-boundary documents.
 
@@ -42,15 +42,24 @@ The Observation Review workspace lets a reviewer select a submitted pin, highlig
 - `updated_at`
 - `updated_by`
 - `edit_summary`
+- `review_status`
+- `reviewer_confidence`
+- `consensus_status`
+- `adjudication_state`
 
-Deleting an observation removes the synced label and observation from active report, session, CSV, and evidence-bundle exports. The in-session Undo Delete control restores the exact deleted pair while the page remains open. This is a local QA workflow, not a provenance claim that the original observation never existed.
+Create, edit, delete, and restore actions also append `observationReviewEvent` records to an immutable review ledger. The ledger remains exportable in research sessions, validation reports, and evidence bundles even when a delete action removes the synced label and observation from active exports. The in-session Undo Delete control restores the exact deleted pair while the page remains open.
+
+`review_status=needs-adjudication` and `consensus_status=needs-adjudication` are workflow placeholders. They mean the observation should receive independent expert review before any consensus interpretation. They are not clinical claims, validated detections, scientific consensus, or production adjudication.
 
 ## Contract Surfaces
 
 - `tileObservation`: raw linked observation record.
+- `observationReviewEvent`: append-only audit event for create/edit/delete/restore review actions.
 - `tileObservationSummary`: derived counts for validation reports and evidence bundles.
 - `validationReport.observation_summary`: report-level observation summary when pins exist.
+- `validationReport.observation_review_events`: report-level review ledger history.
 - `evidenceBundle.observation_summary`: bundle-level observation summary when pins exist.
+- `evidenceBundle.observation_review_events`: bundle-level review ledger history.
 
 These surfaces are additive and preserve replay. Source tile pixels are not modified.
 

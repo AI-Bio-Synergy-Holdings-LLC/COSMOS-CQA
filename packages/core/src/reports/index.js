@@ -61,6 +61,7 @@ export function createValidationReport({
   checks = [],
   artifacts = [],
   observations = [],
+  observationReviewEvents = [],
   sbomRefs = [],
   provenanceHashes = [],
   diagnostics = [],
@@ -76,7 +77,7 @@ export function createValidationReport({
   }));
   const passCount = normalizedChecks.filter((check) => check.status === "pass").length;
   const failCount = normalizedChecks.filter((check) => check.status === "fail").length;
-  const observationSummary = observations.length ? summarizeTileObservations(observations) : null;
+  const observationSummary = observations.length || observationReviewEvents.length ? summarizeTileObservations(observations, observationReviewEvents) : null;
 
   const report = {
     schema_version: CONTRACT_SCHEMA_VERSION,
@@ -102,7 +103,11 @@ export function createValidationReport({
     report.summary.observed_tile_count = observationSummary.observed_tile_count;
     report.summary.observed_zone_count = observationSummary.observed_zone_count;
     report.summary.observation_note_count = observationSummary.note_count;
+    report.summary.observation_review_event_count = observationSummary.review_event_count;
     report.observation_summary = observationSummary;
+  }
+  if (observationReviewEvents.length) {
+    report.observation_review_events = observationReviewEvents;
   }
   if (sbomRefs.length) {
     report.sbom_refs = sbomRefs;
