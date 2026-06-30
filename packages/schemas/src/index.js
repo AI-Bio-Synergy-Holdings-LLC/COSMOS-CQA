@@ -15,7 +15,16 @@ export const DIAGNOSTIC_RESULT_IMPLEMENTATION_STATES = ["placeholder"];
 export const RESEARCH_ARTIFACT_KINDS = ["feed", "core-pack", "sbom", "validation-report"];
 export const OBSERVATION_REVIEW_STATUSES = ["pending-review", "reviewed", "needs-adjudication"];
 export const OBSERVATION_CONSENSUS_STATUSES = ["not-assessed", "single-reviewer", "needs-adjudication", "consensus-placeholder"];
-export const OBSERVATION_REVIEW_EVENT_ACTIONS = ["create", "edit", "delete", "restore"];
+export const OBSERVATION_ADJUDICATION_DECISIONS = ["defer", "request-second-review", "mark-reviewed"];
+export const OBSERVATION_REVIEW_EVENT_ACTIONS = [
+  "create",
+  "edit",
+  "delete",
+  "restore",
+  "adjudication-defer",
+  "adjudication-second-review",
+  "adjudication-reviewed",
+];
 export const OBSERVATION_REVIEW_CLAIM_BOUNDARY =
   "Observation review events are research audit records only; they are not validated detections, clinical findings, or scientific consensus claims.";
 
@@ -227,6 +236,7 @@ export const schemas = {
       event_summary: { type: "string", minLength: 1, maxLength: 512 },
       active_after: { type: "boolean" },
       claim_boundary: { type: "string", minLength: 80, maxLength: 512 },
+      adjudication_decision: { type: "string", enum: OBSERVATION_ADJUDICATION_DECISIONS },
       adjudication_state: { type: "string", maxLength: 256 },
       adjudication_note: { type: "string", maxLength: 512 },
     },

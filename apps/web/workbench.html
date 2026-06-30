@@ -258,6 +258,35 @@
               <button id="restoreObservationReviewBtn" type="button" class="pill">Undo Delete</button>
             </div>
             <div id="observationReviewAudit" class="small inspector-status">Select an observation to review its synced label and evidence fields.</div>
+            <div class="adjudication-queue-panel" aria-label="Review adjudication queue">
+              <div class="group-title explorer-title">Adjudication Queue</div>
+              <div id="adjudicationQueueStatus" class="small inspector-status">No observations are waiting for adjudication.</div>
+              <div class="adjudication-queue-grid">
+                <div>
+                  <div id="adjudicationQueueList" class="observation-review-list" aria-label="Queued observations requiring adjudication"></div>
+                </div>
+                <div class="adjudication-detail-panel">
+                  <div id="adjudicationQueueDetails" class="metadata-panel"></div>
+                  <div>
+                    <label for="adjudicationDecisionSel">Queue decision</label>
+                    <select id="adjudicationDecisionSel" aria-label="Adjudication queue decision">
+                      <option value="defer">Defer</option>
+                      <option value="request-second-review">Request second review</option>
+                      <option value="mark-reviewed">Mark reviewed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="adjudicationNote">Adjudication note</label>
+                    <textarea id="adjudicationNote" maxlength="240" aria-label="Adjudication note" placeholder="Reason for queue decision"></textarea>
+                  </div>
+                  <button id="applyAdjudicationDecisionBtn" type="button" class="pill primary-action">Record Queue Decision</button>
+                </div>
+              </div>
+              <div>
+                <div class="group-title explorer-title">Selected Observation History</div>
+                <div id="adjudicationLedger" class="reference-list compact-reference-list"></div>
+              </div>
+            </div>
             <div>
               <div class="group-title explorer-title">Immutable Review Ledger</div>
               <div id="observationReviewLedger" class="reference-list compact-reference-list"></div>

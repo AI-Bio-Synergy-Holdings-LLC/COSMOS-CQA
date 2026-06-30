@@ -36,13 +36,14 @@ https://cosmos-cqa.org/safety.html
 6. Pin one tile sector, enter a short spatial note, submit the label, and confirm the Evidence Workspace shows the pinned observation map.
 7. Select the submitted observation in Observation Review, confirm the marker is highlighted, edit class/severity/note once, set a review status and reviewer confidence, and inspect the review revision plus ledger fields in reports or exported JSON.
 8. Mark an observation as needing adjudication only when independent review is required; treat the consensus/adjudication fields as workflow placeholders, not scientific validation claims.
-9. Delete the reviewed observation, confirm it leaves active exports while the ledger records a delete event, then use Undo Delete to restore the synced label and observation pair.
-10. Undo the label and confirm the linked observation is removed while an audit event remains when a synced observation was present.
-11. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
-12. Read diagnostic caveats before treating any diagnostic surface as evidence.
-13. Refresh the validation report preview and inspect observation summary, QA metrics, and review ledger fields when pinned observations or review events exist.
-14. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review; import the session JSON and confirm the observation review ledger replays.
-15. Read the research experiment page, tile observation notes, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
+9. Open the Adjudication Queue, select the queued observation, enter an adjudication note, and record one queue decision such as Defer, Request second review, or Mark reviewed. Confirm the decision appears as a ledger event rather than a validation claim.
+10. Delete the reviewed observation, confirm it leaves active exports while the ledger records a delete event, then use Undo Delete to restore the synced label and observation pair.
+11. Undo the label and confirm the linked observation is removed while an audit event remains when a synced observation was present.
+12. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
+13. Read diagnostic caveats before treating any diagnostic surface as evidence.
+14. Refresh the validation report preview and inspect observation summary, QA metrics, adjudication queue history, and review ledger fields when pinned observations or review events exist.
+15. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review; import the session JSON and confirm the observation review ledger replays.
+16. Read the research experiment page, tile observation notes, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
 
 ## Review Notes To Capture
 
@@ -50,7 +51,7 @@ https://cosmos-cqa.org/safety.html
 - Manifest id, tile passport ids, evidence references, SBOM references, and provenance hash subjects.
 - Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.
 - Viewer transform status after zoom, pan, rotate, and reset; transformed clicks should still export normalized source-tile coordinates.
-- Pinned tile sector, normalized observation coordinates if exported, review edit revision fields, review status, reviewer confidence, ledger event sequence, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
+- Pinned tile sector, normalized observation coordinates if exported, review edit revision fields, review status, reviewer confidence, adjudication queue decision/note when used, ledger event sequence, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
 - Known limitations, diagnostic caveats, public truth-label hiding, and any accessibility or visual issues observed.
 
 ## Verification Commands

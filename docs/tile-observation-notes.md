@@ -51,10 +51,22 @@ Create, edit, delete, and restore actions also append `observationReviewEvent` r
 
 `review_status=needs-adjudication` and `consensus_status=needs-adjudication` are workflow placeholders. They mean the observation should receive independent expert review before any consensus interpretation. They are not clinical claims, validated detections, scientific consensus, or production adjudication.
 
+## Adjudication Queue
+
+The Adjudication Queue filters active observations whose review or consensus status is `needs-adjudication`. Selecting a queued row highlights the tile marker, shows the active observation fields, and lists the selected observation's ledger history.
+
+Queue decisions are intentionally narrow:
+
+- `defer`: keeps the observation in the queue for later review.
+- `request-second-review`: records that independent review is needed before any consensus interpretation.
+- `mark-reviewed`: moves the observation out of the queue as a single-reviewer QA workflow state only.
+
+Each queue action requires an adjudication note and appends an `observationReviewEvent` such as `adjudication-defer`, `adjudication-second-review`, or `adjudication-reviewed`. These events preserve workflow history; they do not validate the observation, assert scientific consensus, or convert the pin into measured sky coordinates.
+
 ## Contract Surfaces
 
 - `tileObservation`: raw linked observation record.
-- `observationReviewEvent`: append-only audit event for create/edit/delete/restore review actions.
+- `observationReviewEvent`: append-only audit event for create/edit/delete/restore and adjudication-queue review actions.
 - `tileObservationSummary`: derived counts for validation reports and evidence bundles.
 - `validationReport.observation_summary`: report-level observation summary when pins exist.
 - `validationReport.observation_review_events`: report-level review ledger history.

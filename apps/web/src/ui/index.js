@@ -45,6 +45,7 @@ import {
   DEFAULT_VIEWER_TRANSFORM,
   TILE_OBSERVATION_ZONE_CELLS,
   VIEWER_TRANSFORM_LIMITS,
+  adjudicateTileObservationReview,
   createObservationReviewEvent,
   createTileObservation,
   createViewerTransformMatrix,
@@ -478,6 +479,68 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     appendReferenceList(dom.observationReviewLedger, state.observationReviewEvents, formatReviewEventReference);
     setObservationReviewEditor(selected);
+    renderAdjudicationQueue();
+  }
+
+  function renderAdjudicationQueue() {
+    if (
+      !dom.adjudicationQueueStatus ||
+      !dom.adjudicationQueueList ||
+      !dom.adjudicationQueueDetails ||
+      !dom.adjudicationLedger ||
+      !dom.applyAdjudicationDecisionBtn
+    ) {
+      return;
+    }
+
+    const candidates = getAdjudicationCandidates();
+    const selected = candidates.find((observation) => observation.observation_id === state.selectedObservationId) || null;
+    dom.adjudicationQueueList.replaceChildren();
+    dom.adjudicationQueueDetails.replaceChildren();
+    dom.adjudicationLedger.replaceChildren();
+    dom.adjudicationQueueStatus.textContent = candidates.length
+      ? `${candidates.length} observation(s) need adjudication queue triage.`
+      : "No observations are waiting for adjudication.";
+
+    if (!candidates.length) {
+      appendEmptyState(dom.adjudicationQueueList, "Set review status to Needs adjudication to queue an observation.");
+    }
+
+    for (const observation of candidates) {
+      const button = documentRef.createElement("button");
+      button.type = "button";
+      button.className = observation.observation_id === state.selectedObservationId ? "observation-review-row active" : "observation-review-row";
+      button.dataset.adjudicationObservationId = observation.observation_id;
+      button.innerHTML = `
+        <strong>${escapeHtml(observation.tile_id)} - ${escapeHtml(observation.zone_label)}</strong>
+        <span>${escapeHtml(observation.clazz)} / ${escapeHtml(observation.severity)}; confidence ${formatConfidence(
+          observation.reviewer_confidence ?? 0.5,
+        )}</span>
+        <span>${escapeHtml(observation.consensus_status || "needs-adjudication")}; ${escapeHtml(truncateText(observation.note, 74))}</span>
+      `;
+      button.addEventListener("click", () => selectObservationForReview(observation.observation_id));
+      dom.adjudicationQueueList.appendChild(button);
+    }
+
+    if (selected) {
+      appendMetadataGrid(dom.adjudicationQueueDetails, [
+        ["Observation", selected.observation_id],
+        ["Tile", selected.tile_id],
+        ["Zone", selected.zone_label],
+        ["Class/severity", `${selected.clazz} / ${selected.severity}`],
+        ["Review status", selected.review_status || "pending-review"],
+        ["Consensus", selected.consensus_status || "not-assessed"],
+        ["Revision", String(selected.review_revision || 0)],
+        ["Note", selected.note],
+      ]);
+      const selectedEvents = state.observationReviewEvents.filter((event) => event.observation_id === selected.observation_id);
+      appendReferenceList(dom.adjudicationLedger, selectedEvents, formatReviewEventReference);
+    } else {
+      appendEmptyState(dom.adjudicationQueueDetails, "No queued observation selected.");
+      appendEmptyState(dom.adjudicationLedger, "No queued ledger history.");
+    }
+
+    updateAdjudicationControls(selected);
   }
 
   function setObservationReviewEditor(observation) {
@@ -521,11 +584,79 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.saveObservationReviewBtn.disabled = !state.selectedObservationId || !dom.reviewNote.value.trim();
   }
 
+  function updateAdjudicationControls(selected = getSelectedAdjudicationCandidate()) {
+    if (!dom.adjudicationDecisionSel || !dom.adjudicationNote || !dom.applyAdjudicationDecisionBtn) {
+      return;
+    }
+    const disabled = !selected;
+    dom.adjudicationDecisionSel.disabled = disabled;
+    dom.adjudicationNote.disabled = disabled;
+    dom.applyAdjudicationDecisionBtn.disabled = disabled || !String(dom.adjudicationNote.value || "").trim();
+  }
+
+  function applyAdjudicationDecision() {
+    const observation = getSelectedAdjudicationCandidate();
+    if (!observation) {
+      setCaption("Select an observation waiting for adjudication before applying a queue decision.");
+      return null;
+    }
+
+    const observationIndex = state.observations.findIndex((entry) => entry.observation_id === observation.observation_id);
+    const labelIndex = state.labels.findIndex((entry) => entry.label_id === observation.label_id);
+    const label = labelIndex >= 0 ? state.labels[labelIndex] : null;
+    let result;
+    try {
+      result = adjudicateTileObservationReview({
+        observation,
+        label,
+        decision: dom.adjudicationDecisionSel.value,
+        note: dom.adjudicationNote.value,
+        updatedBy: state.volunteerId,
+      });
+    } catch (error) {
+      setCaption(error.message);
+      return null;
+    }
+
+    state.observations[observationIndex] = result.observation;
+    if (labelIndex >= 0 && result.label) {
+      state.labels[labelIndex] = result.label;
+    }
+    const event = appendObservationReviewEvent({
+      action: result.event_action,
+      observation: result.observation,
+      label: result.label || label,
+      eventSummary: result.event_summary,
+      adjudicationDecision: result.adjudication_decision,
+    });
+    dom.adjudicationNote.value = "";
+    saveLabels(state.labels);
+    saveObservations(state.observations);
+    renderObservationOverlay();
+    renderObservationReviewWorkspace();
+    refreshValidationReportPreview();
+    setCaption(`Adjudication queue decision recorded: ${result.adjudication_decision}.`);
+    notifyTestBridge("tileObservation.adjudicated", { ...result, event });
+    return result;
+  }
+
   function getSelectedObservation() {
     return state.observations.find((entry) => entry.observation_id === state.selectedObservationId) || null;
   }
 
-  function appendObservationReviewEvent({ action, observation, label, eventSummary, activeAfter = action !== "delete" }) {
+  function getAdjudicationCandidates() {
+    return state.observations.filter((observation) => isObservationNeedingAdjudication(observation));
+  }
+
+  function getSelectedAdjudicationCandidate() {
+    return getAdjudicationCandidates().find((observation) => observation.observation_id === state.selectedObservationId) || null;
+  }
+
+  function isObservationNeedingAdjudication(observation) {
+    return observation?.review_status === "needs-adjudication" || observation?.consensus_status === "needs-adjudication";
+  }
+
+  function appendObservationReviewEvent({ action, observation, label, eventSummary, activeAfter = action !== "delete", adjudicationDecision }) {
     const event = createObservationReviewEvent({
       action,
       observation,
@@ -534,6 +665,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       reviewerId: state.volunteerId,
       eventSummary,
       activeAfter,
+      adjudicationDecision,
     });
     state.observationReviewEvents.push(event);
     saveObservationReviewEvents(state.observationReviewEvents);
@@ -1071,6 +1203,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         `confidence=${formatConfidence(event.reviewer_confidence)}`,
         `consensus=${event.consensus_status}`,
         `revision=${event.revision}`,
+        event.adjudication_decision ? `decision=${event.adjudication_decision}` : "",
+        event.adjudication_note ? `adjudication_note=${event.adjudication_note}` : "",
         `active_after=${event.active_after}`,
         `ts=${formatDate(event.event_ts)}`,
         event.event_summary,
@@ -2492,6 +2626,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.saveObservationReviewBtn.addEventListener("click", saveSelectedObservationReview);
     dom.deleteObservationReviewBtn.addEventListener("click", deleteSelectedObservationReview);
     dom.restoreObservationReviewBtn.addEventListener("click", restoreDeletedObservationReview);
+    dom.adjudicationNote.addEventListener("input", () => updateAdjudicationControls());
+    dom.adjudicationDecisionSel.addEventListener("change", () => updateAdjudicationControls());
+    dom.applyAdjudicationDecisionBtn.addEventListener("click", applyAdjudicationDecision);
     dom.submitBtn.addEventListener("click", () => onCalibSubmit(submitLabel()));
     dom.undoBtn.addEventListener("click", () => {
       const removedLabel = undoLastLabel(state);
@@ -2714,6 +2851,13 @@ function bindDom(documentRef) {
     restoreObservationReviewBtn: get("restoreObservationReviewBtn"),
     observationReviewAudit: get("observationReviewAudit"),
     observationReviewLedger: get("observationReviewLedger"),
+    adjudicationQueueStatus: get("adjudicationQueueStatus"),
+    adjudicationQueueList: get("adjudicationQueueList"),
+    adjudicationQueueDetails: get("adjudicationQueueDetails"),
+    adjudicationLedger: get("adjudicationLedger"),
+    adjudicationDecisionSel: get("adjudicationDecisionSel"),
+    adjudicationNote: get("adjudicationNote"),
+    applyAdjudicationDecisionBtn: get("applyAdjudicationDecisionBtn"),
     calibBtn: get("calibBtn"),
     expertBtn: get("expertBtn"),
     bookmarkBtn: get("bookmarkBtn"),
