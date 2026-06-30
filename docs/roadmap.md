@@ -22,9 +22,11 @@
 
 - Build the Core Pack intake lane before importing diagnostics.
 - Validate sample Core Pack manifests with provenance, SBOM, evidence, and diagnostic concept references.
+- Add linked tile-observation targets so reviewers can pin normalized tile coordinates and notes to submitted labels without mutating source tile pixels.
 - Keep kappa-y and E/B diagnostic placeholders documentation-only until source provenance, license review, fixtures, and scientific review are complete.
 - Repair and merge useful CSSFP Core Pack diagnostic concepts only after intake gates pass.
 - Produce report JSON before PDF generation.
+- Follow spatial observation foundations with viewer transform tools, such as zoom, pan, rotate, and reset, only after coordinate mapping remains stable under transformed views.
 
 ## Phase 4: Public Research Release
 

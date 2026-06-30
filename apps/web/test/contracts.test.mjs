@@ -15,6 +15,7 @@ import {
 } from "../../../packages/core/src/evidence/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
+import { createTileObservation, getTileObservationZone } from "../../../packages/core/src/observations/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
 import {
   createBookmarkPayload,
@@ -92,9 +93,42 @@ test("label contract rejects invalid classes with pathful errors", () => {
   assert.equal(result.errors[0].path, "labelRecord.clazz");
 });
 
+test("tile observation records link normalized targets to labels", () => {
+  const label = createVolunteerLabel({ tile, state, controls });
+  const target = {
+    x_norm: 0.42,
+    y_norm: 0.21,
+    ...getTileObservationZone({ xNorm: 0.42, yNorm: 0.21 }),
+  };
+  const observation = createTileObservation({
+    tile,
+    label,
+    target,
+    overlay: "gradient",
+    palette: "cividis",
+  });
+
+  assertContract("tileObservation", observation);
+  assert.equal(observation.label_id, label.label_id);
+  assert.equal(observation.zone_id, "r1c2");
+  assert.equal(observation.zone_label, "top center");
+  assert.equal(observation.x_norm, 0.42);
+  assert.equal(observation.y_norm, 0.21);
+
+  const rows = labelsToRows([label], [tile], [], [observation]);
+  assert.equal(rows[0].observation_id, observation.observation_id);
+  assert.equal(rows[0].observation_zone_label, "top center");
+  assert.equal(rows[0].observation_x_norm, 0.42);
+
+  const invalid = validateContract("tileObservation", { ...observation, note: "" });
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.errors.some((error) => error.path === "tileObservation.note"));
+});
+
 test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof assertContract, "function");
   assert.equal(typeof createVolunteerLabel, "function");
+  assert.equal(typeof createTileObservation, "function");
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");
   assert.equal(typeof createBookmarkPayload, "function");
@@ -371,6 +405,47 @@ test("research session and evidence bundle helpers preserve report evidence coun
     sbom_ref_count: 0,
   });
   assert.ok(bundle.limitations.some((limitation) => limitation.includes("not production")));
+});
+
+test("research sessions preserve linked tile observations as additive evidence", () => {
+  const generatedAt = "2026-06-29T00:00:00.000Z";
+  const label = createVolunteerLabel({
+    tile,
+    state,
+    controls: {
+      classSelect: { value: "stripe" },
+      severitySelect: { value: "medium" },
+      noteInput: { value: "spatial target top center" },
+    },
+  });
+  const observation = createTileObservation({
+    tile,
+    label,
+    target: {
+      x_norm: 0.4,
+      y_norm: 0.2,
+      ...getTileObservationZone({ xNorm: 0.4, yNorm: 0.2 }),
+    },
+    generatedAt,
+  });
+  const session = createResearchSession({
+    sessionId: "session_observation_contract",
+    createdAt: generatedAt,
+    updatedAt: generatedAt,
+    labels: [label],
+    observations: [observation],
+  });
+  const bundle = createEvidenceBundle({
+    bundleId: "bundle_observation_contract",
+    generatedAt,
+    session,
+  });
+
+  assertContract("researchSession", session);
+  assertContract("evidenceBundle", bundle);
+  assert.equal(session.observations[0].label_id, label.label_id);
+  assert.equal(bundle.summary.observation_count, 1);
+  assert.equal(summarizeResearchSession(session).observation_count, 1);
 });
 
 test("research session and evidence bundle reject malformed required fields", () => {

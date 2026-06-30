@@ -26,12 +26,13 @@ export function createVolunteerLabel({ tile, state, controls }) {
   });
 }
 
-export function labelsToRows(labels, tiles, expertDecisions) {
+export function labelsToRows(labels, tiles, expertDecisions, observations = []) {
   return labels.map((label) => {
     const meta = tiles.find((tile) => tile.meta.tile_id === label.tile_id)?.meta || {};
     const expert = expertDecisions.find((decision) => decision.tile_id === label.tile_id) || {};
+    const observation = observations.find((entry) => entry.label_id === label.label_id);
 
-    return assertContract("labelExportRow", {
+    const row = {
       tile_id: label.tile_id,
       dataset: meta.dataset || "",
       volunteer_id: label.volunteer_id,
@@ -43,6 +44,16 @@ export function labelsToRows(labels, tiles, expertDecisions) {
       expert_class: expert.expert_class || "",
       expert_confidence: expert.expert_confidence || "",
       expert_latency: expert.latency_s || "",
-    });
+    };
+
+    if (observation) {
+      row.observation_id = observation.observation_id;
+      row.observation_zone_id = observation.zone_id;
+      row.observation_zone_label = observation.zone_label;
+      row.observation_x_norm = observation.x_norm;
+      row.observation_y_norm = observation.y_norm;
+    }
+
+    return assertContract("labelExportRow", row);
   });
 }

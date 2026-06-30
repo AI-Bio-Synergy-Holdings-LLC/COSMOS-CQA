@@ -19,12 +19,13 @@ export function createResearchSession({
   artifacts = [],
   selectedTiles = [],
   labels = [],
+  observations = [],
   diagnostics = [],
   reports = [],
   provenanceHashes = [],
   sbomRefs = [],
 } = {}) {
-  return assertContract("researchSession", {
+  const session = {
     schema_version: CONTRACT_SCHEMA_VERSION,
     session_id: sessionId,
     created_at: createdAt,
@@ -37,7 +38,13 @@ export function createResearchSession({
     reports,
     provenance_hashes: provenanceHashes,
     sbom_refs: sbomRefs,
-  });
+  };
+
+  if (observations.length) {
+    session.observations = observations;
+  }
+
+  return assertContract("researchSession", session);
 }
 
 export function createEvidenceBundle({
@@ -123,7 +130,7 @@ export function validateEvidenceBundleJson(text) {
 }
 
 export function summarizeResearchSession(session) {
-  return {
+  const summary = {
     artifact_count: session.artifacts.length,
     selected_tile_count: session.selected_tiles.length,
     label_count: session.labels.length,
@@ -132,11 +139,17 @@ export function summarizeResearchSession(session) {
     provenance_hash_count: session.provenance_hashes.length,
     sbom_ref_count: session.sbom_refs.length,
   };
+
+  if (session.observations !== undefined) {
+    summary.observation_count = session.observations.length;
+  }
+
+  return summary;
 }
 
 export function normalizeResearchSession(session) {
   const validSession = assertContract("researchSession", session);
-  return {
+  const normalized = {
     schema_version: validSession.schema_version,
     session_id: validSession.session_id,
     created_at: validSession.created_at,
@@ -150,6 +163,12 @@ export function normalizeResearchSession(session) {
     provenance_hashes: cloneJson(validSession.provenance_hashes),
     sbom_refs: cloneJson(validSession.sbom_refs),
   };
+
+  if (validSession.observations !== undefined) {
+    normalized.observations = cloneJson(validSession.observations);
+  }
+
+  return normalized;
 }
 
 export function serializeResearchSession(session) {

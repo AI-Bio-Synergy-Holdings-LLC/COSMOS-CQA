@@ -7,6 +7,8 @@ export function createAppState() {
     volunteerId: `anon_${Math.random().toString(36).slice(2, 6)}`,
     weight: 0.5,
     labels: [],
+    observations: [],
+    pendingObservation: null,
     expert: [],
     startTimes: {},
     scores: [],

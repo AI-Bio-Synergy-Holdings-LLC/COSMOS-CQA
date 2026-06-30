@@ -8,14 +8,14 @@ COSMOS-CQA is available for research-only public use under the project-specific 
 
 The modeled experiment is a research-infrastructure experiment:
 
-Can visual tiles, sidecar views, labels, evidence bundles, provenance hashes, and deterministic replay help researchers and public contributors review artifact candidates in a way that is auditable after the session ends?
+Can visual tiles, sidecar views, spatial tile observations, labels, evidence bundles, provenance hashes, and deterministic replay help researchers and public contributors review artifact candidates in a way that is auditable after the session ends?
 
 The current public sample uses synthetic Core Pack material to exercise this workflow safely. It models a quality-assurance surface that could support future artifact review for public cosmology data cultures around CMB maps, weak-lensing products, survey images, and catalog release evidence.
 
 ## What Does The Current Prototype Demonstrate?
 
 - Core Pack intake for tile passports, evidence references, SBOM references, diagnostics, and provenance context.
-- Tile review controls for navigation, overlays, palettes, captions, labels, undo, bookmarks, calibration, and public truth-label hiding.
+- Tile review controls for navigation, overlays, palettes, captions, spatial observation pinning, labels, undo, bookmarks, calibration, and public truth-label hiding.
 - Evidence exports for validation report JSON, session JSON, evidence bundle JSON, SBOM JSON, and replayable bookmark state.
 - Deterministic replay tests and golden fixtures for the sample workflow and public/dev display boundaries.
 
@@ -26,7 +26,7 @@ COSMOS-CQA exposes the research workflow fundamentals needed to audit the public
 - Data contract: Core Pack manifests identify tiles, passports, evidence references, SBOM references, diagnostic placeholders, and release stewardship.
 - Tile passport: each tile can carry dataset context, coordinates, checksum, sidecars, provenance, and truth-policy language.
 - Review sidecars: overlays, palettes, captions, and sonic loops provide alternate ways to inspect the same review object.
-- Evidence chain: labels, bookmarks, reports, hashes, sessions, and bundles preserve what happened during review.
+- Evidence chain: tile observations, labels, bookmarks, reports, hashes, sessions, and bundles preserve what happened during review.
 
 The public project does not expose or imply proprietary future diagnostic claims.
 

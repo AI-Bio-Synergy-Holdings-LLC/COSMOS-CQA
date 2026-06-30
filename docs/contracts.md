@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -18,7 +18,8 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 ## Covered Shapes
 
 - `labelRecord`: local volunteer label records before export.
-- `labelExportRow`: flattened CSV export rows with optional expert adjudication fields.
+- `tileObservation`: linked spatial observation target for a submitted label, with normalized tile coordinates, deterministic grid zone, required note, overlay/palette state, and timestamp.
+- `labelExportRow`: flattened CSV export rows with optional expert adjudication and tile-observation fields.
 - `feedTileEvent`: tile ingest records from upload, HTTP polling, or WebSocket feeds.
 - `feedExpertEvent`: expert adjudication records from upload, HTTP polling, or WebSocket feeds.
 - `bookmarkPayload`: encoded replay/provenance state for shareable bookmarks.
@@ -32,7 +33,7 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
 - `validationReport`: structured report JSON with research-only license notice, limitations, checks, optional research artifacts, SBOM references, provenance hashes, and caveated diagnostic placeholder results. This is the report artifact lane before any PDF generation.
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
-- `researchSession`: replayable working-state contract that ties loaded artifacts, selected tiles, labels, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata together.
+- `researchSession`: replayable working-state contract that ties loaded artifacts, selected tiles, labels, tile observations, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata together.
 - `evidenceBundle`: export-ready wrapper around a research session with steward, research-only license notice, limitations, generated metadata, claim-boundary references, and evidence counts.
 
 Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.

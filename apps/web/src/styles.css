@@ -350,12 +350,17 @@ h2 {
   width: 100%;
 }
 
+.tile-canvas-wrap {
+  position: relative;
+}
+
 canvas.tile {
   aspect-ratio: 1 / 1;
   background: #000;
   border: 1px solid rgba(236, 244, 239, 0.08);
   border-radius: var(--radius-sm);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  cursor: crosshair;
   display: block;
   height: auto;
   image-rendering: pixelated;
@@ -363,9 +368,91 @@ canvas.tile {
   width: 100%;
 }
 
+.tile-canvas-wrap:hover canvas.tile,
 canvas.tile:hover {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.48);
   transform: scale(1.01);
+}
+
+.tile-observation-overlay {
+  border-radius: var(--radius-sm);
+  cursor: crosshair;
+  display: grid;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.tile-observation-overlay:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.zone-map {
+  border: 1px solid rgba(236, 244, 239, 0.08);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.zone-map span {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(236, 244, 239, 0.16);
+  border-right: 1px solid rgba(236, 244, 239, 0.16);
+  color: rgba(236, 244, 239, 0.72);
+  display: flex;
+  font-size: 10px;
+  justify-content: flex-start;
+  line-height: 1;
+  padding: 6px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.88);
+}
+
+.zone-map span:nth-child(3n) {
+  border-right: 0;
+}
+
+.zone-map span:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.tile-observation-markers {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.observation-marker {
+  background: rgba(240, 201, 106, 0.92);
+  border: 2px solid rgba(9, 13, 16, 0.94);
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(240, 201, 106, 0.28), 0 10px 22px rgba(0, 0, 0, 0.42);
+  height: 14px;
+  left: calc(var(--x) * 100%);
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  transform: translate(-50%, -50%);
+  width: 14px;
+}
+
+.observation-marker.pending {
+  background: rgba(67, 214, 197, 0.96);
+  box-shadow: 0 0 0 3px rgba(67, 214, 197, 0.24), 0 0 0 10px rgba(67, 214, 197, 0.08);
+}
+
+.tile-observation-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.compact-pill {
+  min-height: 30px;
+  padding: 6px 9px;
 }
 
 .controls {
@@ -494,6 +581,13 @@ textarea:hover {
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.note-tips {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .cmd-icon {

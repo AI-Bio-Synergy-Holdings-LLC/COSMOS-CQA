@@ -110,6 +110,14 @@ export async function firstStoredLabel(page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem("labels") || "[]")[0]);
 }
 
+export async function observationCount(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem("tileObservations") || "[]").length);
+}
+
+export async function firstStoredObservation(page) {
+  return page.evaluate(() => JSON.parse(localStorage.getItem("tileObservations") || "[]")[0]);
+}
+
 export async function blurActiveElement(page) {
   await page.evaluate(() => document.activeElement?.blur());
 }

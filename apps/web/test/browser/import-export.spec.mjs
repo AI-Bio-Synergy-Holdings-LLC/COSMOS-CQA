@@ -150,9 +150,13 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
   await page.locator("#overlaySel").selectOption("gradient");
   await page.locator("#paletteSel").selectOption("cividis");
+  const canvas = page.locator("#tileCanvas");
+  const box = await canvas.boundingBox();
+  await canvas.click({ position: { x: box.width * 0.72, y: box.height * 0.68 } });
+  await expect(page.locator("#tileObservationStatus")).toContainText("Pinned bottom right");
   await page.locator("#classSel").selectOption("stripe");
   await page.locator("#sevSel").selectOption("medium");
-  await page.locator("#note").fill("session roundtrip browser test");
+  await page.locator("#note").fill("session roundtrip browser test bottom right observation");
   await page.locator("#submitBtn").click();
 
   const downloadPromise = page.waitForEvent("download");
@@ -169,6 +173,15 @@ test("saves imports and deterministically reloads research sessions", async ({ p
     palette: "cividis",
   });
   expect(exportedSession.labels).toHaveLength(1);
+  expect(exportedSession.observations).toHaveLength(1);
+  expect(exportedSession.observations[0]).toMatchObject({
+    label_id: exportedSession.labels[0].label_id,
+    tile_id: "demo_corepack_tile_001",
+    zone_id: "r3c3",
+    zone_label: "bottom right",
+  });
+  expect(exportedSession.observations[0].x_norm).toBeGreaterThan(0.7);
+  expect(exportedSession.observations[0].y_norm).toBeGreaterThan(0.66);
   expect(exportedSession.artifacts).toHaveLength(1);
   expect(exportedSession.diagnostics).toHaveLength(2);
   expect(exportedSession.reports).toHaveLength(1);
@@ -198,17 +211,21 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
   await expect(page.locator("#reportViewerStatus")).toContainText(exportedSession.reports[0].report_id);
   await expect(page.locator("#caption")).toContainText("Research session imported and restored.");
+  await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 tile observation");
+  await expect(page.locator(".observation-marker.submitted")).toHaveCount(1);
   expect(await labelCount(page)).toBe(1);
 
   const restoredState = await page.evaluate(() => ({
     artifactCount: window.COSMOS_CQA_APP.state.researchArtifacts.length,
     labelNote: window.COSMOS_CQA_APP.state.labels[0].note,
+    observationZone: window.COSMOS_CQA_APP.state.observations[0].zone_label,
     diagnosticCount: window.COSMOS_CQA_APP.state.diagnostics.length,
     reportId: window.COSMOS_CQA_APP.state.validationReportPreview.report_id,
   }));
   expect(restoredState).toEqual({
     artifactCount: 1,
-    labelNote: "session roundtrip browser test",
+    labelNote: "session roundtrip browser test bottom right observation",
+    observationZone: "bottom right",
     diagnosticCount: 2,
     reportId: exportedSession.reports[0].report_id,
   });
