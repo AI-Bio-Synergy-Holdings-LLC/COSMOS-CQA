@@ -209,6 +209,44 @@
               <button id="bookmarkBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#128279;</span> Bookmark</button>
             </div>
           </section>
+
+          <section id="observationReviewWorkspace" class="control-group observation-review-workspace" aria-label="Observation review and QA workspace">
+            <div class="group-title">Observation Review</div>
+            <div id="observationReviewStatus" class="small inspector-status">No submitted observations yet.</div>
+            <div id="observationReviewSummary" class="metadata-panel"></div>
+            <div id="observationReviewList" class="observation-review-list" aria-label="Submitted observation list"></div>
+            <div class="observation-review-editor" aria-label="Selected observation review editor">
+              <div>
+                <label for="reviewClassSel">Class</label>
+                <select id="reviewClassSel" aria-label="Review class">
+                  <option value="stripe">Stripe</option>
+                  <option value="dipole">Dipole</option>
+                  <option value="ringing">Ringing</option>
+                  <option value="point">Point-source residual</option>
+                  <option value="clean">Clean</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="reviewSevSel">Severity</label>
+                <select id="reviewSevSel" aria-label="Review severity">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="review-note-field">
+                <label for="reviewNote">Review note</label>
+                <textarea id="reviewNote" maxlength="240" aria-label="Review note"></textarea>
+              </div>
+            </div>
+            <div class="command-grid observation-review-actions">
+              <button id="saveObservationReviewBtn" type="button" class="pill primary-action">Save Review</button>
+              <button id="deleteObservationReviewBtn" type="button" class="pill">Delete Observation</button>
+              <button id="restoreObservationReviewBtn" type="button" class="pill">Undo Delete</button>
+            </div>
+            <div id="observationReviewAudit" class="small inspector-status">Select an observation to review its synced label and evidence fields.</div>
+          </section>
           <div id="caption" class="caption status-caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
         </div>
       </div>

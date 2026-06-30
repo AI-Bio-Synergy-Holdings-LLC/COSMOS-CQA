@@ -25,6 +25,7 @@ import {
   summarizeTileObservations,
   transformSourceToViewportPoint,
   transformViewportPointToSource,
+  updateTileObservationReview,
 } from "../../../packages/core/src/observations/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
 import {
@@ -140,7 +141,32 @@ test("tile observation records link normalized targets to labels", () => {
   assert.equal(summary.observed_tile_count, 1);
   assert.equal(summary.observed_zone_count, 1);
   assert.equal(summary.dominant_zone_label, "top center");
+  assert.deepEqual(summary.tile_counts[0], { key: "tile_001", label: "tile_001", count: 1 });
   assert.deepEqual(summary.zone_counts[0], { key: "r1c2", label: "top center", count: 1 });
+  assert.deepEqual(summary.tile_zone_counts[0], { key: "tile_001:r1c2", label: "tile_001 top center", count: 1 });
+  assert.deepEqual(summary.note_status_counts[0], { key: "with_note", label: "with note", count: 1 });
+  assert.deepEqual(summary.review_state_counts[0], { key: "submitted", label: "submitted", count: 1 });
+
+  const review = updateTileObservationReview({
+    observation,
+    label,
+    updates: {
+      clazz: "dipole",
+      severity: "high",
+      note: "reviewed spatial target top center with stronger dipole interpretation",
+    },
+    updatedAt: "2026-06-29T12:00:00.000Z",
+    updatedBy: "reviewer_contract",
+  });
+  assertContract("tileObservation", review.observation);
+  assertContract("labelRecord", review.label);
+  assert.equal(review.observation.review_revision, 1);
+  assert.equal(review.observation.review_state, "edited");
+  assert.equal(review.label.clazz, "dipole");
+  assert.equal(review.label.note, review.observation.note);
+  assert.match(review.observation.edit_summary, /class stripe -> dipole/);
+  const editedSummary = summarizeTileObservations([review.observation]);
+  assert.deepEqual(editedSummary.review_state_counts[0], { key: "edited", label: "edited", count: 1 });
 
   const rows = labelsToRows([label], [tile], [], [observation]);
   assert.equal(rows[0].observation_id, observation.observation_id);
@@ -194,6 +220,7 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof summarizeTileObservations, "function");
   assert.equal(typeof createViewerTransformMatrix, "function");
   assert.equal(typeof transformViewportPointToSource, "function");
+  assert.equal(typeof updateTileObservationReview, "function");
   assert.deepEqual(DEFAULT_VIEWER_TRANSFORM, { zoom: 1, panX: 0, panY: 0, rotationDeg: 0 });
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");

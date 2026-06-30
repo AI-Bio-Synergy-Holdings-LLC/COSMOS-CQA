@@ -34,12 +34,14 @@ https://cosmos-cqa.org/safety.html
 4. Use Zoom, Pan, Rotate, and Reset once; confirm the tile remains targetable and the viewer status returns to 100 percent zoom, 0 degree rotation, and pan 0, 0 after reset.
 5. Check audio safety before playback: read the Audio and Captions notice, keep device volume low, and leave Loop off unless you intentionally need repeat playback.
 6. Pin one tile sector, enter a short spatial note, submit the label, and confirm the Evidence Workspace shows the pinned observation map.
-7. Undo the label and confirm the linked observation is removed.
-8. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
-9. Read diagnostic caveats before treating any diagnostic surface as evidence.
-10. Refresh the validation report preview and inspect observation summary fields when pinned observations exist.
-11. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.
-12. Read the research experiment page, tile observation notes, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
+7. Select the submitted observation in Observation Review, confirm the marker is highlighted, edit class/severity/note once, and inspect the review revision fields in reports or exported JSON.
+8. Delete the reviewed observation, confirm it leaves active exports, then use Undo Delete to restore the synced label and observation pair.
+9. Undo the label and confirm the linked observation is removed.
+10. Create a bookmark, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.
+11. Read diagnostic caveats before treating any diagnostic surface as evidence.
+12. Refresh the validation report preview and inspect observation summary fields when pinned observations exist.
+13. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.
+14. Read the research experiment page, tile observation notes, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
 
 ## Review Notes To Capture
 
@@ -47,7 +49,7 @@ https://cosmos-cqa.org/safety.html
 - Manifest id, tile passport ids, evidence references, SBOM references, and provenance hash subjects.
 - Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.
 - Viewer transform status after zoom, pan, rotate, and reset; transformed clicks should still export normalized source-tile coordinates.
-- Pinned tile sector, normalized observation coordinates if exported, note text quality, and whether observation summaries appear only as review-process evidence.
+- Pinned tile sector, normalized observation coordinates if exported, review edit revision fields, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
 - Known limitations, diagnostic caveats, public truth-label hiding, and any accessibility or visual issues observed.
 
 ## Verification Commands
