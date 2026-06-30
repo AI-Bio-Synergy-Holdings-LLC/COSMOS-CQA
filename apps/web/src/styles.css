@@ -336,6 +336,14 @@ h2 {
   padding: 14px;
 }
 
+.viewer:fullscreen {
+  align-items: start;
+  background: var(--bg);
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow: auto;
+}
+
 .tile-stage {
   align-self: start;
   background:
