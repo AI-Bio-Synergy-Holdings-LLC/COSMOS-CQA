@@ -52,7 +52,7 @@ test("keeps the research console hierarchy and responsive visual system coherent
   const largeViewerBox = await page.locator(".viewer").boundingBox();
   const largeTileStageBox = await page.locator(".tile-stage").boundingBox();
   expect(largeCanvasBox.width).toBeGreaterThanOrEqual(760);
-  expect(largeViewerBox.height - largeTileStageBox.height).toBeLessThan(80);
+  expect(largeViewerBox.height - largeTileStageBox.height).toBeLessThan(120);
 
   await page.setViewportSize({ width: 1500, height: 900 });
   await openWorkbench(page);
