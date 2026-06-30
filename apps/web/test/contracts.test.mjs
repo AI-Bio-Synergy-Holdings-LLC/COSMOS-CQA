@@ -15,7 +15,12 @@ import {
 } from "../../../packages/core/src/evidence/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
-import { createTileObservation, getTileObservationZone } from "../../../packages/core/src/observations/index.js";
+import {
+  createTileObservation,
+  createTileObservationTaxonomy,
+  getTileObservationZone,
+  summarizeTileObservations,
+} from "../../../packages/core/src/observations/index.js";
 import { parseResearchArtifactPayload } from "../../../packages/core/src/research-artifacts/index.js";
 import {
   createBookmarkPayload,
@@ -114,6 +119,23 @@ test("tile observation records link normalized targets to labels", () => {
   assert.equal(observation.zone_label, "top center");
   assert.equal(observation.x_norm, 0.42);
   assert.equal(observation.y_norm, 0.21);
+  assert.equal(observation.zone_taxonomy.row_band, "top");
+  assert.equal(observation.zone_taxonomy.column_band, "center");
+  assert.equal(observation.zone_taxonomy.radial_band, "mid-field");
+  assert.match(observation.zone_taxonomy.interpretation, /not measured sky coordinates/);
+
+  const taxonomy = createTileObservationTaxonomy({ xNorm: 0.12, yNorm: 0.88 });
+  assert.equal(taxonomy.row_band, "bottom");
+  assert.equal(taxonomy.column_band, "left");
+  assert.equal(taxonomy.quadrant, "lower-left");
+
+  const summary = summarizeTileObservations([observation]);
+  assertContract("tileObservationSummary", summary);
+  assert.equal(summary.observation_count, 1);
+  assert.equal(summary.observed_tile_count, 1);
+  assert.equal(summary.observed_zone_count, 1);
+  assert.equal(summary.dominant_zone_label, "top center");
+  assert.deepEqual(summary.zone_counts[0], { key: "r1c2", label: "top center", count: 1 });
 
   const rows = labelsToRows([label], [tile], [], [observation]);
   assert.equal(rows[0].observation_id, observation.observation_id);
@@ -129,6 +151,7 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof assertContract, "function");
   assert.equal(typeof createVolunteerLabel, "function");
   assert.equal(typeof createTileObservation, "function");
+  assert.equal(typeof summarizeTileObservations, "function");
   assert.equal(typeof parseFeedPayload, "function");
   assert.equal(typeof parseResearchArtifactPayload, "function");
   assert.equal(typeof createBookmarkPayload, "function");
@@ -234,9 +257,19 @@ test("report exports satisfy SBOM and validation report contracts", () => {
   assert.equal(sbom.components[0].name, "Chart.js");
 
   const label = createVolunteerLabel({ tile, state, controls });
+  const observation = createTileObservation({
+    tile,
+    label,
+    target: {
+      x_norm: 0.42,
+      y_norm: 0.21,
+      ...getTileObservationZone({ xNorm: 0.42, yNorm: 0.21 }),
+    },
+  });
   const report = createValidationReport({
     build: createBuildInfo({ dev: false }),
     labels: [label],
+    observations: [observation],
     feedErrors: [{ message: "bad feed" }],
     checks: [
       { name: "label schema", status: "pass", detail: "label contract valid" },
@@ -251,6 +284,10 @@ test("report exports satisfy SBOM and validation report contracts", () => {
   assert.equal(report.summary.feed_error_count, 1);
   assert.equal(report.summary.pass_count, 1);
   assert.equal(report.summary.fail_count, 1);
+  assert.equal(report.summary.observation_count, 1);
+  assert.equal(report.summary.observed_zone_count, 1);
+  assert.equal(report.summary.observation_note_count, 1);
+  assert.equal(report.observation_summary.dominant_zone_label, "top center");
 });
 
 test("tile passport and core pack manifests satisfy evidence contracts", () => {
@@ -445,6 +482,10 @@ test("research sessions preserve linked tile observations as additive evidence",
   assertContract("evidenceBundle", bundle);
   assert.equal(session.observations[0].label_id, label.label_id);
   assert.equal(bundle.summary.observation_count, 1);
+  assert.equal(bundle.summary.observed_tile_count, 1);
+  assert.equal(bundle.summary.observed_zone_count, 1);
+  assert.equal(bundle.summary.observation_note_count, 1);
+  assert.equal(bundle.observation_summary.zone_counts[0].label, "top center");
   assert.equal(summarizeResearchSession(session).observation_count, 1);
 });
 

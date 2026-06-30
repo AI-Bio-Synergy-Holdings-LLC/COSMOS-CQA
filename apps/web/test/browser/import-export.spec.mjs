@@ -185,6 +185,13 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   expect(exportedSession.artifacts).toHaveLength(1);
   expect(exportedSession.diagnostics).toHaveLength(2);
   expect(exportedSession.reports).toHaveLength(1);
+  expect(exportedSession.reports[0].summary).toMatchObject({
+    observation_count: 1,
+    observed_tile_count: 1,
+    observed_zone_count: 1,
+    observation_note_count: 1,
+  });
+  expect(exportedSession.reports[0].observation_summary.dominant_zone_label).toBe("bottom right");
   await expect(page.locator("#sessionStatus")).toContainText("Exported");
 
   await page.evaluate(() => localStorage.clear());
@@ -212,6 +219,8 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   await expect(page.locator("#reportViewerStatus")).toContainText(exportedSession.reports[0].report_id);
   await expect(page.locator("#caption")).toContainText("Research session imported and restored.");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 tile observation");
+  await expect(page.locator("#evidenceObservationSummary")).toContainText("bottom right");
+  await expect(page.locator("#reportObservationSummary")).toContainText("bottom right");
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(1);
   expect(await labelCount(page)).toBe(1);
 

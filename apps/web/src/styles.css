@@ -793,6 +793,40 @@ textarea:hover {
   font-size: 12px;
 }
 
+.observation-evidence-map {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 8px;
+}
+
+.observation-zone-cell {
+  background: rgba(13, 16, 20, 0.48);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: 4px;
+  min-height: 54px;
+  padding: 7px;
+}
+
+.observation-zone-cell.active {
+  background: rgba(67, 214, 197, 0.1);
+  border-color: rgba(67, 214, 197, 0.52);
+}
+
+.observation-zone-cell strong {
+  color: var(--muted-strong);
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+.observation-zone-cell span {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .inspector-panel > p,
 .contract-line,
 .license-note,
