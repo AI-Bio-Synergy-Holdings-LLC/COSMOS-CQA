@@ -49,10 +49,18 @@ async function validateStaticContract() {
   const robots = await readText("apps/web/robots.txt");
   const sitemap = await readText("apps/web/sitemap.xml");
   const citation = await readText("CITATION.cff");
+  const zenodoRaw = await readText(".zenodo.json");
+  const zenodoMetadata = JSON.parse(zenodoRaw);
+  const readme = await readText("README.md");
+  const citationDoc = await readText("docs/citation.md");
+  const citationPage = await readText("apps/web/citation.html");
+  const docsPage = await readText("apps/web/docs.html");
+  const releasesPage = await readText("apps/web/releases.html");
   const quickstart = await readText("docs/quickstart.md");
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
   const selectiveAccessDoc = await readText("docs/selective-access-application.md");
+  const zenodoDoc = await readText("docs/zenodo-registration.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
   const publicSafetyDoc = await readText("docs/public-safety.md");
   const securityPolicy = await readText("SECURITY.md");
@@ -68,6 +76,7 @@ async function validateStaticContract() {
   const artifactPrepScript = await readText("apps/web/scripts/prepare-pages-artifact.mjs");
   const pagesDnsScript = await readText("apps/web/scripts/check-pages-dns.mjs");
   const releaseIndex = await readText("docs/releases/README.md");
+  const releaseNotes = await readText(`docs/releases/${releaseId}.md`);
   const validationReport = JSON.parse(await readText(`docs/releases/${releaseId}-validation-report.json`));
   const sbom = JSON.parse(await readText(`docs/releases/${releaseId}-sbom.json`));
 
@@ -154,7 +163,55 @@ async function validateStaticContract() {
   requirePhrases("CITATION.cff", citation, [
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
+    "Zenodo DOI",
+    "Canonical public portal",
+    "Canonical public source repository",
     owner,
+  ]);
+
+  requirePhrases(".zenodo.json", zenodoRaw, [
+    "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts",
+    owner,
+    "https://cosmos-cqa.org",
+    "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
+    "COSMOS-CQA Research-Only Public License",
+    "other-closed",
+    "0.1.1-research-alpha",
+  ]);
+
+  assert(zenodoMetadata.upload_type === "software", ".zenodo.json must identify COSMOS-CQA as software.");
+  assert(zenodoMetadata.access_right === "open", ".zenodo.json must preserve public archive access.");
+  assert(zenodoMetadata.license === "other-closed", ".zenodo.json must avoid implying OSI, CC, or commercial reuse rights.");
+  assert(Array.isArray(zenodoMetadata.creators) && zenodoMetadata.creators.some((creator) => creator.name === owner), ".zenodo.json must name the steward as creator.");
+  assert(Array.isArray(zenodoMetadata.keywords) && zenodoMetadata.keywords.includes("research-only license"), ".zenodo.json must include research-only license keywords.");
+  assert(Array.isArray(zenodoMetadata.related_identifiers), ".zenodo.json must include related identifiers.");
+
+  requirePhrases("README.md", readme, [
+    "Zenodo DOI",
+    "pending v0.1.1-research-alpha",
+    "docs/zenodo-registration.md",
+  ]);
+
+  requirePhrases("docs/citation.md", citationDoc, [
+    "Zenodo DOI: pending first Zenodo-archived public release",
+    ".zenodo.json",
+    "repository URL, canonical portal URL, and exact release tag",
+  ]);
+
+  requirePhrases("apps/web/citation.html", citationPage, [
+    "Zenodo DOI pending.",
+    "pending first Zenodo-archived release",
+    "Zenodo DOI plan",
+  ]);
+
+  requirePhrases("apps/web/docs.html", docsPage, [
+    "Zenodo DOI Plan",
+    "Controlled Zenodo metadata",
+  ]);
+
+  requirePhrases("apps/web/releases.html", releasesPage, [
+    "Zenodo DOI status: pending first Zenodo-archived public release",
+    "v0.1.1-research-alpha",
   ]);
 
   requirePhrases("docs/quickstart.md", quickstart, [
@@ -210,6 +267,15 @@ async function validateStaticContract() {
     "should not publish backend architecture, access promises, or operational timelines prematurely",
   ]);
 
+  requirePhrases("docs/zenodo-registration.md", zenodoDoc, [
+    "Zenodo Registration And DOI Plan",
+    "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
+    "other-closed",
+    "No Zenodo DOI has been minted for COSMOS-CQA yet.",
+    "v0.1.1-research-alpha",
+    "Do not replace the pending badge with a DOI-like string",
+  ]);
+
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
     "Public Portal Release/Deployment Validation",
     "canonical URL metadata",
@@ -232,6 +298,7 @@ async function validateStaticContract() {
     "HTTPS enforcement",
     "AI-Bio Synergy Holdings LLC",
     "security disclosure routing",
+    "Zenodo DOI",
   ]);
 
   requirePhrases("docs/public-safety.md", publicSafetyDoc, [
@@ -375,6 +442,12 @@ async function validateStaticContract() {
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
+    "Zenodo DOI status: pending first Zenodo-archived release",
+  ]);
+
+  requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
+    "Zenodo DOI: not minted for this release.",
+    "first Zenodo DOI is planned for the next clean public research alpha release",
   ]);
 
   for (const artifactPath of extractLocalReleaseLinks(releaseIndex)) {

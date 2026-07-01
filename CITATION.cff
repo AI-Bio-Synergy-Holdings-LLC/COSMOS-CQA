@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts"
-message: "If you use COSMOS-CQA for research, please cite this repository and any relevant release DOI."
+message: "If you use COSMOS-CQA for research, cite this repository and the Zenodo DOI for the exact archived release once available."
 type: software
 authors:
   - name: "AI-Bio Synergy Holdings LLC"
@@ -8,6 +8,13 @@ repository-code: "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
 url: "https://cosmos-cqa.org"
 license: "LicenseRef-COSMOS-CQA-Research-Only"
 abstract: "A research-source workbench for citizen-assisted quality assurance of cosmology artifacts, including CMB and weak-lensing map tiles, deterministic sidecars, expert adjudication, provenance manifests, and validation reports."
+identifiers:
+  - type: url
+    value: "https://cosmos-cqa.org"
+    description: "Canonical public portal"
+  - type: url
+    value: "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
+    description: "Canonical public source repository"
 keywords:
   - cosmology
   - citizen-science

@@ -1,0 +1,53 @@
+{
+  "upload_type": "software",
+  "title": "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts",
+  "creators": [
+    {
+      "name": "AI-Bio Synergy Holdings LLC",
+      "affiliation": "AI-Bio Synergy Holdings LLC"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "AI-Bio Synergy Holdings LLC",
+      "affiliation": "AI-Bio Synergy Holdings LLC",
+      "type": "RightsHolder"
+    }
+  ],
+  "description": "COSMOS-CQA is research-source software for citizen-assisted quality assurance of cosmology artifacts, including public demo workflows for tile review, provenance hashes, evidence bundles, Core Pack intake, reviewer handoff packets, and deterministic replay. The public repository and portal are stewarded by AI-Bio Synergy Holdings LLC and are provided for research-only public use.",
+  "access_right": "open",
+  "license": "other-closed",
+  "keywords": [
+    "cosmology",
+    "citizen science",
+    "quality assurance",
+    "research software",
+    "provenance",
+    "evidence bundles",
+    "deterministic replay",
+    "Core Pack",
+    "CMB",
+    "weak lensing",
+    "research-only license"
+  ],
+  "language": "eng",
+  "version": "0.1.1-research-alpha",
+  "related_identifiers": [
+    {
+      "identifier": "https://cosmos-cqa.org",
+      "relation": "isSupplementTo",
+      "resource_type": "other"
+    },
+    {
+      "identifier": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/LICENSE.md",
+      "relation": "isSupplementTo",
+      "resource_type": "other"
+    }
+  ],
+  "notes": "License and rights: public access is governed by the COSMOS-CQA Research-Only Public License at https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/LICENSE.md. Public use is limited to research use; commercial, production, hosted-service, clinical, regulatory, resale, sublicensing, and derivative product use require a separate written agreement from AI-Bio Synergy Holdings LLC. The Zenodo license registry value 'other-closed' is used to avoid implying an OSI, Creative Commons, or commercial reuse grant; the project-specific LICENSE.md controls the public-use terms."
+}

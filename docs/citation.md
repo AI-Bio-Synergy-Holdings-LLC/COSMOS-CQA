@@ -12,6 +12,8 @@ The canonical citation metadata is stored in `CITATION.cff`. This page mirrors t
 - Repository: `https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA`
 - Canonical URL: `https://cosmos-cqa.org`
 - License reference: `LicenseRef-COSMOS-CQA-Research-Only`
+- Zenodo DOI: pending first Zenodo-archived public release, expected `v0.1.1-research-alpha`
+- Zenodo metadata: `.zenodo.json`
 
 ## Suggested Citation
 
@@ -25,11 +27,14 @@ If you cite a specific release, include the release tag and any DOI that may be 
 AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.0-research-alpha. Research-source software. https://cosmos-cqa.org
 ```
 
+The first Zenodo DOI is planned for the next clean public research alpha release after Zenodo registration. Until that DOI exists, use the repository URL, canonical portal URL, and exact release tag instead of a placeholder DOI.
+
 ## What To Cite Alongside COSMOS-CQA
 
 For reproducibility work, cite the exact evidence you used:
 
 - release tag;
+- Zenodo DOI, once minted for the exact release;
 - release notes;
 - validation report JSON;
 - SBOM JSON;
