@@ -1655,7 +1655,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (scroll && isNarrowWorkbench()) {
       dom.workspaceLabels?.scrollIntoView({ behavior: "smooth", block: "start" });
     } else if (scroll && dom.reviewControls && dom.workspaceLabels) {
-      const targetTop = Math.max(0, dom.workspaceLabels.offsetTop - dom.reviewControls.offsetTop - 8);
+      const activeOffset = calibration.active ? 28 : 8;
+      const targetTop = Math.max(0, dom.workspaceLabels.offsetTop - dom.reviewControls.offsetTop + activeOffset);
       dom.reviewControls.scrollTo({ top: targetTop, behavior: "smooth" });
     }
 

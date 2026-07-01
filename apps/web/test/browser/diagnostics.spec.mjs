@@ -146,6 +146,18 @@ test("migrates calibration wizard targets into browser automation", async ({ pag
   await expect(page.locator("#exitCalib")).toBeEnabled();
   await expect(page.locator("#calibDrawerSummary")).toContainText("Guided calibration active in the Tile Viewer workflow");
   await expectSelectorsInViewport(page, ["#tileCanvas", "#classSel", "#note", "#submitBtn", "#calibHint", "#calibExplain", "#nextStep"]);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const modeRect = document.querySelector("#calibMode").getBoundingClientRect();
+        const policyRect = document.querySelector("#gatePolicy").getBoundingClientRect();
+        return {
+          stacked: policyRect.top > modeRect.bottom,
+          similarWidth: Math.abs(modeRect.width - policyRect.width) < 2,
+        };
+      }),
+    )
+    .toEqual({ stacked: true, similarWidth: true });
 
   await openWorkbench(page);
   await page.locator("#calibMode").selectOption("inline");
