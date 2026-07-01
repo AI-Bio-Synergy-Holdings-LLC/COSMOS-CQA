@@ -547,8 +547,8 @@ body.calibration-active .controls {
 
 body.calibration-active .label-workflow,
 body.calibration-active .guided-calibration-workspace {
-  gap: 7px;
-  padding: 9px;
+  gap: 6px;
+  padding: 8px;
 }
 
 body.calibration-active .label-workflow .command-grid {
@@ -561,9 +561,15 @@ body.calibration-active .label-workflow .primary-action {
 
 body.calibration-active .note-tips {
   font-size: 11px;
-  line-height: 1.28;
-  max-height: 30px;
+  line-height: 1.2;
+  max-height: 14px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.calibration-active .guided-calibration-header p {
+  display: none;
 }
 
 .control-group {
@@ -727,11 +733,16 @@ textarea:hover {
 .calibration-config-grid {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .calibration-actions {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.calibration-active .calibration-config-grid,
+body.calibration-active .calibration-actions {
+  gap: 6px;
 }
 
 body.calibration-active .guided-calibration-workspace {
