@@ -1,6 +1,6 @@
 # Zenodo Registration And DOI Plan
 
-COSMOS-CQA should be registered on Zenodo as a citable public research software artifact after the repository metadata lands on `main`.
+COSMOS-CQA is registered on Zenodo as a citable public research software artifact.
 
 ## Citation Identity
 
@@ -10,18 +10,21 @@ COSMOS-CQA should be registered on Zenodo as a citable public research software 
 - Canonical URL: `https://cosmos-cqa.org`
 - License reference: `COSMOS-CQA Research-Only Public License`
 - Zenodo license registry value: `other-closed`
+- Zenodo all-versions DOI: `10.5281/zenodo.21112698`
+- Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699`
 
 The Zenodo registry value is intentionally conservative. It avoids implying OSI open-source, Creative Commons, commercial reuse, production use, hosted-service use, clinical use, regulatory use, sublicensing, or derivative product rights. The repository `LICENSE.md` controls public-use terms.
 
 ## Registration Sequence
 
-1. Merge the Zenodo metadata PR into `main`.
-2. In Zenodo, connect the public GitHub repository `AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA`.
-3. Confirm Zenodo sees `.zenodo.json` in the repository root.
-4. Do not mint a DOI from a partial metadata state.
-5. Create the next clean public release tag, expected `v0.1.1-research-alpha`, after CI, CodeQL, and public portal deployment validation are green.
-6. Confirm the Zenodo release record uses the controlled title, creator, canonical URL, repository URL, and research-only rights language.
-7. Replace pending DOI placeholders with the minted DOI badge and DOI URL in:
+Completed for the first DOI-minted release:
+
+1. Merged the Zenodo metadata PR into `main`.
+2. Connected the public GitHub repository `AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA` in Zenodo.
+3. Confirmed Zenodo used `.zenodo.json` from the repository root.
+4. Created GitHub release `v0.1.1-research-alpha` after CI, CodeQL, and public portal deployment validation were green.
+5. Confirmed the Zenodo release record uses the controlled title, creator, canonical URL, repository URL, `other-closed` license metadata, and research-only rights language.
+6. Replaced pending DOI placeholders with the minted DOI badge and DOI URL in:
    - `README.md`;
    - `CITATION.cff`;
    - `docs/citation.md`;
@@ -32,14 +35,16 @@ The Zenodo registry value is intentionally conservative. It avoids implying OSI 
 
 ## Current DOI Status
 
-No Zenodo DOI has been minted for COSMOS-CQA yet.
+The first Zenodo DOI has been minted.
 
-The current public badge and citation pages intentionally say `pending v0.1.1-research-alpha` until the first Zenodo-archived release exists. Do not replace the pending badge with a DOI-like string until Zenodo has issued the actual DOI.
+- Zenodo record: `https://zenodo.org/records/21112699`
+- All-versions concept DOI: `https://doi.org/10.5281/zenodo.21112698`
+- `v0.1.1-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21112699`
 
 ## Post-Mint Citation Pattern
 
 ```text
-AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.1-research-alpha. Research-source software. Zenodo. https://doi.org/[issued-doi]
+AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.1-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21112699
 ```
 
 Also cite the canonical portal and repository when needed:
