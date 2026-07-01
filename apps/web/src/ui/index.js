@@ -39,6 +39,16 @@ import {
   serializeResearchSession,
   validateResearchSessionJson,
 } from "../evidence/index.js";
+import {
+  REVIEW_PACKET_CLAIM_BOUNDARY,
+  createReviewIntakeEnvelope,
+  createReviewReturnEnvelope,
+  createReviewerIdentityClaim,
+  serializeReviewIntakeEnvelope,
+  serializeReviewReturnEnvelope,
+  validateReviewIntakeEnvelopeJson,
+  validateReviewReturnEnvelopeJson,
+} from "../review-intake/index.js";
 import { parseResearchArtifactPayload } from "../research-artifacts/index.js";
 import { createSbom, createSbomReference, createValidationReport, downloadBlob, downloadCsv, downloadJson } from "../reports/index.js";
 import {
@@ -2143,6 +2153,65 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     notifyTestBridge("evidenceBundle.exported", { bundle, contents });
   }
 
+  function createLocalReviewerIdentity() {
+    return createReviewerIdentityClaim({
+      reviewerId: state.volunteerId || "local-reviewer",
+      displayName: "Local workbench reviewer",
+      role: "public-demo-reviewer",
+      authState: "unauthenticated-local",
+      authProvider: "none",
+      claimBoundary: REVIEW_PACKET_CLAIM_BOUNDARY,
+    });
+  }
+
+  async function buildReviewIntakeEnvelope({ generatedAt = new Date().toISOString() } = {}) {
+    const bundle = buildEvidenceBundle({ generatedAt });
+    return createReviewIntakeEnvelope({
+      bundle,
+      reviewerIdentity: createLocalReviewerIdentity(),
+      generatedAt,
+    });
+  }
+
+  async function exportReviewIntake() {
+    const envelope = await buildReviewIntakeEnvelope();
+    const contents = serializeReviewIntakeEnvelope(envelope);
+    downloadBlob({
+      contents,
+      type: "application/json",
+      filename: "cosmos-cqa-review-intake.json",
+    });
+    renderReviewerHandoffStatus(
+      `Prepared ${envelope.packet_id}: ${envelope.assignment.observation_ids.length} observation target(s) ready for local handoff. No network submission or authenticated reviewer access is active on this static portal.`,
+    );
+    setCaption("Reviewer handoff JSON prepared as a local download.");
+    notifyTestBridge("reviewIntake.exported", { envelope, contents });
+  }
+
+  async function buildReviewReturnEnvelope({ generatedAt = new Date().toISOString() } = {}) {
+    const session = buildResearchSession({ generatedAt });
+    return createReviewReturnEnvelope({
+      session,
+      reviewerIdentity: createLocalReviewerIdentity(),
+      generatedAt,
+    });
+  }
+
+  async function exportReviewReturnEnvelope() {
+    const envelope = await buildReviewReturnEnvelope();
+    const contents = serializeReviewReturnEnvelope(envelope);
+    downloadBlob({
+      contents,
+      type: "application/json",
+      filename: "cosmos-cqa-review-return.json",
+    });
+    renderReviewerHandoffStatus(
+      `Prepared ${envelope.packet_id}: ${envelope.review_event_count} review ledger event(s) ready for local return testing. No network submission occurred.`,
+    );
+    setCaption("Reviewer return JSON prepared as a local download.");
+    notifyTestBridge("reviewReturn.exported", { envelope, contents });
+  }
+
   function handleSessionImport(event) {
     const file = event.target.files[0];
     if (!file) {
@@ -2154,6 +2223,50 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     reader.onload = () => importResearchSessionText(String(reader.result || ""), { source: `file:${file.name}` });
     reader.readAsText(file);
     event.target.value = "";
+  }
+
+  function handleReviewPacketImport(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      renderReviewerHandoffStatus("No reviewer packet chosen.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => importReviewPacketText(String(reader.result || ""), { source: `file:${file.name}` });
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
+  function importReviewPacketText(text, { source = "inline" } = {}) {
+    const returnResult = validateReviewReturnEnvelopeJson(text);
+    if (returnResult.valid) {
+      const plan = createResearchSessionReloadPlan(returnResult.envelope.research_session);
+      applyResearchSession(returnResult.envelope.research_session, plan);
+      renderReviewerHandoffStatus(
+        `Imported review return packet ${returnResult.envelope.packet_id}: ${returnResult.envelope.review_event_count} review event(s) restored for local replay. Reviewer identity remains metadata-only unless verified by a future authenticated service.`,
+      );
+      notifyTestBridge("reviewPacket.imported", { ok: true, source, type: "review-return", envelope: returnResult.envelope, plan });
+      return { ok: true, type: "review-return", envelope: returnResult.envelope, plan };
+    }
+
+    const intakeResult = validateReviewIntakeEnvelopeJson(text);
+    if (intakeResult.valid) {
+      const session = intakeResult.envelope.evidence_bundle.session;
+      const plan = createResearchSessionReloadPlan(session);
+      applyResearchSession(session, plan);
+      renderReviewerHandoffStatus(
+        `Imported review intake packet ${intakeResult.envelope.packet_id}: ${intakeResult.envelope.assignment.observation_ids.length} observation target(s) restored for local reviewer testing. No authenticated queue is active.`,
+      );
+      notifyTestBridge("reviewPacket.imported", { ok: true, source, type: "review-intake", envelope: intakeResult.envelope, plan });
+      return { ok: true, type: "review-intake", envelope: intakeResult.envelope, plan };
+    }
+
+    const message = returnResult.errors[0] || intakeResult.errors[0] || "Invalid reviewer packet.";
+    renderReviewerHandoffStatus(`Reviewer packet rejected: ${message}`);
+    setCaption("Reviewer packet import rejected; current state preserved.");
+    notifyTestBridge("reviewPacket.imported", { ok: false, source, error: message });
+    return { ok: false, error: message };
   }
 
   function importResearchSessionText(text, { source = "inline" } = {}) {
@@ -2257,6 +2370,12 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function renderSessionStatus(message) {
     if (dom.sessionStatus) {
       dom.sessionStatus.textContent = message;
+    }
+  }
+
+  function renderReviewerHandoffStatus(message) {
+    if (dom.reviewerHandoffStatus) {
+      dom.reviewerHandoffStatus.textContent = message;
     }
   }
 
@@ -2663,6 +2782,13 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.exportSession.addEventListener("click", exportResearchSession);
     dom.exportBundle.addEventListener("click", exportEvidenceBundle);
     dom.sessionInput.addEventListener("change", handleSessionImport);
+    dom.exportReviewIntake.addEventListener("click", () => {
+      void exportReviewIntake();
+    });
+    dom.exportReviewReturn.addEventListener("click", () => {
+      void exportReviewReturnEnvelope();
+    });
+    dom.reviewPacketInput.addEventListener("change", handleReviewPacketImport);
     dom.exportSBOM.addEventListener("click", exportSbom);
     dom.exportReport.addEventListener("click", exportValidationReport);
     dom.refreshReportPreview.addEventListener("click", () => {
@@ -2722,6 +2848,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     exportResearchSession,
     exportEvidenceBundle,
     importResearchSessionText,
+    buildReviewIntakeEnvelope,
+    buildReviewReturnEnvelope,
+    importReviewPacketText,
     buildResearchSession,
     buildEvidenceBundle,
   };
@@ -2896,6 +3025,10 @@ function bindDom(documentRef) {
     exportBundle: get("exportBundle"),
     sessionInput: get("sessionInput"),
     sessionStatus: get("sessionStatus"),
+    exportReviewIntake: get("exportReviewIntake"),
+    exportReviewReturn: get("exportReviewReturn"),
+    reviewPacketInput: get("reviewPacketInput"),
+    reviewerHandoffStatus: get("reviewerHandoffStatus"),
     expertDetails: get("expertDetails"),
     expertPane: get("expertPane"),
     diagnosticSummary: get("diagnosticSummary"),

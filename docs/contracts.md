@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, reviewer intake/return packets, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -22,6 +22,11 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `observationReviewEvent`: append-only review ledger event for create, edit, delete, restore, and adjudication-queue placeholder actions, with reviewer confidence, workflow status, consensus/adjudication placeholder state, optional queue decision, active-export state, and claim-boundary text.
 - `observationQaMetric`: per-tile or per-zone QA metric row for active observation counts, reviewed counts, adjudication-needed counts, ledger event counts, and average reviewer confidence.
 - `tileObservationSummary`: derived observation evidence counts by tile, zone, row band, column band, radial band, class, severity, review status, consensus placeholder status, and QA metrics.
+- `reviewerIdentityClaim`: metadata-only reviewer identity claim for the static portal lane, with explicit auth-state and claim-boundary text.
+- `reviewDataUseConsent`: local review packet consent/data-use posture, including no-personal-data-by-default signaling.
+- `reviewAssignment`: source session/bundle hashes, tile ids, observation ids, review task, transport state, research-only license notice, and assignment status.
+- `reviewIntakeEnvelope`: local reviewer handoff packet containing an evidence bundle and assignment metadata; current public packets require `authenticated_access: false` and `network_submission: false`.
+- `reviewReturnEnvelope`: local reviewer return packet containing a research session and returned review ledger count; current public packets require `authenticated_access: false` and `network_submission: false`.
 - `labelExportRow`: flattened CSV export rows with optional expert adjudication and tile-observation fields.
 - `feedTileEvent`: tile ingest records from upload, HTTP polling, or WebSocket feeds.
 - `feedExpertEvent`: expert adjudication records from upload, HTTP polling, or WebSocket feeds.
@@ -44,6 +49,8 @@ Checklist targets may include `covered_by` entries that point to automated tests
 Research sessions are intended to capture what was loaded, selected, generated, and reviewed during a reproducible COSMOS-CQA workflow. Evidence bundles are the portable citation/review layer for those sessions. They do not certify scientific validity or production readiness on their own; claim boundaries remain governed by `docs/claim-boundaries.md` and `docs/scientific-scope.md`.
 
 Spatial observation notes are interpreted under `docs/tile-observation-notes.md`. They are reviewer-authored location cues inside the reviewed tile, not measured sky coordinates or validated detections. Observation review ledger fields are QA workflow records only; `needs-adjudication`, adjudication queue decisions, and consensus placeholder values do not create scientific validation claims.
+
+Reviewer packet boundaries are interpreted under `docs/reviewer-access-boundary.md`. The static public portal can prepare/import local handoff JSON, but it does not authenticate reviewers, assign expert queues, transmit observations, or verify reviewer qualifications.
 
 ## Verification
 

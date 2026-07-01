@@ -38,6 +38,15 @@ import {
   encodeBookmarkPayload,
 } from "../../../packages/core/src/provenance/index.js";
 import { createSbom, createSbomReference, createValidationReport } from "../../../packages/core/src/reports/index.js";
+import {
+  createReviewIntakeEnvelope,
+  createReviewReturnEnvelope,
+  createReviewerIdentityClaim,
+  parseReviewIntakeEnvelopeJson,
+  serializeReviewIntakeEnvelope,
+  serializeReviewReturnEnvelope,
+  validateReviewReturnEnvelopeJson,
+} from "../../../packages/core/src/review-intake/index.js";
 import { TARGET_COVERAGE, expectedBrowserTargetIds } from "./browser/fixtures/legacy-targets.mjs";
 
 const legacyChecklistTargets = JSON.parse(
@@ -309,6 +318,8 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof createBookmarkPayload, "function");
   assert.equal(typeof createResearchSession, "function");
   assert.equal(typeof createEvidenceBundle, "function");
+  assert.equal(typeof createReviewIntakeEnvelope, "function");
+  assert.equal(typeof createReviewReturnEnvelope, "function");
   assert.equal(typeof createSbomReference, "function");
   assert.equal(typeof createValidationReport, "function");
 });
@@ -666,6 +677,98 @@ test("research sessions preserve linked tile observations as additive evidence",
   assert.equal(bundle.observation_summary.tile_qa_metrics[0].ledger_event_count, 1);
   assert.equal(summarizeResearchSession(session).observation_count, 1);
   assert.equal(summarizeResearchSession(session).observation_review_event_count, 1);
+});
+
+test("reviewer intake and return packets preserve local research boundaries", async () => {
+  const generatedAt = "2026-06-30T14:00:00.000Z";
+  const label = createVolunteerLabel({
+    tile,
+    state,
+    controls: {
+      classSelect: { value: "stripe" },
+      severitySelect: { value: "medium" },
+      noteInput: { value: "top center stripe candidate for reviewer packet contract" },
+    },
+  });
+  const observation = createTileObservation({
+    tile,
+    label,
+    target: {
+      x_norm: 0.42,
+      y_norm: 0.21,
+      ...getTileObservationZone({ xNorm: 0.42, yNorm: 0.21 }),
+    },
+    generatedAt,
+  });
+  const reviewEvent = createObservationReviewEvent({
+    action: "create",
+    observation,
+    label,
+    eventIndex: 0,
+    eventTs: generatedAt,
+    eventSummary: "review packet create event",
+  });
+  const session = createResearchSession({
+    sessionId: "session_reviewer_packet_contract",
+    createdAt: generatedAt,
+    updatedAt: generatedAt,
+    labels: [label],
+    observations: [observation],
+    observationReviewEvents: [reviewEvent],
+  });
+  const bundle = createEvidenceBundle({
+    bundleId: "bundle_reviewer_packet_contract",
+    generatedAt,
+    session,
+  });
+  const reviewerIdentity = createReviewerIdentityClaim({
+    reviewerId: "reviewer_contract",
+    displayName: "Contract reviewer",
+  });
+  const intake = await createReviewIntakeEnvelope({
+    bundle,
+    reviewerIdentity,
+    generatedAt,
+  });
+
+  assertContract("reviewIntakeEnvelope", intake);
+  assert.equal(intake.packet_type, "review-intake");
+  assert.equal(intake.authenticated_access, false);
+  assert.equal(intake.network_submission, false);
+  assert.equal(intake.transport_state, "local-export");
+  assert.equal(intake.reviewer_identity.auth_state, "unauthenticated-local");
+  assert.match(intake.reviewer_identity.claim_boundary, /metadata only/);
+  assert.equal(intake.contributor_consent.contains_personal_data, false);
+  assert.equal(intake.assignment.source_session_id, session.session_id);
+  assert.equal(intake.assignment.source_bundle_id, bundle.bundle_id);
+  assert.equal(intake.assignment.observation_ids[0], observation.observation_id);
+  assert.match(intake.source_session_sha256, /^sha256:[a-f0-9]{64}$/);
+  assert.match(intake.source_bundle_sha256, /^sha256:[a-f0-9]{64}$/);
+
+  const intakeText = serializeReviewIntakeEnvelope(intake);
+  assert.deepEqual(parseReviewIntakeEnvelopeJson(intakeText), intake);
+
+  const returnPacket = await createReviewReturnEnvelope({
+    session,
+    assignment: intake.assignment,
+    reviewerIdentity: intake.reviewer_identity,
+    generatedAt: "2026-06-30T14:05:00.000Z",
+  });
+  const returnText = serializeReviewReturnEnvelope(returnPacket);
+  const returnValidation = validateReviewReturnEnvelopeJson(returnText);
+
+  assertContract("reviewReturnEnvelope", returnPacket);
+  assert.equal(returnPacket.packet_type, "review-return");
+  assert.equal(returnPacket.authenticated_access, false);
+  assert.equal(returnPacket.network_submission, false);
+  assert.equal(returnPacket.review_event_count, 1);
+  assert.equal(returnPacket.research_session.observation_review_events[0].event_id, reviewEvent.event_id);
+  assert.equal(returnValidation.valid, true);
+  assert.deepEqual(returnValidation.envelope, returnPacket);
+
+  const forgedAccess = validateContract("reviewIntakeEnvelope", { ...intake, authenticated_access: true });
+  assert.equal(forgedAccess.valid, false);
+  assert.ok(forgedAccess.errors.some((error) => error.path === "reviewIntakeEnvelope.authenticated_access"));
 });
 
 test("research session and evidence bundle reject malformed required fields", () => {
