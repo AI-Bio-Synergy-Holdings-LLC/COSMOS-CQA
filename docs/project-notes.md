@@ -42,9 +42,20 @@ Post-merge evidence:
 
 ## Current Public Trust Operations Trail
 
-Next hardening layer:
+Completed public trust operations layer:
 
 - `SECURITY.md` responsible disclosure routing;
 - a public security/disclosure page;
 - issue template chooser routing so private vulnerabilities and sensitive safety details are not filed as public issues;
 - validation that security, safety, privacy, accessibility, and contact routes remain connected.
+
+## Current Public Demo Boundary
+
+After PR #62, the public demo has a clear local-first reviewer boundary:
+
+- observation review and adjudication are local research workflow evidence;
+- reviewer handoff and return packets are validated local JSON artifacts;
+- `authenticated_access` and `network_submission` remain false for public reviewer packets;
+- the hosted demo does not authenticate reviewers, assign expert queues, collect observations, or transmit review packets.
+
+The public portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions, but should not publish backend architecture, onboarding promises, operational timelines, or access claims for that future surface.

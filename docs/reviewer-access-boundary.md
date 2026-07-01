@@ -4,6 +4,8 @@ COSMOS-CQA currently provides local research review mechanics, not authenticated
 
 The public workbench can create tile observations, edit review fields, record adjudication queue placeholder decisions, export evidence bundles, and prepare reviewer handoff packets. Those features are useful for research workflow design and deterministic replay, but they do not prove reviewer identity, qualification, assignment, or scientific consensus.
 
+A separate selective-access COSMOS-CQA application is planned for verified researchers and institutions. That application is outside the current public demo and should not be described as available through the static portal.
+
 ## Current Boundary
 
 - The hosted portal is static and local-first.

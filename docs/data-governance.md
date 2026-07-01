@@ -28,6 +28,8 @@ The hosted portal is static and local-first. Imported files, labels, bookmarks, 
 
 Reviewer handoff and return packets are also local JSON artifacts in the current public portal. Preparing or importing a reviewer packet does not authenticate a reviewer, assign an expert queue, or transmit observations to AI-Bio Synergy Holdings LLC or another review service. Treat `reviewer_id` and related identity fields as metadata unless a future authenticated service verifies them.
 
+A separate selective-access COSMOS-CQA application is planned for verified researchers and institutions. Until that application has its own access terms, data handling, security controls, and operational responsibilities, public documentation should not imply that the hosted demo collects, stores, or routes research submissions.
+
 ## Evidence Artifacts
 
 Expected evidence artifacts include:

@@ -68,6 +68,8 @@ http://localhost:4173/
 
 The public portal is served at `http://localhost:4173/`; the research workbench is served at `http://localhost:4173/workbench.html`. The hosted public demo workflow is served at `http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack`.
 
+The public demo is local-first and account-free. A separate COSMOS-CQA application is planned for verified researchers and institutions; the public repository should point to that selective-access lane without implying active onboarding, server submission, or authenticated review in the hosted demo.
+
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
 Public quickstart, safety, disclosure, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/security-disclosure.md](docs/security-disclosure.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).

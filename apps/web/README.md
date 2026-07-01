@@ -2,16 +2,19 @@
 
 This directory contains the public portal and browser workbench source for COSMOS-CQA.
 
-Planned responsibilities:
+Maintained responsibilities:
 
 - tile viewer;
 - artifact labeling workflow;
 - deterministic sidecar playback;
 - calibration flow;
-- expert queue;
+- local expert/reviewer workflow placeholders;
+- tile observation overlay and review/adjudication ledger;
+- reviewer handoff packet export/import as local JSON artifacts;
 - metrics dashboard;
 - provenance export;
-- validation report export.
+- validation report export;
+- session and evidence bundle export/import.
 
 The first canonical import comes from the stable COSMOS v3 public/dev demo after duplicate exports are filtered. The byte-preserved legacy artifacts live in `../../archive/original-materials/legacy-v3/`.
 
@@ -69,6 +72,8 @@ The hosted public demo workflow preloads the sample Core Pack at:
 http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
 ```
 
+The public demo is local-first and does not authenticate users, collect observations, submit reviewer packets, or operate an institutional queue. A separate COSMOS-CQA application is planned for verified researchers and institutions; public copy should not describe that future surface as available through the hosted demo.
+
 Use `?dev=1` to show dev-only truth labels:
 
 ```text
@@ -89,4 +94,5 @@ The source now separates:
 - `expert-review`
 - `provenance`
 - `reports`
+- `review-intake`
 - `ui`

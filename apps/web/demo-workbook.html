@@ -36,6 +36,10 @@
       <p class="portal-kicker">Hosted demo manual</p>
       <h1>Demo workbook for the public Core Pack workflow.</h1>
       <p>Use this workbook to review the sample workbench as research infrastructure: inspect the Core Pack, exercise tile labeling, export evidence, and stay inside the public claim boundary.</p>
+      <p class="selective-access-notice">
+        <strong>Selective-access application planned.</strong>
+        <span>A separate COSMOS-CQA application is planned for verified researchers and institutions. This public workbook covers only the static local-first demo and does not describe active onboarding, authenticated review, or server submission.</span>
+      </p>
       <div class="portal-actions">
         <a class="portal-action primary" href="./workbench.html?demo=core-pack#workspace-core-pack">Open Demo Workbench</a>
         <a class="portal-action" href="https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/blob/main/docs/demo-workbook.md">Repository Workbook</a>
@@ -59,6 +63,10 @@
             <p>The static portal has no account system. Downloads, bookmarks, and imports stay in the browser session unless you share them.</p>
           </article>
           <article class="portal-tile">
+            <h3>Reviewer boundary</h3>
+            <p>Reviewer handoff packets are local JSON artifacts. The public demo does not authenticate reviewers, submit observations, or operate an expert queue service.</p>
+          </article>
+          <article class="portal-tile">
             <h3>Evidence focus</h3>
             <p>Use exports to inspect contracts, provenance hashes, SBOM references, known limitations, and deterministic replay surfaces.</p>
           </article>
@@ -75,10 +83,15 @@
           <li><strong>Open the hosted demo.</strong> Confirm the banner reports that the sample Core Pack is ready.</li>
           <li><strong>Inspect Core Pack intake.</strong> Review manifest summary, tile passports, evidence references, SBOM references, and diagnostic references.</li>
           <li><strong>Review the first tile.</strong> Change overlay and palette once, then confirm the caption and tile passport remain readable.</li>
+          <li><strong>Use viewer tools.</strong> Try Zoom, Pan, Rotate, and Reset; transformed clicks should still export normalized source-tile coordinates.</li>
           <li><strong>Check audio safety before playback.</strong> Read the Audio and Captions notice, keep device volume low, and leave Loop off unless you intentionally need repeat playback.</li>
-          <li><strong>Submit and undo a label.</strong> Add a brief note, submit a label, then undo it to confirm the session can recover from review mistakes.</li>
+          <li><strong>Pin an observation.</strong> Click a tile sector, enter a spatial note, submit the label, and confirm Evidence Workspace shows the observation map.</li>
+          <li><strong>Review the observation.</strong> Select the row in Observation Review, edit note/class/severity, set review status and confidence, and confirm the ledger updates.</li>
+          <li><strong>Exercise adjudication carefully.</strong> Mark an observation as needing adjudication only as a workflow placeholder, enter a queue note, and record one queue decision without treating it as consensus.</li>
+          <li><strong>Try the calibration wizard.</strong> In Evidence Drawer, start Calibration in Wizard mode, complete the three-step gold-tile mini-review, and confirm score/reliability feedback updates the caption and metrics.</li>
           <li><strong>Create a bookmark.</strong> Use the bookmark control, reload the copied state URL, and confirm tile, overlay, palette, rate, loop, and caption settings return.</li>
           <li><strong>Check diagnostic caveats.</strong> Read placeholder status and limitations before treating any diagnostic surface as evidence.</li>
+          <li><strong>Prepare local review packets.</strong> Export Reviewer Handoff JSON or Review Return JSON only as local artifacts; no authenticated reviewer access or network submission occurs in the public demo.</li>
           <li><strong>Refresh report preview.</strong> Use the Reports panel to regenerate the validation preview before export.</li>
           <li><strong>Export evidence.</strong> Download SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review.</li>
         </ol>
@@ -97,7 +110,7 @@
           </article>
           <article class="portal-link-card">
             <strong>Interaction evidence</strong>
-            <span>Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.</span>
+            <span>Tile navigation, viewer transforms, overlay/palette changes, pin/submit/review behavior, calibration wizard result, bookmark reload result, and export filenames.</span>
           </article>
           <article class="portal-link-card">
             <strong>Boundary notes</strong>

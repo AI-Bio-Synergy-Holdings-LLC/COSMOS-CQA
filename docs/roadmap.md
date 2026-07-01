@@ -33,3 +33,10 @@
 - Publish documentation, sample manifests, test reports, and citation metadata.
 - Tag a versioned release.
 - Add release checks for license, provenance, accessibility, and reproducibility.
+
+## Public Demo Maintenance
+
+- Keep the hosted demo static, local-first, account-free, and research-only.
+- Keep public docs aligned with the current workbench: Core Pack intake, viewer transforms, tile observation pins, Observation Review, Adjudication Queue placeholders, Calibration Wizard, reviewer packet exports/imports, validation reports, sessions, and evidence bundles.
+- Point to the planned selective-access COSMOS-CQA application only as a separate future surface for verified researchers and institutions.
+- Do not add backend/auth architecture, onboarding promises, or server submission claims to the public demo.
