@@ -18,7 +18,7 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 | Sitemap | Sitemap lists the portal root and canonical workbench route. | In place | Add release/docs portal routes if they move from GitHub links into hosted pages. |
 | Page titles | Portal and workbench use specific, project-name-led titles. | In place | Keep titles below truncation-prone lengths when adding new pages. |
 | Meta descriptions | Portal and workbench describe research-only artifact QA, evidence, provenance, and replay. | In place | Maintain claim-boundary review before future public copy changes. |
-| Structured data | Portal publishes `Organization`, `WebSite`, and `SoftwareSourceCode` JSON-LD. | In place | Add release DOI/schema fields only after release DOI metadata exists. |
+| Structured data | Portal publishes `Organization`, `WebSite`, and `SoftwareSourceCode` JSON-LD with Zenodo release DOI, all-versions DOI, and current DOI-minted release version. | In place | Update DOI/version fields after each new DOI-minted release. |
 | Indexable routes | Root portal and workbench route are indexable. | In place | Avoid indexing generated test artifacts, package source paths, or dev-only routes. |
 
 ## Social Preview Baseline

@@ -1,4 +1,4 @@
-# Zenodo Registration And DOI Plan
+# Zenodo Registration and DOI Record
 
 COSMOS-CQA is registered on Zenodo as a citable public research software artifact.
 
@@ -38,8 +38,20 @@ Completed for the first DOI-minted release:
 The first Zenodo DOI has been minted.
 
 - Zenodo record: `https://zenodo.org/records/21112699`
+- Zenodo API record: `https://zenodo.org/api/records/21112699`
 - All-versions concept DOI: `https://doi.org/10.5281/zenodo.21112698`
 - `v0.1.1-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21112699`
+
+## Alignment Responsibilities
+
+Keep these surfaces aligned when a new DOI-minted release is created:
+
+- `.zenodo.json` title, steward, related identifiers, keywords, version, license registry value, and rights notes;
+- `CITATION.cff` DOI, identifiers, canonical URL, repository URL, and research-only license reference;
+- `README.md`, `docs/citation.md`, `docs/releases/README.md`, and the release note for the DOI-minted tag;
+- `apps/web/index.html` structured data, `apps/web/citation.html`, `apps/web/releases.html`, and `apps/web/docs.html`;
+- GitHub repository description and homepage URL;
+- Zenodo record title, creator, publication date, release DOI, all-versions DOI, repository link, canonical portal link, license marker, and rights notes.
 
 ## Post-Mint Citation Pattern
 
