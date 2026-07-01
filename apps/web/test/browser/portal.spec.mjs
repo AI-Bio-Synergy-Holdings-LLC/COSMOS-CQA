@@ -180,13 +180,14 @@ test("serves public resource pages with canonical metadata and notices", async (
   );
 
   await page.goto("/citation.html", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Zenodo DOI pending.")).toBeVisible();
-  await expect(page.getByText("pending first Zenodo-archived release")).toBeVisible();
+  await expect(page.getByText("Zenodo DOI minted.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "10.5281/zenodo.21112699" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112699");
+  await expect(page.getByRole("link", { name: "10.5281/zenodo.21112698" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112698");
   await expect(page.getByRole("link", { name: "Zenodo DOI plan" })).toHaveAttribute("href", /docs\/zenodo-registration\.md/);
 
   await page.goto("/releases.html", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Zenodo DOI status: pending first Zenodo-archived public release.")).toBeVisible();
-  await expect(page.getByText("v0.1.1-research-alpha")).toBeVisible();
+  await expect(page.getByText("Zenodo DOI status: minted.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112699");
 
   await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("What experiment is this workbench modeling?")).toBeVisible();

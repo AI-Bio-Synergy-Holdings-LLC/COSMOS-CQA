@@ -4,7 +4,18 @@ This index points public researchers to release notes, validation reports, SBOM 
 
 COSMOS-CQA release artifacts are research evidence. They are not production certifications, clinical artifacts, regulatory submissions, or OSI open-source distribution grants. Public use remains governed by the COSMOS-CQA Research-Only Public License, with AI-Bio Synergy Holdings LLC as owner and steward.
 
-Zenodo DOI status: pending first Zenodo-archived release. The planned first DOI-minted public release is expected to be `v0.1.1-research-alpha` or the next clean public hardening tag after Zenodo registration.
+Zenodo DOI status: minted. The all-versions concept DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698). The first DOI-minted public release is `v0.1.1-research-alpha` with release DOI [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699).
+
+## v0.1.1-research-alpha
+
+- Release notes: [`v0.1.1-research-alpha.md`](v0.1.1-research-alpha.md)
+- GitHub release: [`v0.1.1-research-alpha`](https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/releases/tag/v0.1.1-research-alpha)
+- Zenodo record: [https://zenodo.org/records/21112699](https://zenodo.org/records/21112699)
+- Zenodo release DOI: [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699)
+- Zenodo all-versions DOI: [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698)
+- Tag: `v0.1.1-research-alpha`
+- Release title: `COSMOS-CQA v0.1.1 Research Alpha`
+- Canonical URL: `https://cosmos-cqa.org`
 
 ## v0.1.0-research-alpha
 

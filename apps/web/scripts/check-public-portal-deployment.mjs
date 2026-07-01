@@ -10,6 +10,8 @@ const canonicalUrl = "https://cosmos-cqa.org/";
 const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.0-research-alpha";
+const zenodoConceptDoi = "10.5281/zenodo.21112698";
+const zenodoReleaseDoi = "10.5281/zenodo.21112699";
 const publicPagePaths = [
   "demo-workbook.html",
   "research-experiment.html",
@@ -161,9 +163,12 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("CITATION.cff", citation, [
+    `doi: "${zenodoReleaseDoi}"`,
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
     "Zenodo DOI",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
     "Canonical public portal",
     "Canonical public source repository",
     owner,
@@ -187,20 +192,23 @@ async function validateStaticContract() {
   assert(Array.isArray(zenodoMetadata.related_identifiers), ".zenodo.json must include related identifiers.");
 
   requirePhrases("README.md", readme, [
-    "Zenodo DOI",
-    "pending v0.1.1-research-alpha",
+    "zenodo.org/badge/DOI/10.5281/zenodo.21112698.svg",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
     "docs/zenodo-registration.md",
   ]);
 
   requirePhrases("docs/citation.md", citationDoc, [
-    "Zenodo DOI: pending first Zenodo-archived public release",
+    `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
+    `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoReleaseDoi}\``,
     ".zenodo.json",
-    "repository URL, canonical portal URL, and exact release tag",
+    `https://doi.org/${zenodoReleaseDoi}`,
   ]);
 
   requirePhrases("apps/web/citation.html", citationPage, [
-    "Zenodo DOI pending.",
-    "pending first Zenodo-archived release",
+    "Zenodo DOI minted.",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
     "Zenodo DOI plan",
   ]);
 
@@ -210,8 +218,9 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
-    "Zenodo DOI status: pending first Zenodo-archived public release",
-    "v0.1.1-research-alpha",
+    "Zenodo DOI status: minted.",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
   ]);
 
   requirePhrases("docs/quickstart.md", quickstart, [
@@ -271,9 +280,11 @@ async function validateStaticContract() {
     "Zenodo Registration And DOI Plan",
     "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "other-closed",
-    "No Zenodo DOI has been minted for COSMOS-CQA yet.",
+    "The first Zenodo DOI has been minted.",
+    "https://zenodo.org/records/21112699",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
     "v0.1.1-research-alpha",
-    "Do not replace the pending badge with a DOI-like string",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -439,15 +450,28 @@ async function validateStaticContract() {
     `${releaseId}.md`,
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
+    "v0.1.1-research-alpha.md",
+    "https://zenodo.org/records/21112699",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
-    "Zenodo DOI status: pending first Zenodo-archived release",
+    "Zenodo DOI status: minted.",
   ]);
 
   requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
     "Zenodo DOI: not minted for this release.",
     "first Zenodo DOI is planned for the next clean public research alpha release",
+  ]);
+
+  requirePhrases("docs/releases/v0.1.1-research-alpha.md", await readText("docs/releases/v0.1.1-research-alpha.md"), [
+    "COSMOS-CQA v0.1.1 Research Alpha",
+    "Zenodo record: [https://zenodo.org/records/21112699]",
+    zenodoConceptDoi,
+    zenodoReleaseDoi,
+    "other-closed",
+    "research-only public use",
   ]);
 
   for (const artifactPath of extractLocalReleaseLinks(releaseIndex)) {
@@ -611,7 +635,7 @@ function requireReleaseCheck(report, name) {
 
 function extractLocalReleaseLinks(markdown) {
   const links = [];
-  const linkPattern = /\]\((v0\.1\.0-research-alpha[^)]+)\)/g;
+  const linkPattern = /\]\((v0\.\d+\.\d+-research-alpha[^)]+)\)/g;
   let match = linkPattern.exec(markdown);
 
   while (match) {
