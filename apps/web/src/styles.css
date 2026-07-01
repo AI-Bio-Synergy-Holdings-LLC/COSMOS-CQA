@@ -337,6 +337,10 @@ h2 {
   padding: 14px;
 }
 
+body.calibration-active .viewer {
+  grid-template-columns: minmax(420px, min(42vw, 820px)) minmax(380px, 1fr);
+}
+
 .viewer:fullscreen {
   align-items: start;
   background: var(--bg);
@@ -356,6 +360,7 @@ h2 {
   max-width: 880px;
   min-width: 0;
   padding: 9px;
+  position: relative;
   width: 100%;
 }
 
@@ -479,6 +484,35 @@ canvas.tile:hover {
   padding-top: 8px;
 }
 
+.calibration-tile-banner {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(10, 16, 32, 0.9), rgba(13, 20, 34, 0.86)) padding-box,
+    linear-gradient(135deg, rgba(67, 214, 197, 0.48), rgba(240, 201, 106, 0.28)) border-box;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
+  color: var(--muted-strong);
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px;
+  left: 18px;
+  padding: 8px 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 4;
+}
+
+.calibration-tile-banner strong {
+  color: var(--accent);
+}
+
+.calibration-tile-banner[hidden] {
+  display: none;
+}
+
 .viewer-tools {
   display: grid;
   gap: 8px;
@@ -500,7 +534,36 @@ canvas.tile:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: min(860px, calc(100vh - 184px));
   min-width: 0;
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-gutter: stable;
+}
+
+body.calibration-active .controls {
+  max-height: min(760px, calc(100vh - 156px));
+}
+
+body.calibration-active .label-workflow,
+body.calibration-active .guided-calibration-workspace {
+  gap: 7px;
+  padding: 9px;
+}
+
+body.calibration-active .label-workflow .command-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.calibration-active .label-workflow .primary-action {
+  grid-column: auto;
+}
+
+body.calibration-active .note-tips {
+  font-size: 11px;
+  line-height: 1.28;
+  max-height: 30px;
+  overflow: hidden;
 }
 
 .control-group {
@@ -629,6 +692,54 @@ textarea:hover {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.45;
+  margin: 0;
+}
+
+.guided-calibration-workspace {
+  background:
+    linear-gradient(140deg, rgba(67, 214, 197, 0.08), rgba(155, 140, 255, 0.1)) padding-box,
+    linear-gradient(140deg, rgba(67, 214, 197, 0.42), rgba(155, 140, 255, 0.28)) border-box;
+  border-color: transparent;
+  scroll-margin: 16px;
+}
+
+.guided-calibration-workspace:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.guided-calibration-header {
+  align-items: start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.guided-calibration-header p {
+  margin: 4px 0 0;
+}
+
+.calibration-step-badge {
+  min-width: 48px;
+  text-align: center;
+}
+
+.calibration-config-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.calibration-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.calibration-active .guided-calibration-workspace {
+  box-shadow: inset 0 0 0 1px rgba(67, 214, 197, 0.22), 0 14px 28px rgba(0, 0, 0, 0.24);
+}
+
+body.calibration-active .guided-calibration-workspace .callout,
+body.calibration-active .guided-calibration-workspace .explain {
   margin: 0;
 }
 
@@ -1250,11 +1361,21 @@ details[open] summary {
     flex-direction: column;
   }
 
+  body.calibration-active .viewer {
+    display: flex;
+  }
+
   .tile-stage,
   .controls {
     max-width: none;
     min-width: 0;
     width: 100%;
+  }
+
+  .controls,
+  body.calibration-active .controls {
+    max-height: none;
+    overflow: visible;
   }
 }
 
@@ -1311,9 +1432,11 @@ details[open] summary {
   }
 
   .grid,
+  .calibration-config-grid,
   .adjudication-queue-grid,
   .observation-review-editor,
-  .command-grid {
+  .command-grid,
+  body.calibration-active .label-workflow .command-grid {
     grid-template-columns: 1fr;
   }
 
