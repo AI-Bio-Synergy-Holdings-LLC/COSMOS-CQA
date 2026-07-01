@@ -18,6 +18,7 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public research-only copy, license boundaries, safety and use boundaries, security disclosure routing, GitHub release links, release artifact index links, and the hosted demo route;
 - `apps/web/workbench.html` includes canonical URL metadata and social preview metadata;
 - public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, and contact are present;
+- `.zenodo.json`, `CITATION.cff`, citation docs, release pages, and README preserve controlled Zenodo DOI metadata and pending-DOI wording until a DOI is minted;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
 - `docs/project-notes.md` records the completed PR #51 safety review trail and current public-surface hardening lane;

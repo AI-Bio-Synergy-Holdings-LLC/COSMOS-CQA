@@ -42,3 +42,4 @@ Core documents:
 - `roadmap.md` outlines the rework path.
 - `release-checklist.md` defines what must ship with public releases.
 - `releases/` stores release-note source documents, validation reports, SBOMs, and the release artifact index.
+- `zenodo-registration.md` records the controlled Zenodo metadata and DOI minting plan.

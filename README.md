@@ -1,5 +1,7 @@
 # COSMOS-CQA
 
+[![Zenodo DOI](https://img.shields.io/badge/Zenodo%20DOI-pending%20v0.1.1--research--alpha-6f64ff)](docs/zenodo-registration.md)
+
 COSMOS-CQA is a research-source workbench for citizen-assisted quality assurance of cosmology artifacts, including CMB and weak-lensing map tiles, deterministic sidecars, expert adjudication, provenance manifests, and validation reports.
 
 Canonical public URL: [https://cosmos-cqa.org](https://cosmos-cqa.org)
@@ -73,6 +75,8 @@ The public demo is local-first and account-free. A separate COSMOS-CQA applicati
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
 Public quickstart, safety, disclosure, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/security-disclosure.md](docs/security-disclosure.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
+
+Zenodo DOI status and registration guidance lives in [docs/zenodo-registration.md](docs/zenodo-registration.md). The DOI badge remains pending v0.1.1-research-alpha until the first Zenodo-archived release is minted, expected on the next clean public research alpha tag.
 
 ## Naming
 
