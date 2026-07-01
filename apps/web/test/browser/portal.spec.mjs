@@ -100,7 +100,17 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
 
   const structuredData = JSON.parse(await page.locator("script[type='application/ld+json']").textContent());
   expect(structuredData["@context"]).toBe("https://schema.org");
-  expect(structuredData["@graph"].some((item) => item["@type"] === "SoftwareSourceCode" && item.name === "COSMOS-CQA")).toBe(true);
+  const softwareMetadata = structuredData["@graph"].find((item) => item["@type"] === "SoftwareSourceCode" && item.name === "COSMOS-CQA");
+  expect(softwareMetadata).toBeTruthy();
+  expect(softwareMetadata.version).toBe("0.1.1-research-alpha");
+  expect(softwareMetadata.sameAs).toContain("https://doi.org/10.5281/zenodo.21112699");
+  expect(softwareMetadata.sameAs).toContain("https://zenodo.org/records/21112699");
+  expect(softwareMetadata.identifier).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ propertyID: "Zenodo release DOI", value: "10.5281/zenodo.21112699", url: "https://doi.org/10.5281/zenodo.21112699" }),
+      expect.objectContaining({ propertyID: "Zenodo all-versions DOI", value: "10.5281/zenodo.21112698", url: "https://doi.org/10.5281/zenodo.21112698" }),
+    ]),
+  );
 
   const robots = await request.get("/robots.txt");
   expect(robots.ok()).toBe(true);
@@ -174,7 +184,7 @@ test("serves public resource pages with canonical metadata and notices", async (
     "href",
     /docs\/selective-access-application\.md/,
   );
-  await expect(page.getByRole("link", { name: "Zenodo DOI Plan Controlled Zenodo metadata, pending DOI status, and post-mint citation update checklist." })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Zenodo DOI Record Controlled Zenodo metadata, minted DOI status, release DOI, and citation guidance." })).toHaveAttribute(
     "href",
     /docs\/zenodo-registration\.md/,
   );
@@ -183,7 +193,7 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("Zenodo DOI minted.")).toBeVisible();
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112699" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112699");
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112698" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112698");
-  await expect(page.getByRole("link", { name: "Zenodo DOI plan" })).toHaveAttribute("href", /docs\/zenodo-registration\.md/);
+  await expect(page.getByRole("link", { name: "Zenodo DOI record" })).toHaveAttribute("href", /docs\/zenodo-registration\.md/);
 
   await page.goto("/releases.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Zenodo DOI status: minted.")).toBeVisible();

@@ -54,6 +54,7 @@ async function validateStaticContract() {
   const zenodoRaw = await readText(".zenodo.json");
   const zenodoMetadata = JSON.parse(zenodoRaw);
   const readme = await readText("README.md");
+  const docsReadme = await readText("docs/README.md");
   const citationDoc = await readText("docs/citation.md");
   const citationPage = await readText("apps/web/citation.html");
   const docsPage = await readText("apps/web/docs.html");
@@ -105,6 +106,14 @@ async function validateStaticContract() {
     `<meta name="twitter:image" content="${canonicalUrl}assets/social-preview.png">`,
     `"@type": "SoftwareSourceCode"`,
     `"codeRepository": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"`,
+    `"version": "0.1.1-research-alpha"`,
+    `"propertyID": "Zenodo release DOI"`,
+    `"value": "${zenodoReleaseDoi}"`,
+    `"url": "https://doi.org/${zenodoReleaseDoi}"`,
+    `"propertyID": "Zenodo all-versions DOI"`,
+    `"value": "${zenodoConceptDoi}"`,
+    `"url": "https://doi.org/${zenodoConceptDoi}"`,
+    "https://zenodo.org/records/21112699",
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
@@ -199,6 +208,13 @@ async function validateStaticContract() {
     "docs/zenodo-registration.md",
   ]);
 
+  requirePhrases("docs/README.md", docsReadme, [
+    "zenodo-registration.md",
+    "controlled Zenodo metadata",
+    "minted DOI record",
+    "citation alignment responsibilities",
+  ]);
+
   requirePhrases("docs/citation.md", citationDoc, [
     `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
     `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoReleaseDoi}\``,
@@ -210,12 +226,13 @@ async function validateStaticContract() {
     "Zenodo DOI minted.",
     zenodoConceptDoi,
     zenodoReleaseDoi,
-    "Zenodo DOI plan",
+    "Zenodo DOI record",
   ]);
 
   requirePhrases("apps/web/docs.html", docsPage, [
-    "Zenodo DOI Plan",
+    "Zenodo DOI Record",
     "Controlled Zenodo metadata",
+    "minted DOI status",
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
@@ -278,11 +295,13 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("docs/zenodo-registration.md", zenodoDoc, [
-    "Zenodo Registration And DOI Plan",
+    "Zenodo Registration and DOI Record",
     "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "other-closed",
     "The first Zenodo DOI has been minted.",
     "https://zenodo.org/records/21112699",
+    "https://zenodo.org/api/records/21112699",
+    "Alignment Responsibilities",
     zenodoConceptDoi,
     zenodoReleaseDoi,
     "v0.1.1-research-alpha",
