@@ -33,6 +33,8 @@ https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
 
 This path opens the maintained browser workbench, auto-loads the public sample Core Pack, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
 
+The portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions. Public copy must keep that notice narrow: the hosted demo remains static, local-first, account-free, and does not collect observations, authenticate reviewers, assign queues, or transmit review packets.
+
 When `apps/web/` is published as the static site root, `apps/web/CNAME` carries the canonical `cosmos-cqa.org` domain setting.
 
 GitHub Pages deployment is managed by `.github/workflows/pages.yml`. The workflow prepares `apps/web/dist-pages` from the `apps/web` site root plus the shared `packages/` and `examples/` folders needed by the browser workbench, uploads that artifact, deploys it to the `github-pages` environment, and runs post-deploy validation against the deployed Pages URL.
@@ -45,6 +47,7 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 - identify the COSMOS-CQA Research-Only Public License as the public use grant;
 - state that all rights not expressly granted are reserved by AI-Bio Synergy Holdings LLC;
 - avoid diagnostic, cosmology, clinical, operational, or production claims that are not validated in the repository evidence.
+- identify any selective-access application as a separate planned surface, not an active feature of the public demo.
 
 ## Required Navigation
 

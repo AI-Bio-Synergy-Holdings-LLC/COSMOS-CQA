@@ -233,6 +233,28 @@ a {
   padding-left: 12px;
 }
 
+.selective-access-notice {
+  background: rgba(21, 32, 42, 0.78);
+  border: 1px solid rgba(155, 140, 255, 0.3);
+  border-left: 3px solid var(--portal-violet);
+  border-radius: 8px;
+  color: #dce8e3;
+  margin-top: 18px;
+  max-width: 760px;
+  padding: 14px 16px;
+}
+
+.selective-access-notice strong {
+  color: var(--portal-text);
+}
+
+.selective-access-notice span {
+  color: var(--portal-muted);
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
 .portal-band {
   border-top: 1px solid rgba(170, 183, 183, 0.14);
   padding: clamp(44px, 6vw, 82px) clamp(18px, 5vw, 76px);

@@ -36,6 +36,8 @@ http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
 
 The hosted demo path auto-loads `examples/core-pack/core-pack.manifest.json`, keeps public truth labels hidden by default, and prepares the validation report preview.
 
+The public demo remains local-first: it does not authenticate users, collect observations, operate a reviewer queue, or transmit reviewer packets. A separate COSMOS-CQA application is planned for verified researchers and institutions; see `docs/selective-access-application.md` for the public wording boundary.
+
 The public workbook for the hosted sample workflow is served at:
 
 ```text
@@ -61,8 +63,9 @@ https://cosmos-cqa.org/safety.html
 3. Inspect the Core Pack Intake panel, tile passports, diagnostic caveats, evidence workspace, and report preview.
 4. Keep public mode active for public review. Use `?dev=1` only for explicit local dev review.
 5. Use the demo workbook to record manifest ids, tile passport ids, evidence exports, known limitations, and any visual/accessibility issues found during review.
-6. Use the research experiment page to distinguish modeled infrastructure, exposed engine fundamentals, sonic loop sidecars, public benefits, and non-claims.
-7. Review the safety page before using optional audio. Keep device volume low, leave Loop off unless intentionally needed, and stop if sound is uncomfortable.
+6. Exercise the current demo controls documented in the workbook: viewer transforms, pinned observations, Observation Review, Adjudication Queue placeholders, Calibration Wizard, reviewer handoff packet export, and evidence exports.
+7. Use the research experiment page to distinguish modeled infrastructure, exposed engine fundamentals, sonic loop sidecars, public benefits, and non-claims.
+8. Review the safety page before using optional audio. Keep device volume low, leave Loop off unless intentionally needed, and stop if sound is uncomfortable.
 
 ## Report Export
 

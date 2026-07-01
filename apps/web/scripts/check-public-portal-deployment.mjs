@@ -52,6 +52,7 @@ async function validateStaticContract() {
   const quickstart = await readText("docs/quickstart.md");
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
+  const selectiveAccessDoc = await readText("docs/selective-access-application.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
   const publicSafetyDoc = await readText("docs/public-safety.md");
   const securityPolicy = await readText("SECURITY.md");
@@ -96,6 +97,8 @@ async function validateStaticContract() {
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
+    "Selective-access application planned.",
+    "This public demo remains local-first and does not authenticate users, collect observations, or transmit review packets.",
     "COSMOS-CQA Research-Only Public License",
     owner,
     "./docs.html",
@@ -122,6 +125,8 @@ async function validateStaticContract() {
     "Core Pack intake",
     "deterministic replay",
     "Optional audio starts only when Play is selected.",
+    "3-step wizard plus inline mini-quiz",
+    "three gold-tile review steps",
     "./safety.html",
     owner,
   ]);
@@ -161,6 +166,8 @@ async function validateStaticContract() {
     "npm --prefix apps/web run check",
     "npm --prefix apps/web run check:portal-deploy",
     "not an OSI open-source release",
+    "docs/selective-access-application.md",
+    "Calibration Wizard",
   ]);
 
   requirePhrases("docs/project-notes.md", projectNotes, [
@@ -191,6 +198,16 @@ async function validateStaticContract() {
     "security.html",
     "docs/security-disclosure.md",
     "docs/public-safety.md",
+    "selective-access application",
+    "does not collect observations",
+  ]);
+
+  requirePhrases("docs/selective-access-application.md", selectiveAccessDoc, [
+    "Selective Access Application Notice",
+    "verified researchers and institutions",
+    "public demo remains local-first",
+    "does not authenticate users, collect observations, or transmit review packets",
+    "should not publish backend architecture, access promises, or operational timelines prematurely",
   ]);
 
   requirePhrases("docs/public-portal-deployment-validation.md", deploymentDoc, [
@@ -274,6 +291,8 @@ async function validateStaticContract() {
     "not a substitute for counsel-reviewed privacy terms",
     "No account system",
     "Local imports and exports",
+    "Selective-access boundary",
+    "outside this public local-first demo",
     "GitHub issues and public reports",
     "Operational logs and third-party routes",
     "Issue Templates",

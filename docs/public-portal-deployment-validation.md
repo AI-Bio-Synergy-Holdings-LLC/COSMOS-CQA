@@ -48,6 +48,7 @@ The HTTP mode checks:
 - optional audio sonification remains user initiated, loop-off by default, visibly caveated, bounded by shared sidecar constants, and described without therapeutic, medical, diagnostic, or scientific-result claims.
 - public data-use copy remains local-first, non-confidential, and explicit that GitHub issues and pull requests are public by default.
 - vulnerability and sensitive safety reporting copy keeps private disclosure separate from public issue templates.
+- selective-access application copy remains a future-facing public notice and does not imply active onboarding, backend authentication, network submission, hosted reviewer queues, or institutional access through the public demo.
 
 ## GitHub Pages Deployment
 

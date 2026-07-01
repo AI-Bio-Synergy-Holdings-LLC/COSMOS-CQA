@@ -27,6 +27,8 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("h1")).toHaveText("COSMOS-CQA");
   await expect(page.getByText("Research-only public use", { exact: true })).toBeVisible();
   await expect(page.getByText("Not a production decision system.")).toBeVisible();
+  await expect(page.getByText("Selective-access application planned.")).toBeVisible();
+  await expect(page.getByText("does not authenticate users, collect observations, or transmit review packets")).toBeVisible();
   await expect(page.locator("body")).not.toContainText("OSI-approved");
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
@@ -63,6 +65,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
     "./security.html",
   );
   await expect(page.getByRole("link", { name: "Contact Developer route for public research questions, accessibility feedback, and issue routing." })).toHaveAttribute("href", "./contact.html");
+  await expect(page.getByText("A separate researcher and institution application is planned outside this static public demo")).toBeVisible();
 
   const signature = await page.evaluate(() => window.COSMOS_CQA_PORTAL.signalSignature());
   expect(signature.activePixels).toBeGreaterThan(0);
@@ -158,8 +161,19 @@ test("serves public resource pages with canonical metadata and notices", async (
   await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
   await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();
+  await expect(page.getByText("Reviewer handoff packets are local JSON artifacts.")).toBeVisible();
+  await expect(page.getByText("Try the calibration wizard.")).toBeVisible();
+  await expect(page.getByText("complete the three-step gold-tile mini-review")).toBeVisible();
+  await expect(page.getByText("Prepare local review packets.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Research Experiment" })).toHaveAttribute("href", "./research-experiment.html");
   await expect(page.getByRole("link", { name: "Safety and Use Boundaries" })).toHaveAttribute("href", "./safety.html");
+
+  await page.goto("/docs.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Selective-access application planned.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Selective Access Notice Public wording for the planned verified researcher and institution application, without backend promises." })).toHaveAttribute(
+    "href",
+    /docs\/selective-access-application\.md/,
+  );
 
   await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("What experiment is this workbench modeling?")).toBeVisible();
@@ -191,6 +205,8 @@ test("serves public resource pages with canonical metadata and notices", async (
   await page.goto("/user-data.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("not a substitute for counsel-reviewed privacy terms")).toBeVisible();
   await expect(page.getByText("GitHub issues and public reports")).toBeVisible();
+  await expect(page.getByText("Selective-access boundary")).toBeVisible();
+  await expect(page.getByText("outside this public local-first demo")).toBeVisible();
   await expect(page.getByText("Operational logs and third-party routes")).toBeVisible();
   await expect(page.getByText("Do not submit restricted datasets")).toBeVisible();
   await expect(page.getByRole("link", { name: "Issue Templates" })).toHaveAttribute(

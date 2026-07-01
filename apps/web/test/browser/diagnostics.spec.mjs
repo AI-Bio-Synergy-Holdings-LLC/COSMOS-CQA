@@ -112,6 +112,8 @@ test("migrates calibration wizard targets into browser automation", async ({ pag
   annotateTargets(CALIBRATION_TARGETS);
   await openWorkbench(page);
 
+  await expect(page.getByText("3-step wizard plus inline mini-quiz")).toBeVisible();
+  await expect(page.getByText("three gold-tile review steps")).toBeVisible();
   await page.locator("#calibBtn").click();
   await expect(page.locator("#calibStep")).toHaveText("1/3");
   await expect(page.locator("#calibHint")).toContainText("Hint:");
