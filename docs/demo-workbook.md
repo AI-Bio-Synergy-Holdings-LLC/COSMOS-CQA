@@ -43,7 +43,9 @@ https://cosmos-cqa.org/safety.html
 13. Read diagnostic caveats before treating any diagnostic surface as evidence.
 14. Refresh the validation report preview and inspect observation summary, QA metrics, adjudication queue history, and review ledger fields when pinned observations or review events exist.
 15. Export SBOM JSON, validation report JSON, session JSON, and evidence bundle JSON for local review; import the session JSON and confirm the observation review ledger replays.
-16. Read the research experiment page, tile observation notes, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
+16. Prepare Reviewer Handoff JSON and confirm the reviewer handoff status says no network submission or authenticated reviewer access is active.
+17. Import a reviewer packet only as local replay/testing evidence; do not describe it as verified expert review unless a future authenticated service validates identity, assignment, and return history.
+18. Read the research experiment page, tile observation notes, reviewer access boundary, and public safety page; confirm the sonic loop is treated as an optional sonification sidecar, not a detector, therapeutic signal, or validated diagnostic.
 
 ## Review Notes To Capture
 
@@ -52,6 +54,7 @@ https://cosmos-cqa.org/safety.html
 - Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.
 - Viewer transform status after zoom, pan, rotate, and reset; transformed clicks should still export normalized source-tile coordinates.
 - Pinned tile sector, normalized observation coordinates if exported, review edit revision fields, review status, reviewer confidence, adjudication queue decision/note when used, ledger event sequence, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
+- Reviewer handoff packet id, source session/bundle hashes, assignment observation ids, `authenticated_access: false`, `network_submission: false`, and whether import restored only local replay state.
 - Known limitations, diagnostic caveats, public truth-label hiding, and any accessibility or visual issues observed.
 
 ## Verification Commands
@@ -76,5 +79,6 @@ npm --prefix apps/web run check
 - Diagnostic placeholders are caveated research concepts, not validated scientific results.
 - Optional audio is user initiated, loop-off by default, and bounded by shared sidecar constants, but device volume and individual sensitivity remain outside browser control.
 - The static portal has no account system or server-side workspace.
+- Reviewer handoff packets are local JSON artifacts; the static portal does not authenticate reviewers, assign expert queues, or transmit observations to a remote review service. See `docs/reviewer-access-boundary.md`.
 - Downloads, bookmarks, imports, and exported evidence remain local to the browser unless the user shares them.
 - Tile observation pins are reviewer-authored location cues, not measured sky coordinates or validated detections. See `docs/tile-observation-notes.md`.

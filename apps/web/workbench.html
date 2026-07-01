@@ -219,6 +219,9 @@
 
       <section id="observationReviewWorkspace" class="control-group observation-review-workspace" aria-label="Observation review and QA workspace">
             <div class="group-title">Observation Review</div>
+            <div class="review-boundary-note">
+              Local research demo boundary: reviewer identity fields are metadata only. This static portal does not authenticate reviewers, assign expert queues, or transmit observations to a remote review service.
+            </div>
             <div id="observationReviewStatus" class="small inspector-status">No submitted observations yet.</div>
             <div id="observationReviewSummary" class="metadata-panel"></div>
             <div id="observationReviewList" class="observation-review-list" aria-label="Submitted observation list"></div>
@@ -544,6 +547,16 @@
             <label class="pill file-pill">Import Session <input id="sessionInput" type="file" accept=".json,application/json"></label>
           </div>
           <div id="sessionStatus" class="small inspector-status">No research session imported.</div>
+          <div class="review-handoff-panel" aria-label="Reviewer handoff boundary and local packet controls">
+            <div class="group-title explorer-title">Reviewer Handoff</div>
+            <p class="small">Prepare validated local packets for reviewer intake testing. These controls do not submit data, authenticate reviewers, or create a live review queue.</p>
+            <div class="export session-actions">
+              <button id="exportReviewIntake" type="button" class="pill">Prepare Reviewer Handoff JSON</button>
+              <button id="exportReviewReturn" type="button" class="pill">Export Local Review Return JSON</button>
+              <label class="pill file-pill">Import Review Packet <input id="reviewPacketInput" type="file" accept=".json,application/json"></label>
+            </div>
+            <div id="reviewerHandoffStatus" class="small inspector-status">Reviewer handoff packets remain local unless you share the downloaded JSON through an external channel.</div>
+          </div>
         </details>
 
         <details>

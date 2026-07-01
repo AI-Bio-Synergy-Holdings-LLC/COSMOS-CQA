@@ -14,6 +14,7 @@ The current entrypoint is `src/index.js`, with submodule entrypoints for:
 - `provenance`: build info and bookmark payload helpers
 - `research-artifacts`: feed/Core Pack payload classification, hashing, and artifact records
 - `reports`: SBOM and validation report assembly
+- `review-intake`: local reviewer identity claims, handoff assignments, intake packets, return packets, and packet validation helpers
 - `sidecars`: deterministic audio-map helpers and shared audio safety limits
 - `tile-synthesis`: deterministic synthetic tile records and pixel helpers
 

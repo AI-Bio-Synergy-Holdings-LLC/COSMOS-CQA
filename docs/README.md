@@ -11,6 +11,7 @@ Start with:
 - `security-disclosure.md` for private vulnerability reporting and non-sensitive public safety/accessibility report routing.
 - `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
 - `contracts.md` for research workflow contracts.
+- `reviewer-access-boundary.md` for the local reviewer handoff boundary before authenticated reviewer access exists.
 - Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, and contact.
 
 Core documents:
@@ -31,6 +32,7 @@ Core documents:
 - `data-governance.md` describes data and provenance handling.
 - `domain-identity.md` records the canonical public URL and redirect-domain policy.
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.
+- `reviewer-access-boundary.md` defines reviewer packet boundaries, current static-portal limits, and future authenticated reviewer pipeline requirements.
 - `public-portal.md` defines the canonical website scaffold and public copy boundaries.
 - `public-portal-deployment-validation.md` defines the portal release/deployment validation workflow.
 - `quickstart.md` defines the public local run, hosted demo, report export, and verification path.

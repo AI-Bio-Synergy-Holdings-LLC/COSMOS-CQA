@@ -8,5 +8,6 @@ export * from "./observations/index.js";
 export * from "./provenance/index.js";
 export * from "./research-artifacts/index.js";
 export * from "./reports/index.js";
+export * from "./review-intake/index.js";
 export * from "./sidecars/index.js";
 export * from "./tile-synthesis/index.js";

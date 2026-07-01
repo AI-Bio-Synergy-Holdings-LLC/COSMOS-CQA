@@ -8,7 +8,7 @@ The current entrypoint is `src/index.js`.
 
 - `CONTRACT_SCHEMA_VERSION`
 - schema constants for artifact classes, severities, overlays, palettes, expert classes, and checklist states
-- schema constants for diagnostic concept status, diagnostic result status, implementation gates, research artifact kinds, observation review statuses, consensus placeholders, adjudication decisions, and review event actions
+- schema constants for diagnostic concept status, diagnostic result status, implementation gates, research artifact kinds, observation review statuses, consensus placeholders, adjudication decisions, reviewer roles/auth states, review transport states, assignment statuses, and review event actions
 - `schemas`
 - `validateContract(name, value)`
 - `assertContract(name, value)`
@@ -27,6 +27,7 @@ The current entrypoint is `src/index.js`.
 - SBOM references and CycloneDX SBOM exports
 - core pack manifests
 - validation reports
+- reviewer identity claims, data-use consent records, review assignments, intake envelopes, and return envelopes
 - legacy checklist target manifests
 - research sessions
 - evidence bundles

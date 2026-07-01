@@ -26,6 +26,8 @@ Vulnerability reports, reproducible exploit steps, deployment-secret exposure, a
 
 The hosted portal is static and local-first. Imported files, labels, bookmarks, exported reports, sessions, CSVs, SBOMs, and evidence bundles are handled in the user's browser environment unless the user shares them through GitHub, email, or another external service.
 
+Reviewer handoff and return packets are also local JSON artifacts in the current public portal. Preparing or importing a reviewer packet does not authenticate a reviewer, assign an expert queue, or transmit observations to AI-Bio Synergy Holdings LLC or another review service. Treat `reviewer_id` and related identity fields as metadata unless a future authenticated service verifies them.
+
 ## Evidence Artifacts
 
 Expected evidence artifacts include:
@@ -40,3 +42,4 @@ Expected evidence artifacts include:
 - SBOM;
 - validation report JSON;
 - validation report PDF or human-readable summary.
+- reviewer intake and return packets.
