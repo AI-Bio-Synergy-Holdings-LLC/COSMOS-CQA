@@ -137,7 +137,8 @@ async function validateStaticContract() {
     "deterministic replay",
     "Optional audio starts only when Play is selected.",
     "3-step wizard plus inline mini-quiz",
-    "three gold-tile review steps",
+    "Start guided calibration to review three gold tiles",
+    "Guided calibration is controlled from the Tile Viewer label workflow",
     "./safety.html",
     owner,
   ]);

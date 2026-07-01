@@ -94,7 +94,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   let feedTimer = null;
   let charts = { pr: null, live: null, ops: null, conf: null };
   const liveSeries = [];
-  const calibration = { mode: "wizard", gate: "learning", active: false, tiles: [], index: 0, correct: 0 };
+  const calibration = { mode: "wizard", gate: "learning", active: false, completed: false, tiles: [], index: 0, correct: 0 };
 
   const audio = createAudioController({
     state,
@@ -1643,28 +1643,107 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       .slice(0, count);
   }
 
+  function isNarrowWorkbench() {
+    return windowRef.matchMedia?.("(max-width: 1100px)")?.matches ?? windowRef.innerWidth <= 1100;
+  }
+
+  function focusCalibrationWorkspace({ scroll = true } = {}) {
+    if (!dom.calibrationWorkspace) {
+      return;
+    }
+
+    if (scroll && isNarrowWorkbench()) {
+      dom.workspaceLabels?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (scroll && dom.reviewControls && dom.workspaceLabels) {
+      const targetTop = Math.max(0, dom.workspaceLabels.offsetTop - dom.reviewControls.offsetTop - 8);
+      dom.reviewControls.scrollTo({ top: targetTop, behavior: "smooth" });
+    }
+
+    try {
+      dom.calibrationWorkspace.focus({ preventScroll: !isNarrowWorkbench() });
+    } catch {
+      dom.calibrationWorkspace.focus();
+    }
+  }
+
   function updateCalibrationUI() {
-    dom.calibStep.textContent = calibration.active ? `${calibration.index + 1}/3` : "";
+    documentRef.body.classList.toggle("calibration-active", calibration.active);
+    const totalSteps = calibration.tiles.length || 3;
+    dom.calibStep.textContent = calibration.active ? `${calibration.index + 1}/${totalSteps}` : calibration.completed ? "Done" : "";
     const explainOk = dom.calibExplain.dataset.ok === "1";
     dom.nextStep.disabled = !calibration.active || (calibration.gate === "gated" && !explainOk);
+    dom.exitCalib.disabled = !calibration.active;
 
     const meta = calibration.active ? calibration.tiles[calibration.index].meta : null;
     dom.calibHint.textContent = meta ? HINTS[meta.truth.class] : "";
+    if (dom.calibrationTileBanner && dom.calibrationTileBannerText) {
+      dom.calibrationTileBanner.hidden = !calibration.active;
+      if (calibration.active) {
+        dom.calibrationTileBannerText.textContent = `Step ${calibration.index + 1}/${totalSteps}; classify the gold tile, submit, then continue.`;
+      }
+    }
+    if (dom.calibDrawerSummary) {
+      if (calibration.active) {
+        dom.calibDrawerSummary.textContent = `Guided calibration active in the Tile Viewer workflow: step ${calibration.index + 1}/${totalSteps}, current score ${calibration.correct}/${totalSteps}.`;
+      } else if (calibration.completed) {
+        dom.calibDrawerSummary.textContent = `Guided calibration complete. Score: ${calibration.correct}/${totalSteps}. Active controls remain beside the label workflow.`;
+      } else {
+        dom.calibDrawerSummary.textContent =
+          "Guided calibration is controlled from the Tile Viewer label workflow so the tile, class, note, Submit, hints, and Next stay together.";
+      }
+    }
   }
 
-  function startCalibFlow() {
+  function startCalibFlow({ focus = false } = {}) {
     calibration.mode = dom.calibMode.value;
     calibration.gate = dom.gatePolicy.value;
     calibration.active = true;
+    calibration.completed = false;
     calibration.tiles = pickGold(3);
     calibration.index = 0;
     calibration.correct = 0;
+
+    if (!calibration.tiles.length) {
+      calibration.active = false;
+      dom.calibStatus.textContent = "No gold tiles are available for guided calibration.";
+      updateCalibrationUI();
+      return;
+    }
 
     state.idx = tiles.indexOf(calibration.tiles[0]);
     drawTile(state.idx);
     dom.calibExplain.textContent = "Choose class and Submit, then Next.";
     dom.calibExplain.dataset.ok = "0";
+    dom.calibStatus.textContent = `Calibration running: 0/${calibration.tiles.length} scored.`;
     updateCalibrationUI();
+    setCaption("Guided calibration started; use Class, Note if needed, Submit, then Next.");
+    if (focus) {
+      focusCalibrationWorkspace();
+    }
+  }
+
+  function exitCalibFlow() {
+    if (!calibration.active) {
+      return;
+    }
+
+    calibration.active = false;
+    calibration.completed = false;
+    dom.calibExplain.textContent = "Guided calibration exited. Start again to review three gold tiles.";
+    dom.calibExplain.dataset.ok = "0";
+    dom.calibStatus.textContent = "Exited before completion.";
+    updateCalibrationUI();
+    setCaption("Guided calibration exited; tile review remains local.");
+  }
+
+  function handleCalibrationCommand() {
+    if (calibration.active) {
+      focusCalibrationWorkspace();
+      setCaption("Guided calibration is active; review Class, Note, Submit, then Next.");
+      return;
+    }
+
+    startCalibFlow({ focus: true });
   }
 
   function onCalibSubmit(label) {
@@ -1677,6 +1756,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     calibration.correct += ok ? 1 : 0;
     dom.calibExplain.textContent = ok ? "Correct: class matches expected residual." : `Expected ${truth}. ${HINTS[truth]}`;
     dom.calibExplain.dataset.ok = ok ? "1" : "0";
+    dom.calibStatus.textContent = `Step ${calibration.index + 1}/${calibration.tiles.length} submitted; score ${calibration.correct}/${calibration.index + 1}.`;
     updateCalibrationUI();
   }
 
@@ -1687,8 +1767,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
     if (calibration.index >= calibration.tiles.length - 1) {
       calibration.active = false;
-      dom.calibStep.textContent = "Done";
-      dom.calibStatus.textContent = `Score: ${calibration.correct}/3`;
+      calibration.completed = true;
+      dom.calibStatus.textContent = `Score: ${calibration.correct}/${calibration.tiles.length}`;
+      updateCalibrationUI();
+      setCaption(`Guided calibration complete; score ${calibration.correct}/${calibration.tiles.length}.`);
       return;
     }
 
@@ -1697,7 +1779,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     drawTile(state.idx);
     dom.calibExplain.textContent = "Choose class and Submit, then Next.";
     dom.calibExplain.dataset.ok = "0";
+    dom.calibStatus.textContent = `Calibration running: ${calibration.correct}/${calibration.index} scored.`;
     updateCalibrationUI();
+    focusCalibrationWorkspace();
   }
 
   function processFeedObject(object) {
@@ -2772,7 +2856,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       recalcKPIs();
       refreshValidationReportPreview();
     });
-    dom.calibBtn.addEventListener("click", startCalibFlow);
+    dom.calibBtn.addEventListener("click", handleCalibrationCommand);
     dom.expertBtn.addEventListener("click", () => {
       dom.expertDetails.open = true;
       dom.expertDetails.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2796,8 +2880,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       setCaption("Validation report preview refreshed.");
     });
     dom.runTests.addEventListener("click", runSelfChecks);
-    dom.startCalib.addEventListener("click", startCalibFlow);
+    dom.startCalib.addEventListener("click", () => startCalibFlow({ focus: true }));
     dom.nextStep.addEventListener("click", nextCalibStep);
+    dom.exitCalib.addEventListener("click", exitCalibFlow);
     dom.startFeed.addEventListener("click", handleFeedUrl);
     dom.stopFeed.addEventListener("click", stopFeed);
     dom.loadSample.addEventListener("click", () => {
@@ -2819,6 +2904,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     renderExpertPane();
     wireEvents();
     installKeyboardScope();
+    updateCalibrationUI();
     addHotkeyToggle();
     const restoredBookmark = restoreBookmarkFromHash();
     recalcKPIs();
@@ -2941,6 +3027,10 @@ function bindDom(documentRef) {
     tileObservationMarkers: get("tileObservationMarkers"),
     tileObservationStatus: get("tileObservationStatus"),
     clearObservationBtn: get("clearObservationBtn"),
+    calibrationTileBanner: get("calibrationTileBanner"),
+    calibrationTileBannerText: get("calibrationTileBannerText"),
+    reviewControls: get("reviewControls"),
+    workspaceLabels: get("workspace-labels"),
     tileSelect: get("tileSelect"),
     prevBtn: get("prevBtn"),
     nextBtn: get("nextBtn"),
@@ -3001,12 +3091,15 @@ function bindDom(documentRef) {
     kpiA11y: get("kpiA11y"),
     calibMode: get("calibMode"),
     gatePolicy: get("gatePolicy"),
+    calibrationWorkspace: get("calibrationWorkspace"),
     startCalib: get("startCalib"),
     nextStep: get("nextStep"),
+    exitCalib: get("exitCalib"),
     calibStep: get("calibStep"),
     calibHint: get("calibHint"),
     calibExplain: get("calibExplain"),
     calibStatus: get("calibStatus"),
+    calibDrawerSummary: get("calibDrawerSummary"),
     fileInput: get("fileInput"),
     feedMethod: get("feedMethod"),
     feedUrl: get("feedUrl"),

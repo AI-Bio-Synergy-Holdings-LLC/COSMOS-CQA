@@ -116,8 +116,12 @@
             <span id="tileObservationStatus" class="caption">Click a tile sector to pin an observation target before submitting a spatial note.</span>
             <button id="clearObservationBtn" type="button" class="pill compact-pill" hidden>Clear target</button>
           </div>
+          <div id="calibrationTileBanner" class="calibration-tile-banner" aria-live="polite" hidden>
+            <strong>Guided calibration active</strong>
+            <span id="calibrationTileBannerText">Step -; review the highlighted gold tile before continuing.</span>
+          </div>
         </div>
-        <div class="controls" aria-label="Tile review controls">
+        <div id="reviewControls" class="controls" aria-label="Tile review controls">
           <section class="control-group" aria-label="Tile navigation">
             <div class="group-title">Tile Navigation</div>
             <div class="row">
@@ -127,6 +131,73 @@
               <button id="nextBtn" type="button" title="Next tile (Ctrl+Right)">Next</button>
             </div>
             <div class="caption">Keys: <span class="kbd">Space</span> play, <span class="kbd">L</span> loop, <span class="kbd">S</span> submit</div>
+          </section>
+
+          <section id="workspace-labels" class="control-group label-workflow" aria-label="Label submission">
+            <div class="group-title">Label Workflow</div>
+            <div class="grid">
+              <div>
+                <label for="classSel">Class</label>
+                <select id="classSel" aria-label="Artifact class">
+                  <option value="stripe">Stripe</option>
+                  <option value="dipole">Dipole</option>
+                  <option value="ringing">Ringing</option>
+                  <option value="point">Point-source residual</option>
+                  <option value="clean">Clean</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="sevSel">Severity</label>
+                <select id="sevSel" aria-label="Severity">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+            <label for="note">Note</label>
+            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240" aria-describedby="noteTips tileObservationStatus">
+            <p id="noteTips" class="note-tips">Tip: describe what you see, where it appears, and why it matters. Example: "faint vertical band in top-left zone; more visible with gradient overlay."</p>
+            <div class="command-grid">
+              <button id="submitBtn" type="button" class="pill primary-action"><span class="cmd-icon" aria-hidden="true">&#10003;</span> Submit (S)</button>
+              <button id="undoBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#8630;</span> Undo (Ctrl+Z)</button>
+              <button id="calibBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9881;</span> Calibration (C)</button>
+              <button id="expertBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9673;</span> Expert Queue</button>
+              <button id="bookmarkBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#128279;</span> Bookmark</button>
+            </div>
+          </section>
+
+          <section id="calibrationWorkspace" class="control-group guided-calibration-workspace" aria-label="Guided calibration workspace" tabindex="-1">
+            <div class="guided-calibration-header">
+              <div>
+                <div class="group-title">Guided Calibration</div>
+                <p class="small">3-step wizard plus inline mini-quiz for gold-tile reliability checks.</p>
+              </div>
+              <span id="calibStep" class="badge calibration-step-badge" aria-live="polite"></span>
+            </div>
+            <div class="calibration-config-grid">
+              <label>Mode
+                <select id="calibMode" aria-label="Calibration mode">
+                  <option value="wizard">Wizard (1/3 to 2/3 to 3/3)</option>
+                  <option value="inline">Inline Mini-Quiz</option>
+                </select>
+              </label>
+              <label>Progress policy
+                <select id="gatePolicy" aria-label="Progress policy">
+                  <option value="learning">Learning-through-errors (allow Next)</option>
+                  <option value="gated">Gated (require correct to proceed)</option>
+                </select>
+              </label>
+            </div>
+            <div class="command-grid calibration-actions">
+              <button id="startCalib" type="button" class="pill">Start</button>
+              <button id="nextStep" type="button" class="pill" disabled>Next</button>
+              <button id="exitCalib" type="button" class="pill" disabled>Exit</button>
+            </div>
+            <div id="calibHint" class="small callout"></div>
+            <div id="calibExplain" class="small explain">Start guided calibration to review three gold tiles without leaving the tile viewer.</div>
+            <div id="calibStatus" class="small">Not started.</div>
           </section>
 
           <section class="control-group" aria-label="Overlay and palette controls">
@@ -179,40 +250,6 @@
             <p id="audioSafetyNotice" class="audio-safety-note">Optional audio starts only when Play is selected. Keep device volume low, stop if uncomfortable, and treat the sonic loop as a review aid, not a diagnostic or therapeutic signal. <a href="./safety.html">Audio safety</a></p>
           </section>
 
-          <section id="workspace-labels" class="control-group label-workflow" aria-label="Label submission">
-            <div class="group-title">Label Workflow</div>
-            <div class="grid">
-              <div>
-                <label for="classSel">Class</label>
-                <select id="classSel" aria-label="Artifact class">
-                  <option value="stripe">Stripe</option>
-                  <option value="dipole">Dipole</option>
-                  <option value="ringing">Ringing</option>
-                  <option value="point">Point-source residual</option>
-                  <option value="clean">Clean</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label for="sevSel">Severity</label>
-                <select id="sevSel" aria-label="Severity">
-                  <option value="low">Low</option>
-                  <option value="medium" selected>Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-            </div>
-            <label for="note">Note</label>
-            <input id="note" type="text" placeholder="faint verticals top-left" maxlength="240" aria-describedby="noteTips tileObservationStatus">
-            <p id="noteTips" class="note-tips">Tip: describe what you see, where it appears, and why it matters. Example: "faint vertical band in top-left zone; more visible with gradient overlay."</p>
-            <div class="command-grid">
-              <button id="submitBtn" type="button" class="pill primary-action"><span class="cmd-icon" aria-hidden="true">&#10003;</span> Submit (S)</button>
-              <button id="undoBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#8630;</span> Undo (Ctrl+Z)</button>
-              <button id="calibBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9881;</span> Calibration (C)</button>
-              <button id="expertBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#9673;</span> Expert Queue</button>
-              <button id="bookmarkBtn" type="button" class="pill"><span class="cmd-icon" aria-hidden="true">&#128279;</span> Bookmark</button>
-            </div>
-          </section>
           <div id="caption" class="caption status-caption" aria-live="polite">Ready. Use keyboard or controls; captions appear here.</div>
         </div>
       </div>
@@ -484,32 +521,8 @@
       </div>
       <div class="drawer-grid">
         <details open>
-          <summary><strong>Calibration</strong> <span class="small">3-step wizard plus inline mini-quiz</span></summary>
-          <div class="small">
-            Pick a mode. The current public demo uses three gold-tile review steps; both modes update reliability, and wizard mode shows hints plus an explainer.
-            <div class="row panel-row">
-              <label>Mode
-                <select id="calibMode" aria-label="Calibration mode">
-                  <option value="wizard">Wizard (1/3 to 2/3 to 3/3)</option>
-                  <option value="inline">Inline Mini-Quiz</option>
-                </select>
-              </label>
-              <label>Progress policy
-                <select id="gatePolicy" aria-label="Progress policy">
-                  <option value="learning">Learning-through-errors (allow Next)</option>
-                  <option value="gated">Gated (require correct to proceed)</option>
-                </select>
-              </label>
-            </div>
-          </div>
-          <div class="row">
-            <button id="startCalib" type="button" class="pill">Start</button>
-            <button id="nextStep" type="button" class="pill" disabled>Next</button>
-            <span id="calibStep" class="small"></span>
-          </div>
-          <div id="calibHint" class="small callout"></div>
-          <div id="calibExplain" class="small explain"></div>
-          <div id="calibStatus" class="small"></div>
+          <summary><strong>Calibration Summary</strong> <span class="small">guided mode lives beside labels</span></summary>
+          <div id="calibDrawerSummary" class="small inspector-status">Guided calibration is controlled from the Tile Viewer label workflow so the tile, class, note, Submit, hints, and Next stay together.</div>
         </details>
 
         <details open>

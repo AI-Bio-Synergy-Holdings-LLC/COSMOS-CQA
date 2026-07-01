@@ -13,6 +13,26 @@ import {
   progressWidth,
 } from "./fixtures/workbench.mjs";
 
+async function expectSelectorsInViewport(page, selectors) {
+  await expect
+    .poll(() =>
+      page.evaluate((targetSelectors) => {
+        return targetSelectors.map((selector) => {
+          const element = document.querySelector(selector);
+          if (!element) {
+            return { selector, visible: false };
+          }
+          const rect = element.getBoundingClientRect();
+          return {
+            selector,
+            visible: rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.right > 0 && rect.top < window.innerHeight && rect.left < window.innerWidth,
+          };
+        });
+      }, selectors),
+    )
+    .toEqual(selectors.map((selector) => ({ selector, visible: true })));
+}
+
 test("migrates metrics and chart render/update targets into browser automation", async ({ page }) => {
   annotateTargets(METRICS_CHART_TARGETS);
   await openWorkbench(page);
@@ -113,10 +133,19 @@ test("migrates calibration wizard targets into browser automation", async ({ pag
   await openWorkbench(page);
 
   await expect(page.getByText("3-step wizard plus inline mini-quiz")).toBeVisible();
-  await expect(page.getByText("three gold-tile review steps")).toBeVisible();
+  await expect(page.getByText("Start guided calibration to review three gold tiles")).toBeVisible();
+  await expect(page.locator("#nextStep")).toHaveCount(1);
+  await expect(page.locator("#calibDrawerSummary")).toContainText("controlled from the Tile Viewer label workflow");
   await page.locator("#calibBtn").click();
+  await expect(page.locator("body")).toHaveClass(/calibration-active/);
+  await expect(page.locator("#calibrationTileBanner")).toBeVisible();
+  await expect(page.locator("#calibrationTileBannerText")).toContainText("classify the gold tile");
+  await expect(page.locator("#calibrationWorkspace")).toBeFocused();
   await expect(page.locator("#calibStep")).toHaveText("1/3");
   await expect(page.locator("#calibHint")).toContainText("Hint:");
+  await expect(page.locator("#exitCalib")).toBeEnabled();
+  await expect(page.locator("#calibDrawerSummary")).toContainText("Guided calibration active in the Tile Viewer workflow");
+  await expectSelectorsInViewport(page, ["#tileCanvas", "#classSel", "#note", "#submitBtn", "#calibHint", "#calibExplain", "#nextStep"]);
 
   await openWorkbench(page);
   await page.locator("#calibMode").selectOption("inline");
@@ -142,5 +171,29 @@ test("migrates calibration wizard targets into browser automation", async ({ pag
   await openWorkbench(page);
   await blurActiveElement(page);
   await page.keyboard.press("c");
+  await expect(page.locator("#calibrationWorkspace")).toBeFocused();
   await expect(page.locator("#calibStep")).toHaveText("1/3");
+  await page.keyboard.press("c");
+  await expect(page.locator("#calibrationWorkspace")).toBeFocused();
+});
+
+test("keeps guided calibration usable at narrow widths", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openWorkbench(page);
+
+  await blurActiveElement(page);
+  await page.keyboard.press("c");
+
+  await expect(page.locator("body")).toHaveClass(/calibration-active/);
+  await expect(page.locator("#calibrationWorkspace")).toBeFocused();
+  await expect(page.locator("#calibrationTileBanner")).toBeVisible();
+  await expect(page.locator("#classSel")).toBeVisible();
+  await expect(page.locator("#note")).toBeVisible();
+  await expect(page.locator("#submitBtn")).toBeVisible();
+  await expect(page.locator("#calibHint")).toContainText("Hint:");
+  await expect(page.locator("#nextStep")).toBeEnabled();
+
+  await page.locator("#exitCalib").click();
+  await expect(page.locator("body")).not.toHaveClass(/calibration-active/);
+  await expect(page.locator("#calibDrawerSummary")).toContainText("controlled from the Tile Viewer label workflow");
 });
