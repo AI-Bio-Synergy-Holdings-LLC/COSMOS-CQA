@@ -9,9 +9,9 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 const canonicalUrl = "https://cosmos-cqa.org/";
 const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
-const releaseId = "v0.1.0-research-alpha";
+const releaseId = "v0.1.2-research-alpha";
 const zenodoConceptDoi = "10.5281/zenodo.21112698";
-const zenodoReleaseDoi = "10.5281/zenodo.21112699";
+const zenodoPriorReleaseDoi = "10.5281/zenodo.21112699";
 const publicPagePaths = [
   "demo-workbook.html",
   "research-experiment.html",
@@ -108,14 +108,12 @@ async function validateStaticContract() {
     `<meta name="twitter:image" content="${canonicalUrl}assets/social-preview.png">`,
     `"@type": "SoftwareSourceCode"`,
     `"codeRepository": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"`,
-    `"version": "0.1.1-research-alpha"`,
-    `"propertyID": "Zenodo release DOI"`,
-    `"value": "${zenodoReleaseDoi}"`,
-    `"url": "https://doi.org/${zenodoReleaseDoi}"`,
+    `"version": "0.1.2-research-alpha"`,
     `"propertyID": "Zenodo all-versions DOI"`,
     `"value": "${zenodoConceptDoi}"`,
     `"url": "https://doi.org/${zenodoConceptDoi}"`,
-    "https://zenodo.org/records/21112699",
+    `"propertyID": "Zenodo v0.1.2 release DOI status"`,
+    "pending Zenodo ingestion",
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
@@ -175,12 +173,14 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("CITATION.cff", citation, [
-    `doi: "${zenodoReleaseDoi}"`,
+    `doi: "${zenodoConceptDoi}"`,
+    'version: "0.1.2-research-alpha"',
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
     "Zenodo DOI",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
+    "pending Zenodo ingestion",
     "Canonical public portal",
     "Canonical public source repository",
     owner,
@@ -193,7 +193,7 @@ async function validateStaticContract() {
     "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "COSMOS-CQA Research-Only Public License",
     "other-closed",
-    "0.1.1-research-alpha",
+    "0.1.2-research-alpha",
   ]);
 
   assert(zenodoMetadata.upload_type === "software", ".zenodo.json must identify COSMOS-CQA as software.");
@@ -206,7 +206,9 @@ async function validateStaticContract() {
   requirePhrases("README.md", readme, [
     "zenodo.org/badge/DOI/10.5281/zenodo.21112698.svg",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
+    "v0.1.2-research-alpha",
+    "pending Zenodo ingestion",
     "docs/zenodo-registration.md",
   ]);
 
@@ -219,30 +221,37 @@ async function validateStaticContract() {
 
   requirePhrases("docs/citation.md", citationDoc, [
     `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
-    `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoReleaseDoi}\``,
+    `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoPriorReleaseDoi}\``,
+    "Zenodo `v0.1.2-research-alpha` release DOI: pending Zenodo ingestion",
     ".zenodo.json",
-    `https://doi.org/${zenodoReleaseDoi}`,
+    `https://doi.org/${zenodoPriorReleaseDoi}`,
+    `https://doi.org/${zenodoConceptDoi}`,
   ]);
 
   requirePhrases("apps/web/citation.html", citationPage, [
-    "Zenodo DOI minted.",
+    "Zenodo DOI active.",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
+    "v0.1.2-research-alpha DOI is pending Zenodo ingestion",
     "Zenodo DOI record",
   ]);
 
   requirePhrases("apps/web/docs.html", docsPage, [
     "Zenodo DOI Record",
     "Controlled Zenodo metadata",
-    "minted DOI status",
+    "active all-versions DOI",
+    "release DOI status",
     "Public Surface Hardening",
     "Repo identity, security, data, SBOM, release, and UI/UX sweep standard.",
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
-    "Zenodo DOI status: minted.",
+    "v0.1.2 Research Alpha",
+    "Zenodo DOI status: v0.1.2-research-alpha pending ingestion",
+    "v0.1.1 Research Alpha",
+    "v0.1.0 Research Alpha",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
   ]);
 
   requirePhrases("apps/web/story.html", storyPage, [
@@ -323,12 +332,14 @@ async function validateStaticContract() {
     "Zenodo Registration and DOI Record",
     "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "other-closed",
-    "The first Zenodo DOI has been minted.",
+    "The first Zenodo DOI has been minted",
     "https://zenodo.org/records/21112699",
     "https://zenodo.org/api/records/21112699",
     "Alignment Responsibilities",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
+    "v0.1.2-research-alpha",
+    "pending publication",
     "v0.1.1-research-alpha",
   ]);
 
@@ -498,23 +509,29 @@ async function validateStaticContract() {
     "v0.1.1-research-alpha.md",
     "https://zenodo.org/records/21112699",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
+    "v0.1.2-research-alpha",
+    "pending Zenodo ingestion",
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
-    "Zenodo DOI status: minted.",
+    "Zenodo DOI status: active.",
   ]);
 
   requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
-    "Zenodo DOI: not minted for this release.",
-    "first Zenodo DOI is planned for the next clean public research alpha release",
+    "COSMOS-CQA v0.1.2 Research Alpha",
+    "Zenodo status: pending ingestion from the GitHub release.",
+    `${releaseId}-validation-report.json`,
+    `${releaseId}-sbom.json`,
+    "The live workbench runtime Self-Checks passed `8/8`.",
+    "research-only public use",
   ]);
 
   requirePhrases("docs/releases/v0.1.1-research-alpha.md", await readText("docs/releases/v0.1.1-research-alpha.md"), [
     "COSMOS-CQA v0.1.1 Research Alpha",
     "Zenodo record: [https://zenodo.org/records/21112699]",
     zenodoConceptDoi,
-    zenodoReleaseDoi,
+    zenodoPriorReleaseDoi,
     "other-closed",
     "research-only public use",
   ]);
