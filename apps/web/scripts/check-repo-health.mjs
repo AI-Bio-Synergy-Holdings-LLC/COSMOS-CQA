@@ -25,7 +25,9 @@ const guardrails = [
       "AI-Bio Synergy Holdings LLC",
       "Research-Only Public License",
       "All rights not expressly granted",
+      "COSMOS-CQA Research Edition",
     ],
+    forbiddenPhrases: ["PRIMEFLOW"],
   },
   {
     path: "OWNERSHIP_AND_USE.md",
@@ -33,8 +35,10 @@ const guardrails = [
     phrases: [
       "owned and stewarded by AI-Bio Synergy Holdings LLC",
       "retains all rights and intellectual property",
+      "COSMOS-CQA Research Edition",
       "separate written agreement",
     ],
+    forbiddenPhrases: ["PRIMEFLOW"],
   },
   {
     path: "GOVERNANCE.md",
@@ -96,7 +100,18 @@ const guardrails = [
   {
     path: "docs/release-checklist.md",
     label: "release checklist",
-    phrases: ["License, notice, citation, and ownership docs", "SBOM", "known limitations"],
+    phrases: ["License, notice, citation, and ownership docs", "SBOM", "CodeQL", "known limitations"],
+  },
+  {
+    path: "docs/public-surface-hardening.md",
+    label: "public surface hardening",
+    phrases: [
+      "Public Surface Hardening",
+      "GitHub CodeQL, Dependabot, and secret-scanning",
+      "npm --prefix apps/web sbom --sbom-format cyclonedx --sbom-type application --json",
+      "research-only",
+      "Portal And Demo Polish",
+    ],
   },
   {
     path: "docs/project-notes.md",
@@ -137,6 +152,12 @@ const guardrails = [
       "COSMOS-CQA Research-Only Public License",
       "AI-Bio Synergy Holdings LLC",
     ],
+  },
+  {
+    path: "apps/web/copyright.html",
+    label: "copyright page",
+    phrases: ["COSMOS-CQA Research Edition", "AI-Bio Synergy Holdings LLC", "All rights not expressly granted"],
+    forbiddenPhrases: ["PRIMEFLOW"],
   },
   {
     path: ".github/ISSUE_TEMPLATE/safety_report.md",
@@ -183,6 +204,12 @@ for (const guardrail of guardrails) {
   for (const phrase of guardrail.phrases) {
     if (!normalizedText.includes(normalize(phrase))) {
       failures.push(`${guardrail.path}: missing guardrail phrase "${phrase}"`);
+    }
+  }
+
+  for (const phrase of guardrail.forbiddenPhrases || []) {
+    if (normalizedText.includes(normalize(phrase))) {
+      failures.push(`${guardrail.path}: contains forbidden public-surface phrase "${phrase}"`);
     }
   }
 }

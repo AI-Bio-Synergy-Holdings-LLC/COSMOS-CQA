@@ -1428,6 +1428,13 @@ details[open] summary {
     grid-template-columns: 1fr;
   }
 
+  .research-inspector {
+    max-height: none;
+    overflow: visible;
+    position: static;
+    top: auto;
+  }
+
   .panel-header {
     align-items: flex-start;
     flex-direction: column;

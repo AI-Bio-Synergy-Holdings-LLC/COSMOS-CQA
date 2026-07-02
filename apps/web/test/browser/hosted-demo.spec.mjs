@@ -65,3 +65,37 @@ test("hosted demo path preloads the sample Core Pack with public boundaries", as
     ]),
   );
 });
+
+test("hosted demo deep link settles on the Core Pack lane at narrow widths", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/workbench.html?demo=core-pack#workspace-core-pack", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.COSMOS_CQA_APP?.state?.corePacks?.length === 1);
+  await page.waitForFunction(() => {
+    const target = document.querySelector("#workspace-core-pack");
+    if (!target) {
+      return false;
+    }
+    const top = target.getBoundingClientRect().top;
+    return top >= 80 && top <= 120;
+  });
+
+  await expect(page.locator("#workspace-core-pack")).toContainText("Core Pack Intake");
+  await expect(page.locator("#workspace-core-pack")).toContainText("corepack_demo-v0.1.0-intake");
+
+  const layout = await page.evaluate(() => {
+    const inspectorStyle = getComputedStyle(document.querySelector(".research-inspector"));
+    return {
+      horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+      inspectorPosition: inspectorStyle.position,
+      inspectorOverflow: inspectorStyle.overflowY,
+      inspectorMaxHeight: inspectorStyle.maxHeight,
+    };
+  });
+
+  expect(layout).toEqual({
+    horizontalOverflow: false,
+    inspectorPosition: "static",
+    inspectorOverflow: "visible",
+    inspectorMaxHeight: "none",
+  });
+});

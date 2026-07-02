@@ -60,6 +60,12 @@ const checks = [
     status: "pass",
     detail: `Release SBOM artifact generated at docs/releases/${releaseId}-sbom.json.`,
   },
+  {
+    name: "canonical public URL",
+    status: "pass",
+    detail:
+      "Canonical public project identity is https://cosmos-cqa.org; cosmoscqa.org, cosmos-cqa.com, and cosmoscqa.com are redirect domains.",
+  },
 ];
 
 const validationReport = createValidationReport({

@@ -88,7 +88,7 @@ export function truthTagDisplay(config = {}) {
 
 export function createCosmosWorkbench({ documentRef = document, windowRef = window, tiles, state, config }) {
   const dom = bindDom(documentRef);
-  const ctx = dom.tileCanvas.getContext("2d");
+  const ctx = dom.tileCanvas.getContext("2d", { willReadFrequently: true });
   const build = createBuildInfo(config);
   let feedWS = null;
   let feedTimer = null;
@@ -113,7 +113,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function populateTileSelect() {
-    dom.tileSelect.innerHTML = "";
+    dom.tileSelect.replaceChildren();
     tiles.forEach((tile, index) => {
       const option = documentRef.createElement("option");
       option.value = String(index);
@@ -476,13 +476,15 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       button.type = "button";
       button.className = observation.observation_id === state.selectedObservationId ? "observation-review-row active" : "observation-review-row";
       button.dataset.observationId = observation.observation_id;
-      button.innerHTML = `
-        <strong>${escapeHtml(observation.tile_id)} - ${escapeHtml(observation.zone_label)}</strong>
-        <span>${escapeHtml(observation.clazz)} / ${escapeHtml(observation.severity)} - x=${observation.x_norm}, y=${observation.y_norm}</span>
-        <span>rev ${observation.review_revision || 0}; ${escapeHtml(observation.review_status || "pending-review")}; conf ${formatConfidence(
-          observation.reviewer_confidence ?? 0.5,
-        )}; ${escapeHtml(truncateText(observation.note, 82))}</span>
-      `;
+      appendStackedText(button, [
+        { text: `${observation.tile_id} - ${observation.zone_label}`, strong: true },
+        { text: `${observation.clazz} / ${observation.severity} - x=${observation.x_norm}, y=${observation.y_norm}` },
+        {
+          text: `rev ${observation.review_revision || 0}; ${observation.review_status || "pending-review"}; conf ${formatConfidence(
+            observation.reviewer_confidence ?? 0.5,
+          )}; ${truncateText(observation.note, 82)}`,
+        },
+      ]);
       button.addEventListener("click", () => selectObservationForReview(observation.observation_id));
       dom.observationReviewList.appendChild(button);
     }
@@ -521,13 +523,15 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       button.type = "button";
       button.className = observation.observation_id === state.selectedObservationId ? "observation-review-row active" : "observation-review-row";
       button.dataset.adjudicationObservationId = observation.observation_id;
-      button.innerHTML = `
-        <strong>${escapeHtml(observation.tile_id)} - ${escapeHtml(observation.zone_label)}</strong>
-        <span>${escapeHtml(observation.clazz)} / ${escapeHtml(observation.severity)}; confidence ${formatConfidence(
-          observation.reviewer_confidence ?? 0.5,
-        )}</span>
-        <span>${escapeHtml(observation.consensus_status || "needs-adjudication")}; ${escapeHtml(truncateText(observation.note, 74))}</span>
-      `;
+      appendStackedText(button, [
+        { text: `${observation.tile_id} - ${observation.zone_label}`, strong: true },
+        {
+          text: `${observation.clazz} / ${observation.severity}; confidence ${formatConfidence(
+            observation.reviewer_confidence ?? 0.5,
+          )}`,
+        },
+        { text: `${observation.consensus_status || "needs-adjudication"}; ${truncateText(observation.note, 74)}` },
+      ]);
       button.addEventListener("click", () => selectObservationForReview(observation.observation_id));
       dom.adjudicationQueueList.appendChild(button);
     }
@@ -1336,6 +1340,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     container.appendChild(empty);
   }
 
+  function appendStackedText(container, rows) {
+    for (const row of rows) {
+      const node = documentRef.createElement(row.strong ? "strong" : "span");
+      node.textContent = row.text || "";
+      container.appendChild(node);
+    }
+  }
+
   function updateChart(chartRef, id, configValue) {
     const canvas = documentRef.getElementById(id);
     if (!windowRef.Chart) {
@@ -1586,24 +1598,29 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       return;
     }
 
-    dom.expertPane.innerHTML = "";
+    dom.expertPane.replaceChildren();
 
     recentScores.forEach((scoreEntry, index) => {
       const wrapper = documentRef.createElement("div");
       wrapper.style.borderTop = "1px solid #24314d";
       wrapper.style.padding = "8px 0";
-      wrapper.innerHTML = `
-        <div><strong>${scoreEntry.tile_id}</strong> - residual: ${scoreEntry.score.toFixed(2)} - truth residual: ${scoreEntry.truth}</div>
-        <div class="row">
-          <button type="button" data-i="${index}" data-d="confirm">Confirm</button>
-          <button type="button" data-i="${index}" data-d="override">Override</button>
-          <select data-i="${index}" data-c="conf">
-            <option value="0.6">0.6</option>
-            <option value="0.75" selected>0.75</option>
-            <option value="0.9">0.9</option>
-          </select>
-          <input data-i="${index}" data-c="note" placeholder="expert note" class="small">
-        </div>`;
+      const scoreLine = documentRef.createElement("div");
+      const scoreTile = documentRef.createElement("strong");
+      scoreTile.textContent = scoreEntry.tile_id;
+      scoreLine.append(
+        scoreTile,
+        documentRef.createTextNode(` - residual: ${scoreEntry.score.toFixed(2)} - truth residual: ${scoreEntry.truth}`),
+      );
+
+      const controls = documentRef.createElement("div");
+      controls.className = "row";
+      controls.append(
+        createExpertButton("Confirm", index, "confirm"),
+        createExpertButton("Override", index, "override"),
+        createExpertConfidenceSelect(index),
+        createExpertNoteInput(index),
+      );
+      wrapper.append(scoreLine, controls);
       dom.expertPane.appendChild(wrapper);
     });
 
@@ -1634,6 +1651,38 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         recalcKPIs();
       });
     });
+  }
+
+  function createExpertButton(label, index, decision) {
+    const button = documentRef.createElement("button");
+    button.type = "button";
+    button.dataset.i = String(index);
+    button.dataset.d = decision;
+    button.textContent = label;
+    return button;
+  }
+
+  function createExpertConfidenceSelect(index) {
+    const select = documentRef.createElement("select");
+    select.dataset.i = String(index);
+    select.dataset.c = "conf";
+    for (const value of ["0.6", "0.75", "0.9"]) {
+      const option = documentRef.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      option.selected = value === "0.75";
+      select.appendChild(option);
+    }
+    return select;
+  }
+
+  function createExpertNoteInput(index) {
+    const input = documentRef.createElement("input");
+    input.dataset.i = String(index);
+    input.dataset.c = "note";
+    input.placeholder = "expert note";
+    input.className = "small";
+    return input;
   }
 
   function pickGold(count) {
@@ -2007,7 +2056,13 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function scrollToDemoSection() {
     const hashId = windowRef.location.hash && !windowRef.location.hash.startsWith("#state=") ? windowRef.location.hash.slice(1) : "";
     const target = documentRef.getElementById(hashId || "workspace-core-pack");
-    target?.scrollIntoView({ behavior: "auto", block: "start" });
+    if (!target) {
+      return;
+    }
+
+    const scrollTargetIntoView = () => target.scrollIntoView({ behavior: "auto", block: "start" });
+    scrollTargetIntoView();
+    windowRef.requestAnimationFrame?.(() => windowRef.requestAnimationFrame?.(scrollTargetIntoView));
   }
 
   function startWs(url) {
@@ -3179,15 +3234,6 @@ function safeId(value) {
 function truncateText(value, maxLength) {
   const text = String(value || "");
   return text.length > maxLength ? `${text.slice(0, Math.max(0, maxLength - 3))}...` : text;
-}
-
-function escapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function cloneJson(value) {

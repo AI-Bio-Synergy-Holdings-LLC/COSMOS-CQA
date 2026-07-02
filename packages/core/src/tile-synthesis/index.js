@@ -209,7 +209,7 @@ export function canvasFromGrayscalePixels(pixels, size, documentRef = document) 
   const canvas = documentRef.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const image = ctx.createImageData(size, size);
 
   for (let i = 0, j = 0; i < image.data.length; i += 4, j += 1) {
@@ -228,7 +228,7 @@ function canvasToGrayscalePixels(source, targetSize = source.width) {
   const canvas = document.createElement("canvas");
   canvas.width = targetSize;
   canvas.height = targetSize;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
   ctx.drawImage(source, 0, 0, targetSize, targetSize);
   const image = ctx.getImageData(0, 0, targetSize, targetSize).data;
   const pixels = new Uint8ClampedArray(targetSize * targetSize);

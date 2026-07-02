@@ -63,6 +63,7 @@ async function validateStaticContract() {
   const quickstart = await readText("docs/quickstart.md");
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
+  const publicSurfaceHardeningDoc = await readText("docs/public-surface-hardening.md");
   const selectiveAccessDoc = await readText("docs/selective-access-application.md");
   const zenodoDoc = await readText("docs/zenodo-registration.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
@@ -234,6 +235,8 @@ async function validateStaticContract() {
     "Zenodo DOI Record",
     "Controlled Zenodo metadata",
     "minted DOI status",
+    "Public Surface Hardening",
+    "Repo identity, security, data, SBOM, release, and UI/UX sweep standard.",
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
@@ -297,6 +300,15 @@ async function validateStaticContract() {
     "docs/public-safety.md",
     "selective-access application",
     "does not collect observations",
+  ]);
+
+  requirePhrases("docs/public-surface-hardening.md", publicSurfaceHardeningDoc, [
+    "Public Surface Hardening",
+    "COSMOS-CQA Research Edition",
+    "GitHub CodeQL, Dependabot, and secret-scanning",
+    "npm --prefix apps/web sbom --sbom-format cyclonedx --sbom-type application --json",
+    "Portal And Demo Polish",
+    "Pass Criteria",
   ]);
 
   requirePhrases("docs/selective-access-application.md", selectiveAccessDoc, [

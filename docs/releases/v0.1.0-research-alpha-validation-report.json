@@ -7,6 +7,12 @@
     "sha": "source-split",
     "dev": false
   },
+  "license": "Research-only public use; all other rights reserved.",
+  "limitations": [
+    "Validation reports are research artifacts, not production decision-system certifications.",
+    "Diagnostic entries may include caveated placeholders and must not be treated as validated scientific results.",
+    "External datasets, SBOM references, and source artifacts remain subject to their own terms and provenance limits."
+  ],
   "summary": {
     "label_count": 1,
     "feed_error_count": 0,
