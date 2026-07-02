@@ -69,7 +69,7 @@ const tile = {
     tile_id: "tile_001",
     dataset: "DEMO_SIM_T",
     release: "v0",
-    doi: "doi:10.0000/demo",
+    doi: "",
     url: "https://example.test/tile_001.png",
     truth: { class: "stripe", severity: "medium" },
     checksum: "sha256:test-001",
@@ -508,8 +508,8 @@ test("tile passport and core pack manifests satisfy evidence contracts", () => {
   assertContract("sbomReference", sbomReference);
   assertContract("corePackManifest", {
     schema_version: CONTRACT_SCHEMA_VERSION,
-    manifest_id: "corepack_demo-v0.1.0",
-    name: "COSMOS-CQA Demo Core Pack",
+    manifest_id: "corepack_synthetic-contract-v0.1.1",
+    name: "COSMOS-CQA Synthetic Contract Core Pack Fixture",
     version: "v0.1.0-research-alpha",
     generated_at: generatedAt,
     license: "Research-only public use; all other rights reserved.",

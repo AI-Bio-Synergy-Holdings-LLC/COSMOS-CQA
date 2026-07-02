@@ -38,6 +38,6 @@ npm --prefix apps/web run check
 
 ## Guarantee
 
-For a given fixture seed, schema version, sample Core Pack manifest, research session fixture, and module version, the replay suite must produce the same tile digest, sidecar digest, bookmark state, CSV export, Core Pack validation summary, diagnostic placeholder outputs, report summary, session reload plan, and public/dev visibility policy.
+For a given fixture seed, schema version, synthetic Core Pack fixture manifest, research session fixture, and module version, the replay suite must produce the same tile digest, sidecar digest, bookmark state, CSV export, Core Pack validation summary, diagnostic placeholder outputs, report summary, session reload plan, and public/dev visibility policy.
 
 Any intentional change to these outputs should update the fixture and explain the reason in the commit or release notes.

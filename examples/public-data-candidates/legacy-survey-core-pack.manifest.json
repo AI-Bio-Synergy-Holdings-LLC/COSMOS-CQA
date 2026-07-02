@@ -1,0 +1,134 @@
+{
+  "schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "manifest_id": "corepack_public-data-legacy-survey-candidate-v0.1.0",
+  "name": "COSMOS-CQA Public Data Candidate - DESI Legacy Imaging Surveys Cutouts",
+  "version": "v0.1.1-research-alpha",
+  "generated_at": "2026-07-02T00:00:00.000Z",
+  "license": "Research-only public use in COSMOS-CQA; upstream public data services retain their own terms and citation expectations.",
+  "steward": "AI-Bio Synergy Holdings LLC",
+  "tiles": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "tile_id": "public_legacy_survey_cutout_1547709_464537",
+      "dataset": "DESI_LEGACY_IMAGING_SURVEYS_DR6_CANDIDATE",
+      "release": "dr6-candidate-reference",
+      "band": "grz-composite",
+      "ra": 154.7709,
+      "dec": 46.4537,
+      "checksum": "sha256:external-legacy-survey-cutout-1547709-464537",
+      "truth": null,
+      "review_prompt": "Candidate public-source reference for inspecting coadd/model/residual cutout context. Treat observations as research workflow notes only; no truth label or validated scientific interpretation is provided.",
+      "image_refs": [
+        {
+          "role": "jpeg-cutout-coadd",
+          "format": "image/jpeg",
+          "url": "https://www.legacysurvey.org/viewer/jpeg-cutout?ra=154.7709&dec=46.4537&layer=mzls+bass-dr6&pixscale=0.262&size=256",
+          "source": "DESI Legacy Imaging Surveys Sky Viewer",
+          "citation": "DESI Legacy Imaging Surveys public cutout service and DR6 documentation.",
+          "access_policy": "External public reference URL only; not required for hosted demo execution.",
+          "notes": "Do not make the hosted demo depend on this third-party endpoint until CORS, rate limits, cache policy, attribution, and redistribution terms are reviewed."
+        },
+        {
+          "role": "jpeg-cutout-residual",
+          "format": "image/jpeg",
+          "url": "https://www.legacysurvey.org/viewer/jpeg-cutout?ra=154.7709&dec=46.4537&layer=mzls+bass-dr6-resid&pixscale=0.262&size=256",
+          "source": "DESI Legacy Imaging Surveys Sky Viewer",
+          "citation": "DESI Legacy Imaging Surveys public residual/model cutout documentation.",
+          "access_policy": "External public reference URL only; not required for hosted demo execution.",
+          "notes": "Residual imagery is a candidate review aid, not a COSMOS-CQA truth label or diagnostic output."
+        }
+      ],
+      "provenance": {
+        "source": "DESI Legacy Imaging Surveys public cutout reference",
+        "source_url": "https://www.legacysurvey.org/dr6/description/",
+        "generated_at": "2026-07-02T00:00:00.000Z",
+        "notes": "Candidate manifest for future public-data credibility work. The hosted demo does not fetch these external images by default."
+      },
+      "sidecars": {
+        "audio_map": "not-enabled-for-external-reference",
+        "overlay_modes": ["none", "gradient", "rings"],
+        "palette_modes": ["gray", "viridis", "cividis"],
+        "metrics": ["public_source_reference", "provenance_review", "rights_review_required"]
+      }
+    },
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "tile_id": "public_legacy_survey_cutout_1800000_300000",
+      "dataset": "DESI_LEGACY_IMAGING_SURVEYS_DR6_CANDIDATE",
+      "release": "dr6-candidate-reference",
+      "band": "grz-composite",
+      "ra": 180,
+      "dec": 30,
+      "checksum": "sha256:external-legacy-survey-cutout-1800000-300000",
+      "truth": null,
+      "review_prompt": "Candidate public-source reference for testing how a future Core Pack might preserve cutout URLs, coordinates, provenance, and note-only observation prompts without bundling third-party data.",
+      "image_refs": [
+        {
+          "role": "jpeg-cutout-coadd",
+          "format": "image/jpeg",
+          "url": "https://www.legacysurvey.org/viewer/jpeg-cutout?ra=180.0000&dec=30.0000&layer=mzls+bass-dr6&pixscale=0.262&size=256",
+          "source": "DESI Legacy Imaging Surveys Sky Viewer",
+          "citation": "DESI Legacy Imaging Surveys public cutout service and DR6 documentation.",
+          "access_policy": "External public reference URL only; not required for hosted demo execution.",
+          "notes": "Use as a source-reference candidate only until public hosting, caching, attribution, and rate-limit behavior are reviewed."
+        },
+        {
+          "role": "jpeg-cutout-residual",
+          "format": "image/jpeg",
+          "url": "https://www.legacysurvey.org/viewer/jpeg-cutout?ra=180.0000&dec=30.0000&layer=mzls+bass-dr6-resid&pixscale=0.262&size=256",
+          "source": "DESI Legacy Imaging Surveys Sky Viewer",
+          "citation": "DESI Legacy Imaging Surveys public residual/model cutout documentation.",
+          "access_policy": "External public reference URL only; not required for hosted demo execution.",
+          "notes": "Residual imagery is a candidate review aid, not a COSMOS-CQA truth label or diagnostic output."
+        }
+      ],
+      "provenance": {
+        "source": "DESI Legacy Imaging Surveys public cutout reference",
+        "source_url": "https://www.legacysurvey.org/dr6/description/",
+        "generated_at": "2026-07-02T00:00:00.000Z",
+        "notes": "Candidate manifest for future public-data credibility work. The hosted demo does not fetch these external images by default."
+      },
+      "sidecars": {
+        "audio_map": "not-enabled-for-external-reference",
+        "overlay_modes": ["none", "gradient", "rings"],
+        "palette_modes": ["gray", "viridis", "cividis"],
+        "metrics": ["public_source_reference", "provenance_review", "rights_review_required"]
+      }
+    }
+  ],
+  "sbom_refs": [
+    {
+      "schema_version": "cosmos-cqa.contracts.v0.1.0",
+      "sbom_id": "sbom_v0.1.0-research-alpha",
+      "format": "CycloneDX",
+      "spec_version": "1.4",
+      "path": "docs/releases/v0.1.0-research-alpha-sbom.json",
+      "checksum": "sha256:bf9851b36a7d88dfe0874745b11f7f4d736a665161a0fa46d37b0a5541caddf9",
+      "generated_at": "2026-06-28T00:00:00.000Z",
+      "component_name": "COSMOS-CQA Research Workbench"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "kind": "archive-original-materials-manifest",
+      "path": "archive/original-materials/MANIFEST.md"
+    },
+    {
+      "kind": "core-pack-import-checklist",
+      "path": "docs/core-pack-import-checklist.md"
+    },
+    {
+      "kind": "public-data-source-assessment",
+      "path": "docs/public-data-sources.md"
+    },
+    {
+      "kind": "legacy-survey-dr6-description",
+      "path": "https://www.legacysurvey.org/dr6/description/"
+    },
+    {
+      "kind": "legacy-survey-viewer-tips",
+      "path": "https://www.legacysurvey.org/svtips/"
+    }
+  ],
+  "diagnostic_refs": []
+}

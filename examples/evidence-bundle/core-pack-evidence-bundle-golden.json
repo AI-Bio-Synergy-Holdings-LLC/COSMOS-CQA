@@ -2,8 +2,8 @@
   "schema_version": "cosmos-cqa.evidence-bundle-golden.v0.1.0",
   "source": "examples/core-pack/core-pack.manifest.json",
   "generated_at": "2026-06-29T00:00:00.000Z",
-  "serialized_sha256": "2bdd09028fdffb479b5c3a3f9cbbfb4f8e80316ad2063561d1ba9c3b2920f73e",
-  "serialized_bytes": 17165,
+  "serialized_sha256": "58b2ed6911897d10d9ac12a03c66d01c2b9d89deb5a3c16bd97b70a916c7b13d",
+  "serialized_bytes": 17343,
   "bundle_id": "bundle_core_pack_evidence_bundle",
   "session_id": "session_core_pack_evidence_bundle",
   "steward": "AI-Bio Synergy Holdings LLC",
@@ -17,7 +17,7 @@
     "provenance_hash_count": 2,
     "sbom_ref_count": 1
   },
-  "artifact_id": "artifact_core-pack_e6c04cdf34a231b1",
+  "artifact_id": "artifact_core-pack_84f28183f3aa4fb5",
   "report_id": "rpt_core_pack_evidence_bundle",
   "diagnostic_ids": [
     "diag_kappa_y_crosscheck",

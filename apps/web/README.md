@@ -66,7 +66,7 @@ The maintained demo workbench is served at:
 http://localhost:4173/workbench.html
 ```
 
-The hosted public demo workflow preloads the sample Core Pack at:
+The hosted public demo workflow preloads the synthetic Core Pack fixture at:
 
 ```text
 http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack

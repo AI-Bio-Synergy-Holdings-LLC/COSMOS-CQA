@@ -58,13 +58,13 @@ test("migrates SBOM download targets into browser automation", async ({ page }) 
         diagnostic_id: "diag_kappa_y_crosscheck",
         status: "placeholder",
         caveat: expect.stringContaining("not a validated cosmology diagnostic"),
-        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack manifest")]),
+        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack contract fixture")]),
       }),
       expect.objectContaining({
         diagnostic_id: "diag_eb_residual_placeholder",
         status: "placeholder",
         caveat: expect.stringContaining("not a validated weak-lensing diagnostic"),
-        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack manifest")]),
+        limitations: expect.arrayContaining([expect.stringContaining("synthetic Core Pack contract fixture")]),
       }),
     ]),
   );

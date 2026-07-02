@@ -22,7 +22,7 @@ const manifest = JSON.parse(
   await readFile(new URL("../../../examples/core-pack/core-pack.manifest.json", import.meta.url), "utf8"),
 );
 
-test("sample Core Pack manifest satisfies schema and intake validation", () => {
+test("synthetic Core Pack fixture manifest satisfies schema and intake validation", () => {
   assertContract("corePackManifest", manifest);
   assertCorePackManifest(manifest);
 
@@ -30,12 +30,28 @@ test("sample Core Pack manifest satisfies schema and intake validation", () => {
   assert.equal(result.valid, true);
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.summary, {
-    manifest_id: "corepack_demo-v0.1.0-intake",
+    manifest_id: "corepack_synthetic-contract-v0.1.1",
     tile_count: 2,
     sbom_ref_count: 1,
     evidence_ref_count: 5,
     diagnostic_ref_count: 2,
   });
+});
+
+test("public data candidate manifest is source-linked without live demo dependency", async () => {
+  const candidate = JSON.parse(
+    await readFile(new URL("../../../examples/public-data-candidates/legacy-survey-core-pack.manifest.json", import.meta.url), "utf8"),
+  );
+
+  assertContract("corePackManifest", candidate);
+  assertCorePackManifest(candidate);
+  assert.equal(candidate.manifest_id, "corepack_public-data-legacy-survey-candidate-v0.1.0");
+  assert.equal(candidate.diagnostic_refs.length, 0);
+  assert.ok(candidate.evidence_refs.some((ref) => ref.kind === "public-data-source-assessment"));
+  assert.ok(candidate.tiles.every((tile) => tile.truth === null));
+  assert.ok(candidate.tiles.every((tile) => tile.review_prompt.includes("Candidate public-source reference")));
+  assert.ok(candidate.tiles.every((tile) => tile.image_refs.length >= 2));
+  assert.ok(candidate.tiles.every((tile) => tile.image_refs.every((ref) => ref.access_policy.includes("not required for hosted demo"))));
 });
 
 test("diagnostic references remain concept-only and caveated", () => {
@@ -96,14 +112,14 @@ test("research artifact loader classifies feed payloads with contract errors", a
   const feedText = JSON.stringify([
     {
       type: "expert",
-      tile_id: "demo_corepack_tile_001",
+      tile_id: "synthetic_residual_stripe_001",
       expert_class: "residual",
       expert_confidence: 0.9,
       latency_s: 1.25,
     },
     {
       type: "expert",
-      tile_id: "demo_corepack_tile_002",
+      tile_id: "synthetic_clean_control_002",
       expert_class: "residual",
       expert_confidence: 1.5,
       latency_s: 1,

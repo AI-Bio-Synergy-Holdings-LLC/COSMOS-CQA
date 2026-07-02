@@ -31,7 +31,7 @@ The hosted public demo path is:
 https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
 ```
 
-This path opens the maintained browser workbench, auto-loads the public sample Core Pack, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
+This path opens the maintained browser workbench, auto-loads the synthetic contract Core Pack fixture, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
 
 The portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions. Public copy must keep that notice narrow: the hosted demo remains static, local-first, account-free, and does not collect observations, authenticate reviewers, assign queues, or transmit review packets.
 
@@ -83,7 +83,7 @@ Then open:
 http://localhost:4173/
 ```
 
-The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo sample loading, and validation report JSON export.
+The browser regression suite includes portal checks for canonical identity, navigation, workbench handoff, canvas rendering, narrow-screen overflow, hosted demo synthetic fixture loading, and validation report JSON export.
 
 ## SEO, Social Preview, Accessibility, and Usability Baseline
 

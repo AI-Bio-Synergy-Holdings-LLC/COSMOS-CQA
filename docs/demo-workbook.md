@@ -1,6 +1,6 @@
 # COSMOS-CQA Demo Workbook
 
-This workbook is the practical public walkthrough for the hosted COSMOS-CQA sample Core Pack workflow.
+This workbook is the practical public walkthrough for the hosted COSMOS-CQA synthetic Core Pack fixture workflow.
 
 COSMOS-CQA is available for research-only public use under the project-specific COSMOS-CQA Research-Only Public License. It is not an OSI open-source release, not a production decision system, and all rights not expressly granted are reserved by AI-Bio Synergy Holdings LLC.
 
@@ -12,7 +12,7 @@ Open:
 https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
 ```
 
-The hosted demo loads the public sample Core Pack, keeps public truth labels hidden by default, prepares the validation report preview, and exposes Core Pack, report, evidence, and provenance inspection panels.
+The hosted demo loads the synthetic contract Core Pack fixture, keeps public truth labels hidden by default, prepares the validation report preview, and exposes Core Pack, report, evidence, and provenance inspection panels.
 
 A separate COSMOS-CQA application is planned for verified researchers and institutions. This workbook covers only the static local-first public demo; it does not describe active onboarding, authenticated review, server submission, or institutional access.
 
@@ -30,7 +30,7 @@ https://cosmos-cqa.org/safety.html
 
 ## Walkthrough
 
-1. Open the hosted demo and confirm the banner reports that the sample Core Pack is ready.
+1. Open the hosted demo and confirm the banner reports that the synthetic contract Core Pack fixture is ready.
 2. Inspect Core Pack intake: manifest summary, tile passports, evidence references, SBOM references, and diagnostic references.
 3. Review the first tile, change one overlay and one palette, and confirm the caption and tile passport remain readable.
 4. Use Zoom, Pan, Rotate, and Reset once; confirm the tile remains targetable and the viewer status returns to 100 percent zoom, 0 degree rotation, and pan 0, 0 after reset.
@@ -81,6 +81,7 @@ npm --prefix apps/web run check
 ## Public Boundaries
 
 - Public truth labels remain hidden in the visible workflow and public DOM text.
+- The default fixture is synthetic evidence-plumbing material, not public observational data; public-data source candidates are documented separately in `docs/public-data-sources.md`.
 - Diagnostic placeholders are caveated research concepts, not validated scientific results.
 - Optional audio is user initiated, loop-off by default, and bounded by shared sidecar constants, but device volume and individual sensitivity remain outside browser control.
 - The static portal has no account system or server-side workspace.

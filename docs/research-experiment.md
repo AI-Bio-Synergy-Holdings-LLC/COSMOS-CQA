@@ -10,7 +10,7 @@ The modeled experiment is a research-infrastructure experiment:
 
 Can visual tiles, sidecar views, spatial tile observations, observation review ledgers, labels, evidence bundles, provenance hashes, and deterministic replay help researchers and public contributors review artifact candidates in a way that is auditable after the session ends?
 
-The current public sample uses synthetic Core Pack material to exercise this workflow safely. It models a quality-assurance surface that could support future artifact review for public cosmology data cultures around CMB maps, weak-lensing products, survey images, and catalog release evidence.
+The current hosted demo uses a synthetic Core Pack contract fixture to exercise this workflow safely. It models a quality-assurance surface that could support future artifact review for public cosmology data cultures around CMB maps, weak-lensing products, survey images, and catalog release evidence. Public-source candidates are tracked separately until rights, attribution, CORS, rate-limit, and replay requirements are reviewed.
 
 ## What Does The Current Prototype Demonstrate?
 
@@ -69,7 +69,7 @@ Open research benefits when citizen science participation is paired with contrac
 - The current public demo does not validate a cosmology diagnostic or publish scientific results.
 - The sonic loop does not classify artifacts, discover signals, or replace visual/statistical review.
 - The sonic loop is not a therapeutic, medical, or biologically active sound-frequency system.
-- The sample Core Pack is synthetic demonstration material, not a restricted third-party science dataset.
+- The synthetic Core Pack fixture is evidence-plumbing material, not public observational data or a restricted third-party science dataset.
 - Public mode hides truth labels; dev truth display is only for explicit local development review.
 - COSMOS-CQA is research-only public infrastructure, not an OSI open-source release and not a production decision system.
 

@@ -44,7 +44,7 @@ The HTTP mode checks:
 - `robots.txt`, `sitemap.xml`, favicon, social preview source, and social preview assets are served from the static root;
 - public resource pages load from the static root;
 - portal and workbench modules are reachable;
-- sample Core Pack manifest is reachable;
+- synthetic Core Pack fixture manifest is reachable;
 - shared `packages/schemas` and `packages/core` browser entrypoints are reachable.
 - optional audio sonification remains user initiated, loop-off by default, visibly caveated, bounded by shared sidecar constants, and described without therapeutic, medical, diagnostic, or scientific-result claims.
 - public data-use copy remains local-first, non-confidential, and explicit that GitHub issues and pull requests are public by default.
@@ -66,7 +66,7 @@ That command writes `apps/web/dist-pages` with:
 - all top-level `apps/web/*.html` files, `apps/web/CNAME`, and `apps/web/src/` as the public site root;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, and `apps/web/assets/` for crawl and social preview metadata;
 - `packages/` so browser ES module imports resolve on GitHub Pages;
-- `examples/` so the hosted sample Core Pack workflow can load public sample manifests;
+- `examples/` so the hosted synthetic Core Pack fixture and public-data candidate manifests are available to the static portal;
 - `.nojekyll` so GitHub Pages serves static module paths without Jekyll processing.
 
 The Pages workflow uses official GitHub Pages Actions: `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`. It uploads `apps/web/dist-pages`, deploys to the `github-pages` environment, and runs post-deploy validation with `COSMOS_CQA_PORTAL_BASE_URL` set to the deployed Pages URL.

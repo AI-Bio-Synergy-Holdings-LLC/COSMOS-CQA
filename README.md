@@ -19,6 +19,7 @@ Current status:
 - Reusable schemas and domain helpers now live under `packages/schemas/` and `packages/core/`.
 - Labels, feed events, provenance/bookmarks, tile passports, core pack manifests, SBOM exports/references, validation reports, and checklist targets have first-pass contracts and contract tests.
 - Synthetic golden fixtures verify deterministic replay for tile synthesis, sidecars, bookmarks, CSV exports, reports, and public/dev truth-label policy.
+- The hosted demo uses an explicitly named synthetic Core Pack contract fixture; public-data candidates are source-linked separately until rights, attribution, CORS, rate-limit, and replay behavior are reviewed.
 - The legacy v3 manual checklist is converted into tracked evidence targets under `tests/evidence/`, with all tracked legacy targets covered by Playwright browser automation.
 - A Core Pack intake lane now validates a sample manifest, evidence/SBOM references, and documentation-only diagnostic concepts before any CSSFP prototype repair or import.
 - Browser import/export paths now classify feed and Core Pack JSON as research artifacts, retain SHA-256 provenance hashes, and export validation report JSON before any PDF workflow.
@@ -74,7 +75,7 @@ The public demo is local-first and account-free. A separate COSMOS-CQA applicati
 
 Use `http://localhost:4173/workbench.html?dev=1` only for dev-mode truth-label review.
 
-Public quickstart, safety, disclosure, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-safety.md](docs/public-safety.md), [docs/security-disclosure.md](docs/security-disclosure.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
+Public quickstart, public-data source candidates, safety, disclosure, project notes, citation, and release artifact guidance lives in [docs/quickstart.md](docs/quickstart.md), [docs/public-data-sources.md](docs/public-data-sources.md), [docs/public-safety.md](docs/public-safety.md), [docs/security-disclosure.md](docs/security-disclosure.md), [docs/project-notes.md](docs/project-notes.md), [docs/citation.md](docs/citation.md), and [docs/releases/README.md](docs/releases/README.md).
 
 Zenodo DOI status and release citation guidance lives in [docs/zenodo-registration.md](docs/zenodo-registration.md). The all-versions Zenodo DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698); the first archived release DOI for `v0.1.1-research-alpha` is [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699).
 

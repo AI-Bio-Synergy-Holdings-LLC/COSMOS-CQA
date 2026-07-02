@@ -21,7 +21,7 @@
 ## Phase 3: Core Pack and Diagnostics
 
 - Build the Core Pack intake lane before importing diagnostics.
-- Validate sample Core Pack manifests with provenance, SBOM, evidence, and diagnostic concept references.
+- Validate synthetic Core Pack fixtures and public-data candidate manifests with provenance, SBOM, evidence, and diagnostic concept references.
 - Add linked tile-observation targets and summaries so reviewers can pin normalized tile coordinates, note the interpreted sector, and inspect observation evidence without mutating source tile pixels.
 - Keep kappa-y and E/B diagnostic placeholders documentation-only until source provenance, license review, fixtures, and scientific review are complete.
 - Repair and merge useful CSSFP Core Pack diagnostic concepts only after intake gates pass.

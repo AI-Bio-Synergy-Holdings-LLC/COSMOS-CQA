@@ -490,6 +490,24 @@ export const schemas = {
       dec: { type: "number", minimum: -90, maximum: 90 },
       checksum: { type: "string", pattern: checksumPattern },
       truth: { anyOf: [{ $ref: "truthRecord" }, { type: "null" }] },
+      review_prompt: { type: "string", maxLength: 1000 },
+      image_refs: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["role", "format", "url", "access_policy"],
+          additionalProperties: false,
+          properties: {
+            role: { type: "string", minLength: 1, maxLength: 128 },
+            format: { type: "string", minLength: 1, maxLength: 64 },
+            url: { type: "string", minLength: 1, maxLength: 2048 },
+            source: { type: "string", maxLength: 256 },
+            citation: { type: "string", maxLength: 512 },
+            access_policy: { type: "string", minLength: 1, maxLength: 512 },
+            notes: { type: "string", maxLength: 1000 },
+          },
+        },
+      },
       provenance: {
         type: "object",
         required: ["source", "generated_at"],

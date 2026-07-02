@@ -80,7 +80,7 @@
       "dataset": {
         "name": "DEMO_SIM_T",
         "release": "v0",
-        "doi": "doi:10.0000/demo",
+        "doi": "",
         "tile_url": ""
       },
       "tile": {
@@ -100,8 +100,8 @@
         }
       }
     },
-    "encoded": "eyJzY2hlbWFfdmVyc2lvbiI6ImNvc21vcy1jcWEuY29udHJhY3RzLnYwLjEuMCIsImRhdGFzZXQiOnsibmFtZSI6IkRFTU9fU0lNX1QiLCJyZWxlYXNlIjoidjAiLCJkb2kiOiJkb2k6MTAuMDAwMC9kZW1vIiwidGlsZV91cmwiOiIifSwidGlsZSI6eyJpZCI6InRpbGVfMDAxIiwiY2hlY2tzdW0iOiJzaGEyNTY6ZGVtby1jMGZmZWUtMDAxIn0sIm92ZXJsYXkiOiJncmFkaWVudCIsInBhbGV0dGUiOiJjaXZpZGlzIiwiY2FwdGlvbnMiOnRydWUsImVudiI6eyJzZWVkIjoxMjY0ODQzMCwiYXVkaW8iOnsibWFwIjoiZGZ0MzJfcm93bWVhbnMiLCJyYXRlIjoxLjUsImxvb3AiOnRydWUsImZyYW1lcyI6MTIwfX19",
-    "decoded_sha256": "ef5a3306213c9a94a211f6033fb6a6fc90a28c2cbfd878d7a3fcff56b7de7a51"
+    "encoded": "eyJzY2hlbWFfdmVyc2lvbiI6ImNvc21vcy1jcWEuY29udHJhY3RzLnYwLjEuMCIsImRhdGFzZXQiOnsibmFtZSI6IkRFTU9fU0lNX1QiLCJyZWxlYXNlIjoidjAiLCJkb2kiOiIiLCJ0aWxlX3VybCI6IiJ9LCJ0aWxlIjp7ImlkIjoidGlsZV8wMDEiLCJjaGVja3N1bSI6InNoYTI1NjpkZW1vLWMwZmZlZS0wMDEifSwib3ZlcmxheSI6ImdyYWRpZW50IiwicGFsZXR0ZSI6ImNpdmlkaXMiLCJjYXB0aW9ucyI6dHJ1ZSwiZW52Ijp7InNlZWQiOjEyNjQ4NDMwLCJhdWRpbyI6eyJtYXAiOiJkZnQzMl9yb3dtZWFucyIsInJhdGUiOjEuNSwibG9vcCI6dHJ1ZSwiZnJhbWVzIjoxMjB9fX0=",
+    "decoded_sha256": "d9a803c620bccf6c9183f891725cd33a97dee5edc7313d8703d30e2383df9a71"
   },
   "labels": {
     "columns": [
@@ -136,9 +136,9 @@
     "csv_sha256": "057dfd231febd5dcac0fab8c90289786931e23edec98a0fbbedfd18c1228a3ef"
   },
   "core_pack": {
-    "manifest_id": "corepack_demo-v0.1.0-intake",
+    "manifest_id": "corepack_synthetic-contract-v0.1.1",
     "validation_summary": {
-      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "manifest_id": "corepack_synthetic-contract-v0.1.1",
       "tile_count": 2,
       "sbom_ref_count": 1,
       "evidence_ref_count": 5,
@@ -191,7 +191,7 @@
         ]
       }
     ],
-    "sha256": "eca8ac51194382aa87135da0fb7daade5cafe24ac657aa40da292ed5f75c1e7a"
+    "sha256": "e28a787434724d8a8c9972f370c8f67b3ddb030cfe09a354de06ec612afc3ccf"
   },
   "report": {
     "validation_report": {

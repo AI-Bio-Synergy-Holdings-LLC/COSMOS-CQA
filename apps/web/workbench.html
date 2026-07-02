@@ -54,7 +54,7 @@
     </div>
   </header>
   <div id="demoModeNotice" class="demo-mode-notice" role="status" hidden>
-    Hosted demo mode is loading the public sample Core Pack.
+    Hosted demo mode is loading the synthetic contract Core Pack fixture.
   </div>
 
   <main id="main" class="research-shell" tabindex="-1">
@@ -357,7 +357,7 @@
           <h2 id="core-pack-title">Core Pack Intake</h2>
           <span class="panel-status">Contracted</span>
         </div>
-        <p class="small">Load a stored tile set, public sample, or live research artifact stream.</p>
+        <p class="small">Load a stored tile set, synthetic contract fixture, or live research artifact stream.</p>
         <div class="small contract-line">
           <em>Schema:</em> <code>{ type:"tile", tile_id, dataset, ra, dec, band, overlay, checksum, png }</code>
           and <code>{ type:"expert", tile_id, expert_class, expert_confidence, latency_s }</code>.
@@ -372,12 +372,12 @@
           <div class="row">
             <button id="startFeed" type="button" class="pill">Connect</button>
             <button id="stopFeed" type="button" class="pill">Stop</button>
-            <button id="loadSample" type="button" class="pill">Load public sample</button>
+            <button id="loadSample" type="button" class="pill">Load synthetic fixture</button>
           </div>
         </div>
         <div id="feedStatus" class="small inspector-status"></div>
         <div class="explorer-panel" aria-label="Core Pack explorer">
-          <div id="corePackExplorerStatus" class="small empty-state">No Core Pack manifest loaded. Load the public sample or upload a validated Core Pack manifest to inspect evidence.</div>
+          <div id="corePackExplorerStatus" class="small empty-state">No Core Pack manifest loaded. Load the synthetic contract fixture or upload a validated Core Pack manifest to inspect evidence.</div>
           <div id="corePackManifestSummary" class="metadata-panel"></div>
           <div>
             <div class="group-title explorer-title">Tile Passports</div>

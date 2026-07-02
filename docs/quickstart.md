@@ -28,7 +28,7 @@ Open the public portal:
 http://localhost:4173/
 ```
 
-Open the hosted sample Core Pack workflow directly:
+Open the hosted synthetic Core Pack fixture workflow directly:
 
 ```text
 http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
@@ -58,7 +58,7 @@ https://cosmos-cqa.org/safety.html
 
 ## Sample Core Pack Workflow
 
-1. Open the hosted sample Core Pack workflow.
+1. Open the hosted synthetic Core Pack fixture workflow.
 2. Confirm the banner says the hosted demo is ready.
 3. Inspect the Core Pack Intake panel, tile passports, diagnostic caveats, evidence workspace, and report preview.
 4. Keep public mode active for public review. Use `?dev=1` only for explicit local dev review.

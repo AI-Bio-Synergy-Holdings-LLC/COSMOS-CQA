@@ -260,7 +260,7 @@ async function validateStaticContract() {
   requirePhrases("docs/quickstart.md", quickstart, [
     "https://cosmos-cqa.org",
     "demo workbook",
-    "sample Core Pack workflow",
+    "synthetic Core Pack fixture workflow",
     "https://cosmos-cqa.org/safety.html",
     "Export Validation Report JSON",
     "npm --prefix apps/web run check",
@@ -553,7 +553,7 @@ async function validateHttpSurface() {
     {
       path: "/workbench.html?demo=core-pack",
       label: "hosted demo workbench shell",
-      phrases: ["COSMOS-CQA Research Workbench", "Hosted demo mode is loading the public sample Core Pack.", "Export Validation Report JSON"],
+      phrases: ["COSMOS-CQA Research Workbench", "Hosted demo mode is loading the synthetic contract Core Pack fixture.", "Export Validation Report JSON"],
     },
     {
       path: "/CNAME",
@@ -606,8 +606,8 @@ async function validateHttpSurface() {
     },
     {
       path: "/examples/core-pack/core-pack.manifest.json",
-      label: "sample Core Pack manifest",
-      phrases: ["corepack_demo-v0.1.0-intake", "demo_corepack_tile_001"],
+      label: "synthetic Core Pack fixture manifest",
+      phrases: ["corepack_synthetic-contract-v0.1.1", "synthetic_residual_stripe_001"],
     },
     {
       path: "/packages/schemas/src/index.js",
