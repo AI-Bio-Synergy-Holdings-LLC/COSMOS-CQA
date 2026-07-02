@@ -95,6 +95,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   let charts = { pr: null, live: null, ops: null, conf: null };
   const liveSeries = [];
   const calibration = { mode: "wizard", gate: "learning", active: false, completed: false, tiles: [], index: 0, correct: 0 };
+  const observationCoordinateNotePattern =
+    /^Tile coordinates: x=[01](?:\.\d{4})?, y=[01](?:\.\d{4})? \([0-9]{1,3}% x, [0-9]{1,3}% y; [a-z0-9 -]{1,40}\)\. Observation:\s*/i;
 
   const audio = createAudioController({
     state,
@@ -186,16 +188,19 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ...zone,
     };
 
+    ensureObservationCoordinateNote(state.pendingObservation);
     renderObservationOverlay();
     updateObservationSubmissionState();
-    setCaption(`Observation target pinned in ${zone.zone_label}. Add a note, then submit.`);
+    setCaption(`Observation target pinned in ${zone.zone_label}. Add observation text after the coordinate cue, then submit.`);
     dom.note.focus();
     scheduleObservationOverlayRender();
     notifyTestBridge("tileObservation.pinned", { pendingObservation: state.pendingObservation });
   }
 
   function clearPendingObservation({ announce = true } = {}) {
+    const pendingObservation = state.pendingObservation;
     state.pendingObservation = null;
+    clearObservationCoordinateNote(pendingObservation);
     renderObservationOverlay();
     updateObservationSubmissionState();
     if (announce) {
@@ -220,7 +225,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
 
     if (state.pendingObservation?.tile_id === tile.meta.tile_id) {
-      dom.tileObservationStatus.textContent = `Pinned ${state.pendingObservation.zone_label}; enter a note before submitting this observation.`;
+      dom.tileObservationStatus.textContent = `Pinned ${state.pendingObservation.zone_label} at x=${state.pendingObservation.x_norm.toFixed(4)}, y=${state.pendingObservation.y_norm.toFixed(4)}; add observation text before submitting.`;
       dom.clearObservationBtn.hidden = false;
     } else if (state.pendingObservation) {
       dom.tileObservationStatus.textContent = `Pending observation target remains on ${state.pendingObservation.tile_id}; return to that tile or clear the target before tagging another sector.`;
@@ -232,6 +237,44 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       dom.tileObservationStatus.textContent = "Click a tile sector to pin an observation target before submitting a spatial note.";
       dom.clearObservationBtn.hidden = true;
     }
+  }
+
+  function formatObservationCoordinateNote(target) {
+    const x = roundObservationCoordinate(target?.x_norm || 0);
+    const y = roundObservationCoordinate(target?.y_norm || 0);
+    const xPercent = Math.round(x * 100);
+    const yPercent = Math.round(y * 100);
+    const zoneLabel = String(target?.zone_label || "unknown zone").toLowerCase();
+    return `Tile coordinates: x=${x.toFixed(4)}, y=${y.toFixed(4)} (${xPercent}% x, ${yPercent}% y; ${zoneLabel}). Observation: `;
+  }
+
+  function stripObservationCoordinateNote(noteText) {
+    return String(noteText || "").replace(observationCoordinateNotePattern, "");
+  }
+
+  function hasObserverObservationText() {
+    return Boolean(stripObservationCoordinateNote(dom.note.value).trim());
+  }
+
+  function ensureObservationCoordinateNote(target) {
+    if (!target) {
+      return;
+    }
+    const prefix = formatObservationCoordinateNote(target);
+    const observationText = stripObservationCoordinateNote(dom.note.value).trimStart();
+    const maxLength = dom.note.maxLength > 0 ? dom.note.maxLength : 240;
+    dom.note.value = `${prefix}${observationText}`.slice(0, maxLength);
+    if (dom.note.setSelectionRange) {
+      const cursorPosition = dom.note.value.length;
+      dom.note.setSelectionRange(cursorPosition, cursorPosition);
+    }
+  }
+
+  function clearObservationCoordinateNote(target) {
+    if (!target || !observationCoordinateNotePattern.test(dom.note.value)) {
+      return;
+    }
+    dom.note.value = stripObservationCoordinateNote(dom.note.value).trimStart();
   }
 
   function scheduleObservationOverlayRender() {
@@ -262,9 +305,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
   function updateObservationSubmissionState() {
     const pending = Boolean(state.pendingObservation);
-    const hasNote = Boolean(dom.note.value.trim());
+    const hasNote = pending ? hasObserverObservationText() : Boolean(dom.note.value.trim());
     dom.submitBtn.disabled = pending && !hasNote;
-    dom.submitBtn.title = pending && !hasNote ? "Enter a note before submitting this pinned observation." : "Submit label";
+    dom.submitBtn.title = pending && !hasNote ? "Enter observation text after the coordinate cue before submitting this pinned observation." : "Submit label";
   }
 
   function createObservationForLabel({ tile, label }) {
@@ -1536,10 +1579,17 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
     if (state.pendingObservation && !dom.note.value.trim()) {
       updateObservationSubmissionState();
-      setCaption("Add a note before submitting the pinned observation target.");
+      setCaption("Add observation text after the pinned coordinate cue before submitting.");
       dom.note.focus();
       return null;
     }
+    if (state.pendingObservation && !hasObserverObservationText()) {
+      updateObservationSubmissionState();
+      setCaption("Add observation text after the pinned coordinate cue before submitting.");
+      dom.note.focus();
+      return null;
+    }
+    ensureObservationCoordinateNote(state.pendingObservation);
 
     const label = createVolunteerLabel({
       tile,
@@ -1574,6 +1624,10 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     updatePRChart();
     recalcKPIs(false);
     refreshValidationReportPreview();
+    if (observation) {
+      dom.note.value = "";
+      updateObservationSubmissionState();
+    }
     notifyTestBridge("tileObservation.submitted", { label, observation });
     return label;
   }
@@ -2614,21 +2668,76 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function runSelfChecks() {
-    dom.testLog.textContent = "Running tests...\n";
+    dom.testLog.textContent = "Running local runtime checks...\n";
+    const currentTile = tiles[state.idx];
     const tests = [
-      { name: "CSV builder", fn: () => buildCSV([{ a: 1, b: "x" }], ["a", "b"]).includes("1") },
       {
-        name: "PR-AUC",
+        name: "Tile viewer state",
+        fn: () =>
+          Boolean(currentTile?.canvas) &&
+          dom.tileCanvas.width === 512 &&
+          dom.tileCanvas.height === 512 &&
+          currentTile.meta.tile_id === dom.tileId.textContent,
+      },
+      {
+        name: "Observation coordinate note gate",
+        fn: () => {
+          const target = { x_norm: 0.42, y_norm: 0.21, zone_label: "top center" };
+          const prefix = formatObservationCoordinateNote(target);
+          return (
+            prefix.includes("x=0.4200") &&
+            prefix.includes("y=0.2100") &&
+            stripObservationCoordinateNote(prefix).trim() === "" &&
+            stripObservationCoordinateNote(`${prefix}faint residual band`).trim() === "faint residual band"
+          );
+        },
+      },
+      {
+        name: "Viewer transform round trip",
+        fn: () => {
+          const transform = { zoom: 1.5, panX: 32, panY: 32, rotationDeg: 90 };
+          const source = { xNorm: 0.42, yNorm: 0.32, width: 512, height: 512, transform };
+          const viewportPoint = transformSourceToViewportPoint(source);
+          const roundTrip = transformViewportPointToSource({
+            x: viewportPoint.x,
+            y: viewportPoint.y,
+            width: source.width,
+            height: source.height,
+            transform,
+          });
+          return Math.abs(roundTrip.x_norm - source.xNorm) < 0.0001 && Math.abs(roundTrip.y_norm - source.yNorm) < 0.0001;
+        },
+      },
+      { name: "CSV export builder", fn: () => buildCSV([{ a: 1, b: "x" }], ["a", "b"]) === 'a,b\n"1","x"\n' },
+      {
+        name: "Metrics PR-AUC",
         fn: () => {
           const auc = prAUC([
             { thresh: 0.9, p: 1, r: 0.2 },
             { thresh: 0.5, p: 0.8, r: 0.6 },
           ]);
-          return auc >= 0 && auc <= 1;
+          return auc >= 0 && auc <= 1 && Math.abs(ema(0.5, 1, 0.5) - 0.75) < 0.01;
         },
       },
-      { name: "Tile synth", fn: () => synthTile({ class: "stripe" }).width === 256 },
-      { name: "EMA", fn: () => Math.abs(ema(0.5, 1, 0.5) - 0.75) < 0.01 },
+      { name: "Synthetic tile renderer", fn: () => synthTile({ class: "stripe" }).width === 256 },
+      {
+        name: "Validation report contract",
+        fn: () => {
+          const report = buildValidationReport({ generatedAt: "2026-01-01T00:00:00.000Z", reportId: "rpt_self_check" });
+          return (
+            report.report_id === "rpt_self_check" &&
+            report.checks.some((check) => check.name === "report JSON" && check.status === "pass") &&
+            report.summary.pass_count >= 2
+          );
+        },
+      },
+      {
+        name: "SBOM contract",
+        fn: () => {
+          const sbom = createSbom({ generatedAt: "2026-01-01T00:00:00.000Z" });
+          return sbom.bomFormat === "CycloneDX" && sbom.specVersion === "1.4" && sbom.metadata.component.name === "COSMOS-CQA Research Workbench";
+        },
+      },
     ];
 
     let pass = 0;
@@ -2643,7 +2752,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         dom.testLog.textContent += `FAIL ${test.name} (error)\n`;
       }
     }
-    dom.testLog.textContent += `\n${pass}/${tests.length} passed.`;
+    dom.testLog.textContent += `\n${pass}/${tests.length} passed. CI remains the release gate.`;
+    setCaption(`Self-checks complete: ${pass}/${tests.length} passed.`);
+    notifyTestBridge("selfChecks.completed", { pass, total: tests.length });
   }
 
   function createBookmark() {

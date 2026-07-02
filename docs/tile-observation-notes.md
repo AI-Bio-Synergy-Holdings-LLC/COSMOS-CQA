@@ -8,6 +8,7 @@ Tile observations are reviewer-authored spatial notes linked to a submitted labe
 - `zone_id` and `zone_label` identify the deterministic 3x3 review sector.
 - `zone_taxonomy` adds row band, column band, quadrant, radial band, and coordinate-percent context for summaries.
 - Viewer zoom, pan, and rotation are display transforms only. Submitted observations store normalized source-tile coordinates after the screen click is mapped back through the inverse viewer transform.
+- The note field auto-inserts a compact coordinate cue such as `Tile coordinates: x=0.4200, y=0.2100 (42% x, 21% y; top center). Observation:`. The cue is a source-tile location reference, and the reviewer should add the actual observation text after it.
 - The pin is a location cue inside the reviewed tile. It is not a measured sky coordinate, source catalog position, physical parameter estimate, or validated detection.
 
 ## How To Write Notes
@@ -22,7 +23,7 @@ Use notes to describe:
 Good notes are short, observational, and bounded. Example:
 
 ```text
-faint vertical band in top center zone; clearer with gradient overlay
+Tile coordinates: x=0.4200, y=0.2100 (42% x, 21% y; top center). Observation: faint vertical band in top center zone; clearer with gradient overlay
 ```
 
 Avoid personal data, medical claims, private identifiers, unsupported diagnostic conclusions, and claims that the observation proves a cosmological effect.

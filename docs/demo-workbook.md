@@ -35,7 +35,7 @@ https://cosmos-cqa.org/safety.html
 3. Review the first tile, change one overlay and one palette, and confirm the caption and tile passport remain readable.
 4. Use Zoom, Pan, Rotate, and Reset once; confirm the tile remains targetable and the viewer status returns to 100 percent zoom, 0 degree rotation, and pan 0, 0 after reset.
 5. Check audio safety before playback: read the Audio and Captions notice, keep device volume low, and leave Loop off unless you intentionally need repeat playback.
-6. Pin one tile sector, enter a short spatial note, submit the label, and confirm the Evidence Workspace shows the pinned observation map.
+6. Pin one tile sector, confirm the note field auto-inserts normalized source-tile coordinates, add a short observation after the cue, submit the label, and confirm the Evidence Workspace shows the pinned observation map.
 7. Select the submitted observation in Observation Review, confirm the marker is highlighted, edit class/severity/note once, set a review status and reviewer confidence, and inspect the review revision plus ledger fields in reports or exported JSON.
 8. Mark an observation as needing adjudication only when independent review is required; treat the consensus/adjudication fields as workflow placeholders, not scientific validation claims.
 9. Open the Adjudication Queue, select the queued observation, enter an adjudication note, and record one queue decision such as Defer, Request second review, or Mark reviewed. Confirm the decision appears as a ledger event rather than a validation claim.
@@ -57,7 +57,7 @@ https://cosmos-cqa.org/safety.html
 - Tile navigation, overlay/palette changes, label submit/undo behavior, bookmark reload result, and export filenames.
 - Viewer transform status after zoom, pan, rotate, and reset; transformed clicks should still export normalized source-tile coordinates.
 - Calibration Wizard mode, progress policy, 3-step score, caption update, and reliability metric behavior.
-- Pinned tile sector, normalized observation coordinates if exported, review edit revision fields, review status, reviewer confidence, adjudication queue decision/note when used, ledger event sequence, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
+- Pinned tile sector, auto-inserted normalized coordinate cue, exported observation coordinates, review edit revision fields, review status, reviewer confidence, adjudication queue decision/note when used, ledger event sequence, delete/restore result, note text quality, and whether observation summaries appear only as review-process evidence.
 - Reviewer handoff packet id, source session/bundle hashes, assignment observation ids, `authenticated_access: false`, `network_submission: false`, and whether import restored only local replay state.
 - Selective-access application wording, with no claim that verified researcher access is available through the public demo.
 - Known limitations, diagnostic caveats, public truth-label hiding, and any accessibility or visual issues observed.
