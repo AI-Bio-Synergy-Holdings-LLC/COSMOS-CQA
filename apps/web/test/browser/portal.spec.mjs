@@ -19,6 +19,19 @@ const publicPages = [
   { path: "/contact.html", title: /Contact \| COSMOS-CQA/, text: "Developer and public research route." },
 ];
 
+const currentReleaseDoi = "10.5281/zenodo.21142690";
+const allVersionsDoi = "10.5281/zenodo.21112698";
+
+async function expectCitationMetadata(page) {
+  await expect(page.locator("meta[name='citation_title']")).toHaveAttribute("content", "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts");
+  await expect(page.locator("meta[name='citation_author']")).toHaveAttribute("content", "AI-Bio Synergy Holdings LLC");
+  await expect(page.locator("meta[name='citation_publication_date']")).toHaveAttribute("content", "2026-07-02");
+  await expect(page.locator("meta[name='citation_doi']")).toHaveAttribute("content", currentReleaseDoi);
+  await expect(page.locator("meta[name='citation_software_version']")).toHaveAttribute("content", "0.1.2-research-alpha");
+  await expect(page.locator("meta[name='DC.identifier']")).toHaveAttribute("content", `https://doi.org/${currentReleaseDoi}`);
+  await expect(page.locator("meta[name='DC.relation']")).toHaveAttribute("content", `https://doi.org/${allVersionsDoi}`);
+}
+
 test("serves the canonical public portal at the root route", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_PORTAL));
@@ -88,6 +101,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
     "COSMOS-CQA is a research-only public portal and browser workbench for cosmology artifact quality assurance evidence, provenance, and replay.",
   );
   await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", "index,follow");
+  await expectCitationMetadata(page);
   await expect(page.locator("meta[name='theme-color']")).toHaveAttribute("content", "#090d10");
   await expect(page.locator("link[rel='icon']")).toHaveAttribute("href", "./assets/favicon.svg");
   await expect(page.locator("link[rel='sitemap']")).toHaveAttribute("href", "https://cosmos-cqa.org/sitemap.xml");
@@ -103,16 +117,20 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   const softwareMetadata = structuredData["@graph"].find((item) => item["@type"] === "SoftwareSourceCode" && item.name === "COSMOS-CQA");
   expect(softwareMetadata).toBeTruthy();
   expect(softwareMetadata.version).toBe("0.1.2-research-alpha");
-  expect(softwareMetadata.sameAs).toContain("https://doi.org/10.5281/zenodo.21142690");
+  expect(softwareMetadata.sameAs).toContain(`https://doi.org/${currentReleaseDoi}`);
   expect(softwareMetadata.sameAs).toContain("https://zenodo.org/records/21142690");
-  expect(softwareMetadata.sameAs).toContain("https://doi.org/10.5281/zenodo.21112698");
+  expect(softwareMetadata.sameAs).toContain(`https://doi.org/${allVersionsDoi}`);
   expect(softwareMetadata.sameAs).toContain("https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA");
   expect(softwareMetadata.identifier).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({ propertyID: "Zenodo release DOI", value: "10.5281/zenodo.21142690", url: "https://doi.org/10.5281/zenodo.21142690" }),
-      expect.objectContaining({ propertyID: "Zenodo all-versions DOI", value: "10.5281/zenodo.21112698", url: "https://doi.org/10.5281/zenodo.21112698" }),
+      expect.objectContaining({ propertyID: "Zenodo release DOI", value: currentReleaseDoi, url: `https://doi.org/${currentReleaseDoi}` }),
+      expect.objectContaining({ propertyID: "Zenodo all-versions DOI", value: allVersionsDoi, url: `https://doi.org/${allVersionsDoi}` }),
     ]),
   );
+
+  await expect(page.getByText("Cite v0.1.2:")).toBeVisible();
+  await expect(page.getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
+  await expect(page.getByRole("link", { name: allVersionsDoi })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
 
   const robots = await request.get("/robots.txt");
   expect(robots.ok()).toBe(true);
@@ -176,7 +194,10 @@ test("serves public resource pages with canonical metadata and notices", async (
   }
 
   await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
+  await expectCitationMetadata(page);
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
+  await expect(page.getByText("Cite this demo release:")).toBeVisible();
+  await expect(page.locator(".citation-strip").getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();
   await expect(page.getByText("Reviewer handoff packets are local JSON artifacts.")).toBeVisible();
   await expect(page.getByText("Try the calibration wizard.")).toBeVisible();
@@ -201,19 +222,21 @@ test("serves public resource pages with canonical metadata and notices", async (
   );
 
   await page.goto("/citation.html", { waitUntil: "domcontentloaded" });
+  await expectCitationMetadata(page);
   await expect(page.getByText("Zenodo DOI active.")).toBeVisible();
   await expect(page.getByText("Use DOI 10.5281/zenodo.21142690 when citing v0.1.2-research-alpha")).toBeVisible();
-  await expect(page.getByRole("link", { name: "10.5281/zenodo.21142690" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21142690");
+  await expect(page.getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112699" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112699");
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112698" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112698");
   await expect(page.getByRole("link", { name: "Zenodo DOI record" })).toHaveAttribute("href", /docs\/zenodo-registration\.md/);
 
   await page.goto("/releases.html", { waitUntil: "domcontentloaded" });
+  await expectCitationMetadata(page);
   const v012Release = page.locator(".portal-page-section").filter({ has: page.getByRole("heading", { name: "v0.1.2 Research Alpha" }) });
   await expect(v012Release).toBeVisible();
   await expect(v012Release.getByText("Zenodo DOI status: minted.")).toBeVisible();
-  await expect(v012Release.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21142690");
-  await expect(v012Release.getByRole("link", { name: "Zenodo all-versions DOI" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112698");
+  await expect(v012Release.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
+  await expect(v012Release.getByRole("link", { name: "Zenodo all-versions DOI" })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
 
   await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("What experiment is this workbench modeling?")).toBeVisible();
@@ -305,6 +328,7 @@ test("keeps the research workbench discoverability metadata aligned with the por
 
   await expect(page).toHaveTitle("COSMOS-CQA Research Workbench");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/workbench.html");
+  await expectCitationMetadata(page);
   await expect(page.locator("meta[name='description']")).toHaveAttribute(
     "content",
     /Core Pack intake, tile review, evidence bundles, provenance hashes, validation reports, and deterministic replay/,
@@ -312,6 +336,8 @@ test("keeps the research workbench discoverability metadata aligned with the por
   await expect(page.locator("meta[property='og:url']")).toHaveAttribute("content", "https://cosmos-cqa.org/workbench.html");
   await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
   await expect(page.locator("meta[name='twitter:card']")).toHaveAttribute("content", "summary_large_image");
+  await expect(page.getByRole("link", { name: "Cite DOI" })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
+  await expect(page.getByText("Cite this demo release")).toBeVisible();
 });
 
 test("hands off from the public portal to the maintained research workbench", async ({ page }) => {

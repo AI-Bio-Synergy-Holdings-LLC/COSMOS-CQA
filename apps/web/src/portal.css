@@ -233,6 +233,34 @@ a {
   padding-left: 12px;
 }
 
+.citation-strip {
+  align-items: center;
+  background: rgba(7, 11, 13, 0.58);
+  border: 1px solid rgba(67, 214, 197, 0.24);
+  border-radius: 8px;
+  color: var(--portal-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  gap: 7px 10px;
+  margin-top: 18px;
+  max-width: 760px;
+  padding: 10px 12px;
+}
+
+.citation-strip a {
+  color: var(--portal-teal);
+  font-weight: 820;
+  overflow-wrap: anywhere;
+}
+
+.citation-divider {
+  border-left: 1px solid rgba(170, 183, 183, 0.22);
+  color: var(--portal-gold);
+  font-weight: 800;
+  padding-left: 10px;
+}
+
 .selective-access-notice {
   background: rgba(21, 32, 42, 0.78);
   border: 1px solid rgba(155, 140, 255, 0.3);
@@ -730,6 +758,16 @@ a {
 
   .portal-action {
     width: 100%;
+  }
+
+  .citation-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .citation-divider {
+    border-left: 0;
+    padding-left: 0;
   }
 
   .portal-tile,
