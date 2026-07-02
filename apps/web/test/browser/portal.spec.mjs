@@ -193,6 +193,10 @@ test("serves public resource pages with canonical metadata and notices", async (
     "href",
     /docs\/zenodo-registration\.md/,
   );
+  await expect(page.getByRole("link", { name: "Public Surface Hardening Repo identity, security, data, SBOM, release, and UI/UX sweep standard." })).toHaveAttribute(
+    "href",
+    /docs\/public-surface-hardening\.md/,
+  );
 
   await page.goto("/citation.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Zenodo DOI minted.")).toBeVisible();
@@ -218,7 +222,7 @@ test("serves public resource pages with canonical metadata and notices", async (
   await page.goto("/safety.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Audio-first safety boundary")).toBeVisible();
   await expect(page.getByText("Browser code cannot control device or headphone volume.")).toBeVisible();
-  await expect(page.getByText("not a medical, therapeutic, diagnostic")).toBeVisible();
+  await expect(page.getByText("not diagnostic, therapeutic, signal-discovery")).toBeVisible();
   await expect(page.getByText("repository issue templates without sharing sensitive data")).toBeVisible();
   await expect(page.getByText("Use the security route for private vulnerabilities.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");

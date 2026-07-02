@@ -1,5 +1,5 @@
 const canvas = document.getElementById("portalSignalCanvas");
-const context = canvas.getContext("2d");
+const context = canvas.getContext("2d", { willReadFrequently: true });
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const pointer = { x: 0.72, y: 0.42 };
 

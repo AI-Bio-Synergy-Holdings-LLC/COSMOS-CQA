@@ -18,9 +18,8 @@ Use `COSMOS-CQA` for the public research project.
 
 Use `COSMOS-CQA Research Edition` when referring to the public research-source release.
 
-Do not use `PRIMEFLOW`, `AI-Bio Synergy Holdings LLC`, or related marks in a way that implies endorsement, partnership, certification, or commercial permission without written approval.
+Do not use `COSMOS`, `COSMOS-CQA`, `COSMOS-CQA Research Edition`, `AI-Bio Synergy Holdings LLC`, or related marks in a way that implies endorsement, partnership, certification, or commercial permission without written approval.
 
 ## Commercial or Expanded Rights
 
 Commercial, institutional, production, hosted-service, or expanded rights require a separate written agreement with AI-Bio Synergy Holdings LLC.
-

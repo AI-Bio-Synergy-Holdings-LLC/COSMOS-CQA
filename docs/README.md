@@ -9,6 +9,7 @@ Start with:
 - `public-portal.md` for the canonical public site and deployment surface.
 - `public-safety.md` for audio-first public safety and use boundaries.
 - `security-disclosure.md` for private vulnerability reporting and non-sensitive public safety/accessibility report routing.
+- `public-surface-hardening.md` for the public repo, portal, security, data, SBOM, release, and UI/UX sweep standard.
 - `seo-social-accessibility-baseline.md` for SEO, social preview, WCAG 2.2 baseline assessment, and Nielsen Norman Group heuristic review.
 - `contracts.md` for research workflow contracts.
 - `reviewer-access-boundary.md` for the local reviewer handoff boundary before authenticated reviewer access exists.
@@ -37,6 +38,7 @@ Core documents:
 - `selective-access-application.md` keeps public copy aligned around the planned separate application without backend or access promises.
 - `public-portal.md` defines the canonical website scaffold and public copy boundaries.
 - `public-portal-deployment-validation.md` defines the portal release/deployment validation workflow.
+- `public-surface-hardening.md` defines the public-surface quality gate for repo identity, security, data, SBOMs, releases, and UI/UX polish.
 - `quickstart.md` defines the public local run, hosted demo, report export, and verification path.
 - `reproducibility.md` defines deterministic replay expectations.
 - `roadmap.md` outlines the rework path.

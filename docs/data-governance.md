@@ -43,5 +43,5 @@ Expected evidence artifacts include:
 - expert adjudication export;
 - SBOM;
 - validation report JSON;
-- validation report PDF or human-readable summary.
+- validation report PDF or human-readable summary when implemented;
 - reviewer intake and return packets.
