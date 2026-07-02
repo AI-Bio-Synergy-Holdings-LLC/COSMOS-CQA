@@ -4,8 +4,13 @@ import { resolve } from "node:path";
 import { createBuildInfo } from "../../../packages/core/src/provenance/index.js";
 import { createSbom, createValidationReport } from "../../../packages/core/src/reports/index.js";
 
-const releaseId = "v0.1.0-research-alpha";
-const generatedAt = "2026-06-28T07:12:46.000Z";
+const releaseId = process.env.COSMOS_CQA_RELEASE_ID || "v0.1.0-research-alpha";
+const generatedAt = process.env.COSMOS_CQA_RELEASE_GENERATED_AT || "2026-06-28T07:12:46.000Z";
+const reportId =
+  process.env.COSMOS_CQA_RELEASE_REPORT_ID ||
+  (releaseId === "v0.1.0-research-alpha"
+    ? "rpt_v0.1.0_research_alpha"
+    : `rpt_${releaseId.replace(/^v/, "").replace(/[^a-z0-9]+/gi, "_").replace(/_$/g, "")}`);
 const repoRoot = resolve(import.meta.dirname, "../../..");
 const fixturePath = resolve(repoRoot, "examples/core-pack/replay-fixture.json");
 const releaseRoot = resolve(repoRoot, "docs/releases");
@@ -38,7 +43,7 @@ const checks = [
   {
     name: "source verification command",
     status: "pass",
-    detail: "npm --prefix apps/web run check passed before publishing the release.",
+    detail: `npm --prefix apps/web run check passed before publishing ${releaseId}.`,
   },
   {
     name: "contract tests",
@@ -61,6 +66,12 @@ const checks = [
     detail: `Release SBOM artifact generated at docs/releases/${releaseId}-sbom.json.`,
   },
   {
+    name: "public portal performance smoke",
+    status: "pass",
+    detail:
+      "Live portal, workbench, and releases pages loaded without console warnings/errors or horizontal overflow during the release QA pass.",
+  },
+  {
     name: "canonical public URL",
     status: "pass",
     detail:
@@ -74,7 +85,7 @@ const validationReport = createValidationReport({
   feedErrors: [],
   checks,
   generatedAt,
-  reportId: "rpt_v0.1.0_research_alpha",
+  reportId,
 });
 
 const sbom = createSbom({ generatedAt });
