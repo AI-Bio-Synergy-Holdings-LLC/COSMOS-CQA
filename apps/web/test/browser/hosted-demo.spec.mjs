@@ -7,6 +7,7 @@ test("hosted demo path preloads the synthetic Core Pack fixture with public boun
   await page.waitForFunction(() => window.COSMOS_CQA_APP?.state?.corePacks?.length === 1);
 
   await expect(page.locator("#demoModeNotice")).toContainText("Demo ready");
+  await expect(page.locator("#demoModeNotice")).not.toContainText("Demo ready .");
   await expect(page.locator("#demoModeNotice")).not.toContainText("corepack_synthetic-contract-v0.1.1");
   await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_synthetic-contract-v0.1.1: 2 tile passport(s).");
   await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");

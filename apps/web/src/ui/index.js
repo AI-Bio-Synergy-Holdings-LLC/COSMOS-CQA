@@ -2051,11 +2051,11 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.demoModeNotice.hidden = false;
     dom.demoModeNotice.replaceChildren();
     const strong = documentRef.createElement("strong");
-    strong.textContent = label;
+    strong.textContent = label.endsWith(".") ? label : `${label}.`;
     const link = documentRef.createElement("a");
     link.href = "./demo-workbook.html";
     link.textContent = "Open workbook";
-    dom.demoModeNotice.append(strong, `. ${detail} `, link);
+    dom.demoModeNotice.append(strong, ` ${detail} `, link);
   }
 
   function scrollToDemoSection() {
