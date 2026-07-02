@@ -154,9 +154,12 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   const box = await canvas.boundingBox();
   await canvas.click({ position: { x: box.width * 0.72, y: box.height * 0.68 } });
   await expect(page.locator("#tileObservationStatus")).toContainText("Pinned bottom right");
+  const coordinateCue = await page.locator("#note").inputValue();
+  expect(coordinateCue).toContain("Tile coordinates:");
+  expect(coordinateCue).toContain("bottom right");
   await page.locator("#classSel").selectOption("stripe");
   await page.locator("#sevSel").selectOption("medium");
-  await page.locator("#note").fill("session roundtrip browser test bottom right observation");
+  await page.locator("#note").fill(`${coordinateCue}session roundtrip browser test bottom right observation`);
   await page.locator("#submitBtn").click();
 
   const downloadPromise = page.waitForEvent("download");
@@ -246,14 +249,14 @@ test("saves imports and deterministically reloads research sessions", async ({ p
     diagnosticCount: window.COSMOS_CQA_APP.state.diagnostics.length,
     reportId: window.COSMOS_CQA_APP.state.validationReportPreview.report_id,
   }));
-  expect(restoredState).toEqual({
-    artifactCount: 1,
-    labelNote: "session roundtrip browser test bottom right observation",
-    observationZone: "bottom right",
-    reviewEventAction: "create",
-    diagnosticCount: 2,
-    reportId: exportedSession.reports[0].report_id,
-  });
+  expect(restoredState.artifactCount).toBe(1);
+  expect(restoredState.labelNote).toContain("Tile coordinates:");
+  expect(restoredState.labelNote).toContain("bottom right");
+  expect(restoredState.labelNote).toContain("session roundtrip browser test bottom right observation");
+  expect(restoredState.observationZone).toBe("bottom right");
+  expect(restoredState.reviewEventAction).toBe("create");
+  expect(restoredState.diagnosticCount).toBe(2);
+  expect(restoredState.reportId).toBe(exportedSession.reports[0].report_id);
 
   await page.locator("#sessionInput").setInputFiles({
     name: "bad-session.json",

@@ -142,9 +142,15 @@ test("migrates built-in self-check targets into browser automation", async ({ pa
   await selfChecks.locator("summary").click();
   await page.locator("#runTests").click();
 
-  await expect(page.locator("#testLog")).toContainText("OK CSV builder");
-  await expect(page.locator("#testLog")).toContainText("OK PR-AUC");
-  await expect(page.locator("#testLog")).toContainText("OK Tile synth");
-  await expect(page.locator("#testLog")).toContainText("OK EMA");
-  await expect(page.locator("#testLog")).toContainText("4/4 passed.");
+  await expect(page.locator("#testLog")).toContainText("Running local runtime checks");
+  await expect(page.locator("#testLog")).toContainText("OK Tile viewer state");
+  await expect(page.locator("#testLog")).toContainText("OK Observation coordinate note gate");
+  await expect(page.locator("#testLog")).toContainText("OK Viewer transform round trip");
+  await expect(page.locator("#testLog")).toContainText("OK CSV export builder");
+  await expect(page.locator("#testLog")).toContainText("OK Metrics PR-AUC");
+  await expect(page.locator("#testLog")).toContainText("OK Synthetic tile renderer");
+  await expect(page.locator("#testLog")).toContainText("OK Validation report contract");
+  await expect(page.locator("#testLog")).toContainText("OK SBOM contract");
+  await expect(page.locator("#testLog")).toContainText("8/8 passed. CI remains the release gate.");
+  await expect(page.locator("#caption")).toContainText("Self-checks complete: 8/8 passed.");
 });

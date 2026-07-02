@@ -96,10 +96,16 @@ test("pins tile observation targets and requires notes before synced submission"
 
   await expect(page.locator("#tileObservationStatus")).toContainText("Pinned top center");
   await expect(page.locator("#clearObservationBtn")).toBeVisible();
+  const pendingCueTarget = await page.evaluate(() => window.COSMOS_CQA_APP.state.pendingObservation);
+  const expectedCoordinateCue = `Tile coordinates: x=${pendingCueTarget.x_norm.toFixed(4)}, y=${pendingCueTarget.y_norm.toFixed(4)}`;
+  const coordinateCue = await page.locator("#note").inputValue();
+  expect(coordinateCue).toContain(expectedCoordinateCue);
+  expect(coordinateCue).toContain("top center");
+  expect(coordinateCue).toMatch(/Observation:\s*$/);
   await expect(page.locator("#submitBtn")).toBeDisabled();
   await expect(page.locator(".observation-marker.pending")).toHaveCount(1);
 
-  await page.locator("#note").fill("faint vertical band in top center zone; visible with gradient overlay");
+  await page.locator("#note").fill(`${coordinateCue}faint vertical band in top center zone; visible with gradient overlay`);
   await expect(page.locator("#submitBtn")).toBeEnabled();
   await page.locator("#classSel").selectOption("stripe");
   await page.locator("#sevSel").selectOption("medium");
@@ -125,7 +131,10 @@ test("pins tile observation targets and requires notes before synced submission"
   expect(observation.x_norm).toBeLessThan(0.44);
   expect(observation.y_norm).toBeGreaterThan(0.19);
   expect(observation.y_norm).toBeLessThan(0.23);
+  expect(observation.note).toContain(expectedCoordinateCue);
   expect(observation.note).toContain("top center zone");
+  expect(label.note).toBe(observation.note);
+  await expect(page.locator("#note")).toHaveValue("");
 
   await page.locator("#undoBtn").click();
   await expect.poll(() => labelCount(page)).toBe(0);
@@ -171,6 +180,11 @@ test("keeps pinned source coordinates stable after viewer transforms", async ({ 
   expect(pending.x_norm).toBeLessThan(0.422);
   expect(pending.y_norm).toBeGreaterThan(0.318);
   expect(pending.y_norm).toBeLessThan(0.322);
+  const expectedTransformedCoordinateCue = `Tile coordinates: x=${pending.x_norm.toFixed(4)}, y=${pending.y_norm.toFixed(4)}`;
+  const transformedCoordinateCue = await page.locator("#note").inputValue();
+  expect(transformedCoordinateCue).toContain(expectedTransformedCoordinateCue);
+  expect(transformedCoordinateCue).toContain("top center");
+  await expect(page.locator("#submitBtn")).toBeDisabled();
   await expect
     .poll(async () => {
       const viewportAfterPin = await page.locator("#tileCanvasWrap").boundingBox();
@@ -198,7 +212,7 @@ test("keeps pinned source coordinates stable after viewer transforms", async ({ 
     })
     .toBeLessThan(4);
 
-  await page.locator("#note").fill("transformed viewer click stays linked to source tile coordinates");
+  await page.locator("#note").fill(`${transformedCoordinateCue}transformed viewer click stays linked to source tile coordinates`);
   await page.locator("#submitBtn").click();
   const observation = await firstStoredObservation(page);
   expect(observation).toMatchObject({
@@ -208,6 +222,7 @@ test("keeps pinned source coordinates stable after viewer transforms", async ({ 
   expect(observation.x_norm).toBeLessThan(0.422);
   expect(observation.y_norm).toBeGreaterThan(0.318);
   expect(observation.y_norm).toBeLessThan(0.322);
+  expect(observation.note).toContain(expectedTransformedCoordinateCue);
 
   await page.locator("#resetViewBtn").click();
   await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 100%; rotation 0 deg; pan 0, 0.");
@@ -235,7 +250,8 @@ test("reviews submitted observations with synced edit delete restore and export 
     transform: { zoom: 1.25, panX: 32, panY: 0, rotationDeg: 90 },
   });
   await page.locator("#tileCanvasWrap").click({ position: clickPoint });
-  await page.locator("#note").fill("review workspace transformed pin in top center zone");
+  const reviewCoordinateCue = await page.locator("#note").inputValue();
+  await page.locator("#note").fill(`${reviewCoordinateCue}review workspace transformed pin in top center zone`);
   await page.locator("#submitBtn").click();
 
   await expect(page.locator("#observationReviewStatus")).toContainText("1 submitted observation");
