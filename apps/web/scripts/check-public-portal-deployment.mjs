@@ -13,6 +13,15 @@ const releaseId = "v0.1.2-research-alpha";
 const zenodoConceptDoi = "10.5281/zenodo.21112698";
 const zenodoPriorReleaseDoi = "10.5281/zenodo.21112699";
 const zenodoCurrentReleaseDoi = "10.5281/zenodo.21142690";
+const citationMetaPhrases = [
+  '<meta name="citation_title" content="COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts">',
+  `<meta name="citation_author" content="${owner}">`,
+  '<meta name="citation_publication_date" content="2026-07-02">',
+  `<meta name="citation_doi" content="${zenodoCurrentReleaseDoi}">`,
+  '<meta name="citation_software_version" content="0.1.2-research-alpha">',
+  `<meta name="DC.identifier" content="https://doi.org/${zenodoCurrentReleaseDoi}">`,
+  `<meta name="DC.relation" content="https://doi.org/${zenodoConceptDoi}">`,
+];
 const publicPagePaths = [
   "demo-workbook.html",
   "research-experiment.html",
@@ -48,6 +57,7 @@ if (failures.length > 0) {
 async function validateStaticContract() {
   const portalHtml = await readText("apps/web/index.html");
   const workbenchHtml = await readText("apps/web/workbench.html");
+  const demoWorkbookPage = await readText("apps/web/demo-workbook.html");
   const cname = (await readText("apps/web/CNAME")).trim();
   const robots = await readText("apps/web/robots.txt");
   const sitemap = await readText("apps/web/sitemap.xml");
@@ -98,6 +108,7 @@ async function validateStaticContract() {
     "<title>COSMOS-CQA Public Research Portal</title>",
     `<meta name="description" content="COSMOS-CQA is a research-only public portal and browser workbench for cosmology artifact quality assurance evidence, provenance, and replay.">`,
     `<meta name="author" content="${owner}">`,
+    ...citationMetaPhrases,
     `<link rel="canonical" href="${canonicalUrl}">`,
     `<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">`,
     `<link rel="sitemap" type="application/xml" title="Sitemap" href="${canonicalUrl}sitemap.xml">`,
@@ -117,6 +128,8 @@ async function validateStaticContract() {
     `"value": "${zenodoCurrentReleaseDoi}"`,
     `"url": "https://doi.org/${zenodoCurrentReleaseDoi}"`,
     "https://zenodo.org/records/21142690",
+    "Cite v0.1.2:",
+    `https://doi.org/${zenodoCurrentReleaseDoi}`,
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
@@ -141,18 +154,35 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/workbench.html", workbenchHtml, [
     "<title>COSMOS-CQA Research Workbench</title>",
+    ...citationMetaPhrases,
     `<link rel="canonical" href="${canonicalUrl}workbench.html">`,
     `<meta property="og:url" content="${canonicalUrl}workbench.html">`,
     `<meta property="og:image" content="${canonicalUrl}assets/social-preview.png">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     "Core Pack intake",
     "deterministic replay",
+    "Cite DOI",
+    "Cite this demo release",
+    zenodoCurrentReleaseDoi,
+    zenodoConceptDoi,
     "Optional audio starts only when Play is selected.",
     "3-step wizard plus inline mini-quiz",
     "Start guided calibration to review three gold tiles",
     "Guided calibration is controlled from the Tile Viewer label workflow",
     "./safety.html",
     owner,
+  ]);
+
+  requirePhrases("apps/web/demo-workbook.html", demoWorkbookPage, [
+    "<title>Demo Workbook | COSMOS-CQA</title>",
+    ...citationMetaPhrases,
+    `<link rel="canonical" href="${canonicalUrl}demo-workbook.html">`,
+    "Cite this demo release:",
+    zenodoCurrentReleaseDoi,
+    zenodoConceptDoi,
+    "For public notes or reproducibility review",
+    "exported validation, SBOM, session, or evidence bundle artifacts",
+    "Open Demo Workbench",
   ]);
 
   requirePhrases("apps/web/robots.txt", robots, [
@@ -234,6 +264,7 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/citation.html", citationPage, [
     "Zenodo DOI active.",
+    ...citationMetaPhrases,
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
     zenodoCurrentReleaseDoi,
@@ -251,6 +282,7 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/releases.html", releasesPage, [
     "v0.1.2 Research Alpha",
+    ...citationMetaPhrases,
     "Zenodo DOI status: minted.",
     zenodoCurrentReleaseDoi,
     "v0.1.1 Research Alpha",

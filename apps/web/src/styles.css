@@ -119,6 +119,11 @@ body {
   white-space: nowrap;
 }
 
+.header-link[href^="https://doi.org"] {
+  border-color: rgba(240, 201, 106, 0.42);
+  color: var(--accent-2);
+}
+
 .demo-mode-notice {
   align-items: center;
   background: #101813;
@@ -801,6 +806,30 @@ textarea:hover {
   border-color: rgba(67, 214, 197, 0.62);
   color: var(--accent);
   grid-column: 1 / -1;
+}
+
+.workbench-citation-strip {
+  background: rgba(13, 16, 20, 0.58);
+  border: 1px solid rgba(67, 214, 197, 0.24);
+  border-left: 3px solid var(--accent-2);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  display: grid;
+  font-size: 12px;
+  gap: 5px;
+  line-height: 1.35;
+  padding: 9px 10px;
+}
+
+.workbench-citation-strip span {
+  color: var(--muted-strong);
+  font-weight: 800;
+}
+
+.workbench-citation-strip a {
+  color: var(--accent);
+  font-weight: 820;
+  overflow-wrap: anywhere;
 }
 
 .command-grid {

@@ -15,10 +15,10 @@ npm --prefix apps/web run check:portal-deploy
 Without a server, the command checks repository files and release artifacts:
 
 - `apps/web/CNAME` contains only `cosmos-cqa.org`;
-- `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public research-only copy, license boundaries, safety and use boundaries, security disclosure routing, GitHub release links, release artifact index links, and the hosted demo route;
-- `apps/web/workbench.html` includes canonical URL metadata and social preview metadata;
+- `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public citation meta tags, visible DOI links, public research-only copy, license boundaries, safety and use boundaries, security disclosure routing, GitHub release links, release artifact index links, and the hosted demo route;
+- `apps/web/demo-workbook.html` and `apps/web/workbench.html` include canonical URL metadata, social preview metadata, public citation meta tags, and compact DOI citation links for the current DOI-minted demo release;
 - public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, and contact are present;
-- `.zenodo.json`, `CITATION.cff`, citation docs, release pages, README, and portal structured data preserve controlled Zenodo DOI metadata, minted-DOI wording, and the research-only license boundary;
+- `.zenodo.json`, `CITATION.cff`, citation docs, release pages, README, portal structured data, citation meta tags, and visible DOI affordances preserve controlled Zenodo DOI metadata, minted-DOI wording, and the research-only license boundary;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
 - `docs/project-notes.md` records the completed PR #51 safety review trail and current public-surface hardening lane;
