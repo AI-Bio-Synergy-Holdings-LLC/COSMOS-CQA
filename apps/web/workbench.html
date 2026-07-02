@@ -202,32 +202,74 @@
 
           <section class="control-group" aria-label="Overlay and palette controls">
             <div class="group-title">Visual Sidecars</div>
-            <div class="row">
-              <label for="overlaySel">Overlay</label>
-              <select id="overlaySel" aria-label="Overlay type">
-                <option value="none">None</option>
-                <option value="gradient">Gradient (Sobel)</option>
-                <option value="rings">Power rings</option>
-                <option value="wavelet">Wavelet-like</option>
-              </select>
-              <label for="paletteSel">Palette</label>
-              <select id="paletteSel" aria-label="Color palette">
-                <option value="gray">Gray</option>
-                <option value="viridis" selected>Viridis</option>
-                <option value="cividis">Cividis (color-safe)</option>
-              </select>
-              <button id="fullscreenBtn" type="button" title="Fullscreen">Fullscreen</button>
+            <div class="visual-sidecar-toolbar">
+              <div class="sidecar-select-grid">
+                <label class="sidecar-select-control" for="overlaySel">
+                  <span>Overlay</span>
+                  <select id="overlaySel" aria-label="Overlay type">
+                    <option value="none">None</option>
+                    <option value="gradient">Gradient (Sobel)</option>
+                    <option value="rings">Power rings</option>
+                    <option value="wavelet">Wavelet-like</option>
+                  </select>
+                </label>
+                <label class="sidecar-select-control" for="paletteSel">
+                  <span>Palette</span>
+                  <select id="paletteSel" aria-label="Color palette">
+                    <option value="gray">Gray</option>
+                    <option value="viridis" selected>Viridis</option>
+                    <option value="cividis">Cividis (color-safe)</option>
+                  </select>
+                </label>
+              </div>
+              <div class="viewer-actions" aria-label="Viewer utility actions">
+                <button id="fullscreenBtn" type="button" class="compact-pill" title="Fullscreen tile viewer">Fullscreen</button>
+                <button id="resetViewBtn" type="button" class="compact-pill" title="Reset viewer transform">Reset</button>
+              </div>
             </div>
-            <div class="viewer-tools" aria-label="Viewer transform controls">
-              <button id="zoomOutBtn" type="button" title="Zoom out">Zoom -</button>
-              <button id="zoomInBtn" type="button" title="Zoom in">Zoom +</button>
-              <button id="panLeftBtn" type="button" title="Pan left">Pan L</button>
-              <button id="panUpBtn" type="button" title="Pan up">Pan U</button>
-              <button id="panDownBtn" type="button" title="Pan down">Pan D</button>
-              <button id="panRightBtn" type="button" title="Pan right">Pan R</button>
-              <button id="rotateLeftBtn" type="button" title="Rotate left">Rot L</button>
-              <button id="rotateRightBtn" type="button" title="Rotate right">Rot R</button>
-              <button id="resetViewBtn" type="button" title="Reset viewer transform">Reset</button>
+            <div class="viewer-tools transform-controls" aria-label="Viewer transform controls">
+              <label class="transform-control" for="zoomRange">
+                <span class="control-label-row">
+                  <span>Zoom</span>
+                  <output id="zoomValue" for="zoomRange">100%</output>
+                </span>
+                <input id="zoomRange" type="range" min="100" max="400" step="25" value="100" aria-label="Viewer zoom percent" />
+              </label>
+              <label class="transform-control" for="panXRange">
+                <span class="control-label-row">
+                  <span>Pan X</span>
+                  <output id="panXValue" for="panXRange">0</output>
+                </span>
+                <input id="panXRange" type="range" min="-320" max="320" step="32" value="0" aria-label="Viewer horizontal pan" />
+              </label>
+              <label class="transform-control" for="panYRange">
+                <span class="control-label-row">
+                  <span>Pan Y</span>
+                  <output id="panYValue" for="panYRange">0</output>
+                </span>
+                <input id="panYRange" type="range" min="-320" max="320" step="32" value="0" aria-label="Viewer vertical pan" />
+              </label>
+              <fieldset class="rotation-control">
+                <legend>Rotation</legend>
+                <div class="rotation-options">
+                  <label class="segmented-option">
+                    <input type="radio" name="rotationDeg" value="0" checked />
+                    <span>0</span>
+                  </label>
+                  <label class="segmented-option">
+                    <input type="radio" name="rotationDeg" value="90" />
+                    <span>90</span>
+                  </label>
+                  <label class="segmented-option">
+                    <input type="radio" name="rotationDeg" value="180" />
+                    <span>180</span>
+                  </label>
+                  <label class="segmented-option">
+                    <input type="radio" name="rotationDeg" value="270" />
+                    <span>270</span>
+                  </label>
+                </div>
+              </fieldset>
               <span id="viewerTransformStatus" class="caption" aria-live="polite">Zoom 100%; rotation 0 deg; pan 0, 0.</span>
             </div>
           </section>

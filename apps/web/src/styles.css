@@ -513,10 +513,125 @@ canvas.tile:hover {
   display: none;
 }
 
-.viewer-tools {
+.visual-sidecar-toolbar {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: 1fr;
+}
+
+.sidecar-select-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sidecar-select-control {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.viewer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.viewer-tools {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr));
+}
+
+.transform-control,
+.rotation-control {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.control-label-row {
+  align-items: center;
+  color: var(--muted-strong);
+  display: flex;
+  font-size: 12px;
+  font-weight: 750;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.control-label-row output {
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  cursor: pointer;
+  min-height: 28px;
+  padding: 0;
+}
+
+.rotation-control {
+  border: 0;
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+}
+
+.rotation-control legend {
+  color: var(--muted-strong);
+  font-size: 12px;
+  font-weight: 750;
+  padding: 0;
+}
+
+.rotation-options {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.segmented-option {
+  min-width: 0;
+  position: relative;
+}
+
+.segmented-option input {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.segmented-option span {
+  align-items: center;
+  background: rgba(13, 16, 20, 0.9);
+  border: 1px solid #33414a;
+  border-radius: var(--radius-sm);
+  color: var(--muted-strong);
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 30px;
+  padding: 6px 7px;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.segmented-option input:checked + span {
+  background: rgba(67, 214, 197, 0.12);
+  border-color: rgba(67, 214, 197, 0.58);
+  color: var(--accent);
+}
+
+.segmented-option input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .viewer-tools .caption {
@@ -1443,6 +1558,16 @@ details[open] summary {
   .viewer {
     gap: 12px;
     padding: 12px;
+  }
+
+  .visual-sidecar-toolbar,
+  .sidecar-select-grid,
+  .viewer-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .viewer-actions {
+    justify-content: flex-start;
   }
 
   .tile-stage {

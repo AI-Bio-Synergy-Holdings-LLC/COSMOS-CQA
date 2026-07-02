@@ -68,6 +68,23 @@ test("keeps the research console hierarchy and responsive visual system coherent
   const mobileCanvasBox = await page.locator("#tileCanvas").boundingBox();
   expect(mobileCanvasBox.width).toBeLessThanOrEqual(358);
   expect(Math.abs(mobileCanvasBox.width - mobileCanvasBox.height)).toBeLessThan(2);
+
+  await expect(page.locator("#zoomInBtn, #zoomOutBtn, #panRightBtn, #rotateRightBtn")).toHaveCount(0);
+  await expect(page.locator("#zoomRange")).toHaveAccessibleName("Viewer zoom percent");
+  await expect(page.locator("#panXRange")).toHaveAccessibleName("Viewer horizontal pan");
+  await expect(page.locator("#panYRange")).toHaveAccessibleName("Viewer vertical pan");
+  await expect(page.getByRole("radio", { name: "90" })).toBeVisible();
+  await expect(page.locator("#fullscreenBtn")).toBeVisible();
+  await expect(page.locator("#resetViewBtn")).toBeVisible();
+
+  const transformLayout = await page.evaluate(() => ({
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    columns: getComputedStyle(document.querySelector(".viewer-tools")).gridTemplateColumns.split(" ").length,
+  }));
+  expect(transformLayout).toEqual({
+    horizontalOverflow: false,
+    columns: 1,
+  });
 });
 
 test("migrates accessibility focus, captions, and audit targets into browser automation", async ({ page }) => {

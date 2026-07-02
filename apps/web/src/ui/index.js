@@ -737,6 +737,38 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     label.adjudication_state = observation.adjudication_state;
   }
 
+  function configureViewerTransformControls() {
+    if (!dom.zoomRange || !dom.panXRange || !dom.panYRange) {
+      return;
+    }
+
+    dom.zoomRange.min = String(Math.round(VIEWER_TRANSFORM_LIMITS.minZoom * 100));
+    dom.zoomRange.max = String(Math.round(VIEWER_TRANSFORM_LIMITS.maxZoom * 100));
+    dom.zoomRange.step = String(Math.round(VIEWER_TRANSFORM_LIMITS.zoomStep * 100));
+    for (const control of [dom.panXRange, dom.panYRange]) {
+      control.min = String(-VIEWER_TRANSFORM_LIMITS.maxPan);
+      control.max = String(VIEWER_TRANSFORM_LIMITS.maxPan);
+      control.step = String(VIEWER_TRANSFORM_LIMITS.panStep);
+    }
+  }
+
+  function syncViewerTransformControls(view) {
+    if (!dom.zoomRange || !dom.panXRange || !dom.panYRange) {
+      return;
+    }
+
+    const zoomPercent = Math.round(view.zoom * 100);
+    dom.zoomRange.value = String(zoomPercent);
+    dom.zoomValue.textContent = `${zoomPercent}%`;
+    dom.panXRange.value = String(view.panX);
+    dom.panXValue.textContent = String(view.panX);
+    dom.panYRange.value = String(view.panY);
+    dom.panYValue.textContent = String(view.panY);
+    dom.rotationControls.forEach((control) => {
+      control.checked = Number(control.value) === view.rotationDeg;
+    });
+  }
+
   function adjustViewerTransform(patch) {
     state.viewerTransform = normalizeViewerTransform({
       ...state.viewerTransform,
@@ -761,6 +793,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.viewerTransform = view;
     dom.tileTransformLayer.style.transform = matrix.css;
     dom.viewerTransformStatus.textContent = `Zoom ${Math.round(view.zoom * 100)}%; rotation ${view.rotationDeg} deg; pan ${view.panX}, ${view.panY}.`;
+    syncViewerTransformControls(view);
   }
 
   function renderTilePassport(tile = tiles[state.idx]) {
@@ -2921,6 +2954,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   }
 
   function wireEvents() {
+    configureViewerTransformControls();
     dom.prevBtn.addEventListener("click", () => drawTile((state.idx - 1 + tiles.length) % tiles.length));
     dom.nextBtn.addEventListener("click", () => drawTile((state.idx + 1) % tiles.length));
     dom.tileSelect.addEventListener("change", (event) => drawTile(Number(event.target.value)));
@@ -2971,24 +3005,28 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
         pinObservationTarget({ xNorm: 0.5, yNorm: 0.5 });
       }
     });
-    dom.zoomOutBtn.addEventListener("click", () => {
-      adjustViewerTransform({ zoom: state.viewerTransform.zoom - VIEWER_TRANSFORM_LIMITS.zoomStep });
-      setCaption("Viewer zoomed out.");
+    dom.zoomRange.addEventListener("input", () => {
+      const zoom = Number(dom.zoomRange.value) / 100;
+      adjustViewerTransform({ zoom });
+      setCaption(`Viewer zoom ${Math.round(zoom * 100)}%.`);
     });
-    dom.zoomInBtn.addEventListener("click", () => {
-      adjustViewerTransform({ zoom: state.viewerTransform.zoom + VIEWER_TRANSFORM_LIMITS.zoomStep });
-      setCaption("Viewer zoomed in.");
+    dom.panXRange.addEventListener("input", () => {
+      adjustViewerTransform({ panX: Number(dom.panXRange.value) });
+      setCaption(`Viewer pan X ${dom.panXRange.value}.`);
     });
-    dom.panLeftBtn.addEventListener("click", () => adjustViewerTransform({ panX: state.viewerTransform.panX - VIEWER_TRANSFORM_LIMITS.panStep }));
-    dom.panRightBtn.addEventListener("click", () => adjustViewerTransform({ panX: state.viewerTransform.panX + VIEWER_TRANSFORM_LIMITS.panStep }));
-    dom.panUpBtn.addEventListener("click", () => adjustViewerTransform({ panY: state.viewerTransform.panY - VIEWER_TRANSFORM_LIMITS.panStep }));
-    dom.panDownBtn.addEventListener("click", () => adjustViewerTransform({ panY: state.viewerTransform.panY + VIEWER_TRANSFORM_LIMITS.panStep }));
-    dom.rotateLeftBtn.addEventListener("click", () =>
-      adjustViewerTransform({ rotationDeg: state.viewerTransform.rotationDeg - VIEWER_TRANSFORM_LIMITS.rotationStepDeg }),
-    );
-    dom.rotateRightBtn.addEventListener("click", () =>
-      adjustViewerTransform({ rotationDeg: state.viewerTransform.rotationDeg + VIEWER_TRANSFORM_LIMITS.rotationStepDeg }),
-    );
+    dom.panYRange.addEventListener("input", () => {
+      adjustViewerTransform({ panY: Number(dom.panYRange.value) });
+      setCaption(`Viewer pan Y ${dom.panYRange.value}.`);
+    });
+    dom.rotationControls.forEach((control) => {
+      control.addEventListener("change", () => {
+        if (!control.checked) {
+          return;
+        }
+        adjustViewerTransform({ rotationDeg: Number(control.value) });
+        setCaption(`Viewer rotation ${control.value} deg.`);
+      });
+    });
     dom.resetViewBtn.addEventListener("click", () => {
       adjustViewerTransform(DEFAULT_VIEWER_TRANSFORM);
       setCaption("Viewer transform reset.");
@@ -3209,14 +3247,13 @@ function bindDom(documentRef) {
     overlaySel: get("overlaySel"),
     paletteSel: get("paletteSel"),
     fullscreenBtn: get("fullscreenBtn"),
-    zoomOutBtn: get("zoomOutBtn"),
-    zoomInBtn: get("zoomInBtn"),
-    panLeftBtn: get("panLeftBtn"),
-    panUpBtn: get("panUpBtn"),
-    panDownBtn: get("panDownBtn"),
-    panRightBtn: get("panRightBtn"),
-    rotateLeftBtn: get("rotateLeftBtn"),
-    rotateRightBtn: get("rotateRightBtn"),
+    zoomRange: get("zoomRange"),
+    zoomValue: get("zoomValue"),
+    panXRange: get("panXRange"),
+    panXValue: get("panXValue"),
+    panYRange: get("panYRange"),
+    panYValue: get("panYValue"),
+    rotationControls: [...documentRef.querySelectorAll('input[name="rotationDeg"]')],
     resetViewBtn: get("resetViewBtn"),
     viewerTransformStatus: get("viewerTransformStatus"),
     playBtn: get("playBtn"),

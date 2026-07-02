@@ -13,6 +13,20 @@ import {
   openWorkbench,
 } from "./fixtures/workbench.mjs";
 
+async function setRangeValue(page, selector, value) {
+  await page.locator(selector).evaluate((input, nextValue) => {
+    input.value = String(nextValue);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }, value);
+}
+
+async function setViewerTransform(page, { zoomPercent = 100, panX = 0, panY = 0, rotationDeg = 0 } = {}) {
+  await setRangeValue(page, "#zoomRange", zoomPercent);
+  await setRangeValue(page, "#panXRange", panX);
+  await setRangeValue(page, "#panYRange", panY);
+  await page.locator(`input[name="rotationDeg"][value="${rotationDeg}"]`).check({ force: true });
+}
+
 test("migrates tracked label submit and undo targets into browser automation", async ({ page }) => {
   annotateTargets(LABEL_WORKFLOW_TARGETS);
   await openWorkbench(page);
@@ -147,11 +161,10 @@ test("keeps pinned source coordinates stable after viewer transforms", async ({ 
   await disableSimulation(page);
 
   await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 100%; rotation 0 deg; pan 0, 0.");
-  await page.locator("#zoomInBtn").click();
-  await page.locator("#zoomInBtn").click();
-  await page.locator("#panRightBtn").click();
-  await page.locator("#panDownBtn").click();
-  await page.locator("#rotateRightBtn").click();
+  await expect(page.locator("#zoomRange")).toHaveAccessibleName("Viewer zoom percent");
+  await expect(page.locator("#panXRange")).toHaveAccessibleName("Viewer horizontal pan");
+  await expect(page.locator("#panYRange")).toHaveAccessibleName("Viewer vertical pan");
+  await setViewerTransform(page, { zoomPercent: 150, panX: 32, panY: 32, rotationDeg: 90 });
   await expect(page.locator("#viewerTransformStatus")).toContainText("Zoom 150%; rotation 90 deg; pan 32, 32.");
 
   const viewport = await page.locator("#tileCanvasWrap").boundingBox();
@@ -238,9 +251,7 @@ test("reviews submitted observations with synced edit delete restore and export 
   await openWorkbench(page);
   await disableSimulation(page);
 
-  await page.locator("#zoomInBtn").click();
-  await page.locator("#panRightBtn").click();
-  await page.locator("#rotateRightBtn").click();
+  await setViewerTransform(page, { zoomPercent: 125, panX: 32, rotationDeg: 90 });
   const viewport = await page.locator("#tileCanvasWrap").boundingBox();
   const clickPoint = transformSourceToViewportPoint({
     xNorm: 0.42,
