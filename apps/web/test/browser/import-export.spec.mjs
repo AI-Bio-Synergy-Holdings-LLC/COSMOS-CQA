@@ -90,7 +90,7 @@ test("exports schema-ready evidence bundle JSON with archive metadata", async ({
   await expect(page.locator("#caption")).toContainText("Evidence bundle JSON exported.");
 });
 
-test("migrates data import and public sample targets into browser automation", async ({ page }) => {
+test("migrates data import and synthetic fixture targets into browser automation", async ({ page }) => {
   annotateTargets(DATA_IMPORT_TARGETS);
   await openWorkbench(page);
 
@@ -131,8 +131,8 @@ test("migrates data import and public sample targets into browser automation", a
   await expect(page.locator("#tileSelect option")).toHaveCount(33);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_demo-v0.1.0-intake: 2 tile passport(s).");
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_synthetic-contract-v0.1.1: 2 tile passport(s).");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
   await expect(page.locator("#tileSelect option")).toHaveCount(35);
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
   await expect(page.locator("#diagnosticSummary")).toContainText("Not validated scientific results");
@@ -147,7 +147,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   await disableSimulation(page);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
   await page.locator("#overlaySel").selectOption("gradient");
   await page.locator("#paletteSel").selectOption("cividis");
   const canvas = page.locator("#tileCanvas");
@@ -168,7 +168,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
 
   expect(exportedSession.schema_version).toBe("cosmos-cqa.contracts.v0.1.0");
   expect(exportedSession.selected_tiles[0]).toMatchObject({
-    tile_id: "demo_corepack_tile_001",
+    tile_id: "synthetic_residual_stripe_001",
     overlay: "gradient",
     palette: "cividis",
   });
@@ -182,7 +182,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   });
   expect(exportedSession.observations[0]).toMatchObject({
     label_id: exportedSession.labels[0].label_id,
-    tile_id: "demo_corepack_tile_001",
+    tile_id: "synthetic_residual_stripe_001",
     zone_id: "r3c3",
     zone_label: "bottom right",
   });
@@ -200,7 +200,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   });
   expect(exportedSession.reports[0].observation_summary.dominant_zone_label).toBe("bottom right");
   expect(exportedSession.reports[0].observation_summary.tile_qa_metrics[0]).toMatchObject({
-    key: "demo_corepack_tile_001",
+    key: "synthetic_residual_stripe_001",
     ledger_event_count: 1,
   });
   await expect(page.locator("#sessionStatus")).toContainText("Exported");
@@ -211,7 +211,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   expect(await labelCount(page)).toBe(0);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
   await page.locator("#nextBtn").click();
   await page.locator("#overlaySel").selectOption("none");
   await page.locator("#paletteSel").selectOption("gray");
@@ -223,7 +223,7 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   });
 
   await expect(page.locator("#sessionStatus")).toContainText(`Imported ${exportedSession.session_id}`);
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
   await expect(page.locator("#overlaySel")).toHaveValue("gradient");
   await expect(page.locator("#paletteSel")).toHaveValue("cividis");
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
@@ -262,6 +262,6 @@ test("saves imports and deterministically reloads research sessions", async ({ p
   });
 
   await expect(page.locator("#sessionStatus")).toContainText("Session rejected");
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
   expect(await labelCount(page)).toBe(1);
 });

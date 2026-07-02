@@ -17,16 +17,16 @@
       "record_count": 2,
       "error_count": 0,
       "imported_at": "2026-06-29T00:00:00.000Z",
-      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "manifest_id": "corepack_synthetic-contract-v0.1.1",
       "notes": "Synthetic Core Pack fixture loaded through the evidence workspace contract lane."
     }
   ],
   "selected_tiles": [
     {
-      "tile_id": "demo_corepack_tile_001",
-      "dataset": "DEMO_SIM_T",
+      "tile_id": "synthetic_residual_stripe_001",
+      "dataset": "COSMOS_CQA_SYNTHETIC_FIXTURE",
       "checksum": "sha256:demo-corepack-tile-001",
-      "manifest_id": "corepack_demo-v0.1.0-intake",
+      "manifest_id": "corepack_synthetic-contract-v0.1.1",
       "selected_at": "2026-06-29T00:00:00.000Z",
       "overlay": "none",
       "palette": "viridis",
@@ -78,7 +78,7 @@
           "record_count": 2,
           "error_count": 0,
           "imported_at": "2026-06-29T00:00:00.000Z",
-          "manifest_id": "corepack_demo-v0.1.0-intake",
+          "manifest_id": "corepack_synthetic-contract-v0.1.1",
           "notes": "Synthetic Core Pack fixture loaded through the evidence workspace contract lane."
         }
       ],

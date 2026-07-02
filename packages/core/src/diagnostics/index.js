@@ -122,7 +122,7 @@ export function createKappaYPlaceholder({ manifest, generatedAt = new Date().toI
     caveat:
       "This placeholder is not a validated cosmology diagnostic, does not estimate a physical kappa-y cross-correlation, and must not be used as evidence of foreground detection, lensing quality, survey performance, or scientific validity.",
     limitations: [
-      "Uses synthetic Core Pack manifest fields only; no CMB, lensing, Compton-y, mask, covariance, or survey data are analyzed.",
+      "Uses synthetic Core Pack contract fixture fields only; no CMB, lensing, Compton-y, mask, covariance, or survey data are analyzed.",
       "The score is a deterministic replay fixture for research workflow plumbing and expert review planning.",
       "Any future scientific implementation requires source provenance, rights review, domain review, fixtures, and validation.",
     ],
@@ -183,7 +183,7 @@ export function createEbResidualPlaceholder({ manifest, generatedAt = new Date()
     caveat:
       "This placeholder is not a validated weak-lensing diagnostic, does not separate physical E and B modes, and must not be used to claim survey calibration, bias reduction, artifact detection performance, or scientific validity.",
     limitations: [
-      "Uses synthetic Core Pack manifest fields only; no shear catalog, map transform, mask, covariance, or survey calibration data are analyzed.",
+      "Uses synthetic Core Pack contract fixture fields only; no shear catalog, map transform, mask, covariance, or survey calibration data are analyzed.",
       "The score is a deterministic replay fixture for research workflow plumbing and expert review planning.",
       "Any future scientific implementation requires source provenance, rights review, domain review, fixtures, and validation.",
     ],

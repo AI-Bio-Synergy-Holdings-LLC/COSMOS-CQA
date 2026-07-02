@@ -26,14 +26,14 @@ test("shows Core Pack explorer empty and invalid states", async ({ page }) => {
   await expect(page.locator("#corePackExplorerStatus")).toContainText("Core Pack rejected");
 });
 
-test("explores the public sample Core Pack and selected tile passports", async ({ page }) => {
+test("explores the synthetic Core Pack fixture and selected tile passports", async ({ page }) => {
   await openWorkbench(page);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_demo-v0.1.0-intake: 2 tile passport(s).");
+  await expect(page.locator("#feedStatus")).toHaveText("Loaded Core Pack corepack_synthetic-contract-v0.1.1: 2 tile passport(s).");
 
   await expect(page.locator("#corePackExplorerStatus")).toContainText("schema-validated Core Pack manifest");
-  await expect(page.locator("#corePackManifestSummary")).toContainText("corepack_demo-v0.1.0-intake");
+  await expect(page.locator("#corePackManifestSummary")).toContainText("corepack_synthetic-contract-v0.1.1");
   await expect(page.locator("#corePackManifestSummary")).toContainText("v0.1.0-research-alpha");
   await expect(page.locator("#corePackManifestSummary")).toContainText("AI-Bio Synergy Holdings LLC");
   await expect(page.locator("#corePackManifestSummary")).toContainText("Research-only public use");
@@ -49,22 +49,22 @@ test("explores the public sample Core Pack and selected tile passports", async (
   await expect(page.locator("#corePackDiagnosticRefs")).toContainText("E/B residual review placeholder");
 
   await expect(page.locator("#tilePassportStatus")).toHaveText("Core Pack passport");
-  await expect(page.locator("#tilePassportDetails")).toContainText("demo_corepack_tile_001");
-  await expect(page.locator("#tilePassportDetails")).toContainText("DEMO_SIM_T");
+  await expect(page.locator("#tilePassportDetails")).toContainText("synthetic_residual_stripe_001");
+  await expect(page.locator("#tilePassportDetails")).toContainText("COSMOS_CQA_SYNTHETIC_FIXTURE");
   await expect(page.locator("#tilePassportDetails")).toContainText("RA 7.611, Dec 29.900");
   await expect(page.locator("#tilePassportDetails")).toContainText("sha256:demo-corepack-tile-001");
   await expect(page.locator("#tilePassportDetails")).toContainText("Public truth labels hidden");
-  await expect(page.locator("#tilePassportProvenance")).toContainText("synthetic-demo-core-pack");
+  await expect(page.locator("#tilePassportProvenance")).toContainText("cosmos-cqa-synthetic-contract-fixture");
   await expect(page.locator("#tilePassportProvenance")).toContainText("archive/original-materials/legacy-v3/COSMOS_v3_public.html");
   await expect(page.locator("#tilePassportSidecars")).toContainText("dft32_rowmeans");
   await expect(page.locator("#tilePassportSidecars")).toContainText("none, gradient, rings, wavelet");
 
-  await page.locator("#corePackTileList button").filter({ hasText: "demo_corepack_tile_002" }).click();
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_002");
-  await expect(page.locator("#tilePassportDetails")).toContainText("demo_corepack_tile_002");
+  await page.locator("#corePackTileList button").filter({ hasText: "synthetic_clean_control_002" }).click();
+  await expect(page.locator("#tileId")).toHaveText("synthetic_clean_control_002");
+  await expect(page.locator("#tilePassportDetails")).toContainText("synthetic_clean_control_002");
   await expect(page.locator("#tilePassportDetails")).toContainText("RA 19.250, Dec -4.500");
   await expect(page.locator("#tilePassportDetails")).toContainText("sha256:demo-corepack-tile-002");
   await expect(page.locator("#tilePassportDetails")).toContainText("No truth record in passport.");
   await expect(page.locator("#tilePassportSidecars")).toContainText("gray, cividis");
-  await expect(page.locator("#corePackTileList button").filter({ hasText: "demo_corepack_tile_002" })).toHaveClass(/active/);
+  await expect(page.locator("#corePackTileList button").filter({ hasText: "synthetic_clean_control_002" })).toHaveClass(/active/);
 });

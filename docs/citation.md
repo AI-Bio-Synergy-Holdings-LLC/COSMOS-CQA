@@ -43,7 +43,7 @@ For reproducibility work, cite the exact evidence you used:
 - release notes;
 - validation report JSON;
 - SBOM JSON;
-- sample Core Pack manifest;
+- synthetic Core Pack fixture manifest;
 - evidence bundle JSON, if exported;
 - any external data source and its own required citation.
 

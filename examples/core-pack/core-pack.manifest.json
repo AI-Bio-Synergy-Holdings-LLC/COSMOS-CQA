@@ -1,7 +1,7 @@
 {
   "schema_version": "cosmos-cqa.contracts.v0.1.0",
-  "manifest_id": "corepack_demo-v0.1.0-intake",
-  "name": "COSMOS-CQA Demo Core Pack Intake Sample",
+  "manifest_id": "corepack_synthetic-contract-v0.1.1",
+  "name": "COSMOS-CQA Synthetic Contract Core Pack Fixture",
   "version": "v0.1.0-research-alpha",
   "generated_at": "2026-06-28T00:00:00.000Z",
   "license": "Research-only public use; all other rights reserved.",
@@ -9,10 +9,9 @@
   "tiles": [
     {
       "schema_version": "cosmos-cqa.contracts.v0.1.0",
-      "tile_id": "demo_corepack_tile_001",
-      "dataset": "DEMO_SIM_T",
+      "tile_id": "synthetic_residual_stripe_001",
+      "dataset": "COSMOS_CQA_SYNTHETIC_FIXTURE",
       "release": "v0.1.0-research-alpha",
-      "doi": "doi:10.0000/demo",
       "band": "T",
       "ra": 7.611,
       "dec": 29.9,
@@ -22,11 +21,11 @@
         "severity": "low"
       },
       "provenance": {
-        "source": "synthetic-demo-core-pack",
+        "source": "cosmos-cqa-synthetic-contract-fixture",
         "source_url": "examples/core-pack/replay-fixture.json",
         "archive_path": "archive/original-materials/legacy-v3/COSMOS_v3_public.html",
         "generated_at": "2026-06-28T00:00:00.000Z",
-        "notes": "Synthetic demo tile passport for validating Core Pack intake wiring. This is not imported from the missing nested CSSFP/Core Pack prototype."
+        "notes": "Synthetic contract fixture tile for validating Core Pack intake wiring. This is not imported from the missing nested CSSFP/Core Pack prototype and is not public observational data."
       },
       "sidecars": {
         "audio_map": "dft32_rowmeans",
@@ -37,21 +36,20 @@
     },
     {
       "schema_version": "cosmos-cqa.contracts.v0.1.0",
-      "tile_id": "demo_corepack_tile_002",
-      "dataset": "DEMO_SIM_T",
+      "tile_id": "synthetic_clean_control_002",
+      "dataset": "COSMOS_CQA_SYNTHETIC_FIXTURE",
       "release": "v0.1.0-research-alpha",
-      "doi": "doi:10.0000/demo",
       "band": "E",
       "ra": 19.25,
       "dec": -4.5,
       "checksum": "sha256:demo-corepack-tile-002",
       "truth": null,
       "provenance": {
-        "source": "synthetic-demo-core-pack",
+        "source": "cosmos-cqa-synthetic-contract-fixture",
         "source_url": "examples/core-pack/replay-fixture.json",
         "archive_path": "archive/original-materials/legacy-v3/COSMOS_v3_public.html",
         "generated_at": "2026-06-28T00:00:00.000Z",
-        "notes": "Synthetic demo tile passport for exercising nullable truth records and intake validation without committing third-party data."
+        "notes": "Synthetic clean-control fixture tile for exercising nullable truth records and intake validation without committing third-party data."
       },
       "sidecars": {
         "audio_map": "dft32_rowmeans",

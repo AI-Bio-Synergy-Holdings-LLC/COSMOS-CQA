@@ -22,7 +22,7 @@ test("lists populated evidence artifacts hashes SBOM refs diagnostics and valida
   await openWorkbench(page);
 
   await page.locator("#loadSample").click();
-  await expect(page.locator("#feedStatus")).toContainText("Loaded Core Pack corepack_demo-v0.1.0-intake");
+  await expect(page.locator("#feedStatus")).toContainText("Loaded Core Pack corepack_synthetic-contract-v0.1.1");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 artifact(s)");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 provenance hash(es)");
   await expect(page.locator("#evidenceWorkspaceStatus")).toContainText("1 SBOM reference(s)");
@@ -38,7 +38,7 @@ test("lists populated evidence artifacts hashes SBOM refs diagnostics and valida
   await expect(page.locator("#evidenceSbomRefs")).toContainText("sbom_v0.1.0-research-alpha");
   await expect(page.locator("#evidenceSbomRefs")).toContainText("CycloneDX 1.4");
   await expect(page.locator("#evidenceSbomRefs")).toContainText("report=rpt_");
-  await expect(page.locator("#evidenceCorePacks")).toContainText("corepack_demo-v0.1.0-intake");
+  await expect(page.locator("#evidenceCorePacks")).toContainText("corepack_synthetic-contract-v0.1.1");
   await expect(page.locator("#evidenceCorePacks")).toContainText("tiles=2");
   await expect(page.locator("#evidenceDiagnostics")).toContainText("Kappa-y cross-correlation review placeholder");
   await expect(page.locator("#evidenceDiagnostics")).toContainText("not a validated cosmology diagnostic");

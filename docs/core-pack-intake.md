@@ -20,7 +20,9 @@ Until steps 1-6 pass, diagnostic entries must remain concept-only or documentati
 
 ## Current Intake Artifacts
 
-- Sample manifest: `examples/core-pack/core-pack.manifest.json`
+- Synthetic contract fixture manifest: `examples/core-pack/core-pack.manifest.json`
+- Public-data candidate manifest: `examples/public-data-candidates/legacy-survey-core-pack.manifest.json`
+- Public-source assessment: `docs/public-data-sources.md`
 - Validator: `apps/web/scripts/validate-core-pack.mjs`
 - Browser loader: JSON feed/Core Pack uploads are classified as research artifacts with SHA-256 provenance hashes.
 - Report export: validation report JSON includes the research-only notice, limitations, imported artifacts, SBOM references, provenance hashes, and diagnostic caveats before any PDF workflow.
@@ -44,6 +46,7 @@ npm --prefix apps/web run check
 
 - JSON manifests that satisfy `corePackManifest`.
 - Tile passports for synthetic or permitted sample tiles.
+- Public-source candidate references with source URLs, review prompts, citation notes, and explicit no-live-dependency boundaries.
 - SBOM references with paths and checksums.
 - Evidence references to archive manifests, checklists, release notes, and validation reports.
 - Diagnostic concept metadata with explicit caveats and blocked-until gates.
@@ -53,6 +56,7 @@ npm --prefix apps/web run check
 - Importing the missing nested CSSFP prototype as executable source.
 - Repairing minified or malformed prototype JavaScript without preserving provenance.
 - Committing restricted third-party data.
+- Making the hosted public demo depend on third-party cutout services before CORS, rate-limit, attribution, caching, and redistribution terms are reviewed.
 - Adding diagnostics that imply validated scientific performance.
 - Producing PDF or public-facing reports that treat placeholder diagnostics as results.
 

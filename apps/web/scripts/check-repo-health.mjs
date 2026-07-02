@@ -122,7 +122,7 @@ const guardrails = [
     path: "docs/quickstart.md",
     label: "public quickstart",
     phrases: [
-      "sample Core Pack workflow",
+      "synthetic Core Pack fixture workflow",
       "Export Validation Report JSON",
       "npm --prefix apps/web run check",
       "COSMOS-CQA Research-Only Public License",

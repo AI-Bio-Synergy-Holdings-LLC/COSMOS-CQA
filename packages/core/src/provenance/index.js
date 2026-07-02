@@ -33,7 +33,7 @@ export function createBookmarkPayload({ tile, overlay, palette, rate, loop, capt
     dataset: {
       name: meta.dataset || "DemoSynthetic",
       release: meta.release || "v0",
-      doi: meta.doi || "doi:10.0000/demo",
+      doi: meta.doi || "",
       tile_url: meta.url || "",
     },
     tile: {

@@ -747,12 +747,14 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       ["Coordinates", formatCoordinates(meta.ra, meta.dec)],
       ["Checksum", meta.checksum || "not recorded"],
       ["Truth policy", formatTruthPolicy(passport, meta)],
+      ["Review prompt", passport?.review_prompt || "n/a"],
     ]);
 
     if (passport?.provenance) {
       appendMetadataGrid(dom.tilePassportProvenance, [
         ["Provenance source", passport.provenance.source],
         ["Source URL", passport.provenance.source_url || "n/a"],
+        ["Image refs", formatImageRefs(passport.image_refs)],
         ["Archive path", passport.provenance.archive_path || "n/a"],
         ["Generated", formatDate(passport.provenance.generated_at)],
         ["Notes", passport.provenance.notes || "n/a"],
@@ -801,7 +803,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     if (!manifest) {
       dom.corePackExplorerStatus.className = "small empty-state";
       dom.corePackExplorerStatus.textContent =
-        "No Core Pack manifest loaded. Load the public sample or upload a validated Core Pack manifest to inspect evidence.";
+        "No Core Pack manifest loaded. Load the synthetic contract fixture or upload a validated Core Pack manifest to inspect evidence.";
       return;
     }
 
@@ -1296,6 +1298,12 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
   function formatList(values) {
     return Array.isArray(values) && values.length ? values.join(", ") : "n/a";
+  }
+
+  function formatImageRefs(refs) {
+    return Array.isArray(refs) && refs.length
+      ? refs.map((ref) => `${ref.role}: ${ref.url}`).join("; ")
+      : "n/a";
   }
 
   function appendMetadataGrid(container, entries) {
@@ -2008,29 +2016,26 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       const text = await response.text();
       return await importResearchArtifactText(text, { source });
     } catch {
-      dom.feedStatus.textContent = "Public sample Core Pack unavailable.";
+      dom.feedStatus.textContent = "Synthetic contract Core Pack fixture unavailable.";
       return null;
     }
   }
 
   async function startHostedCorePackDemo() {
-    renderDemoModeNotice("Hosted demo:", "loading the public sample Core Pack with public truth-label policy.");
-    setCaption("Hosted demo mode: loading public sample Core Pack.");
+    renderDemoModeNotice("Demo loading", "Synthetic fixture and public truth-label policy are starting.");
+    setCaption("Hosted demo mode: loading synthetic contract Core Pack fixture.");
 
     const result = await loadPublicSample();
     if (!result || result.kind !== "core-pack" || result.errors.length) {
-      renderDemoModeNotice("Hosted demo:", "public sample Core Pack could not be loaded.");
+      renderDemoModeNotice("Demo unavailable", "Synthetic fixture could not be loaded.");
       notifyTestBridge("hostedDemo.ready", { ok: false, dev: config.dev });
       return;
     }
 
     const report = refreshValidationReportPreview();
     scrollToDemoSection();
-    renderDemoModeNotice(
-      "Hosted demo ready:",
-      `${result.manifest.manifest_id} loaded. Diagnostics are caveated placeholders; export Validation Report JSON for research evidence.`,
-    );
-    setCaption("Hosted demo ready: sample Core Pack loaded; diagnostics are caveated.");
+    renderDemoModeNotice("Demo ready", "Synthetic fixture loaded. Public truth labels remain hidden.");
+    setCaption("Demo ready: synthetic fixture loaded; public truth labels hidden.");
     notifyTestBridge("hostedDemo.ready", {
       ok: true,
       dev: config.dev,
@@ -2049,8 +2054,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     strong.textContent = label;
     const link = documentRef.createElement("a");
     link.href = "./demo-workbook.html";
-    link.textContent = "Demo Workbook";
-    dom.demoModeNotice.append(strong, ` ${detail} `, link);
+    link.textContent = "Open workbook";
+    dom.demoModeNotice.append(strong, `. ${detail} `, link);
   }
 
   function scrollToDemoSection() {

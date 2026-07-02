@@ -42,7 +42,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(nav.getByRole("link", { name: /^Experiment$/ })).toHaveAttribute("href", "./research-experiment.html");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
   await expect(page.getByRole("link", { name: "Docs Quickstart, contracts, evidence bundles, deployment validation, and scope references." })).toHaveAttribute("href", "./docs.html");
-  await expect(page.getByRole("link", { name: "Demo Workbook Step-by-step public walkthrough for the sample Core Pack workflow and evidence exports." })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Demo Workbook Step-by-step public walkthrough for the synthetic Core Pack fixture workflow and evidence exports." })).toHaveAttribute(
     "href",
     "./demo-workbook.html",
   );
@@ -313,8 +313,9 @@ test("hands off from the public portal to the maintained research workbench", as
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_APP));
 
   await expect(page.locator("#tileCanvas")).toBeVisible();
-  await expect(page.locator("#demoModeNotice")).toContainText("Hosted demo ready");
-  await expect(page.locator("#tileId")).toHaveText("demo_corepack_tile_001");
+  await expect(page.locator("#demoModeNotice")).toContainText("Demo ready");
+  await expect(page.locator("#demoModeNotice")).not.toContainText("corepack_synthetic-contract-v0.1.1");
+  await expect(page.locator("#tileId")).toHaveText("synthetic_residual_stripe_001");
 });
 
 test("keeps the portal usable on narrow screens", async ({ page }) => {

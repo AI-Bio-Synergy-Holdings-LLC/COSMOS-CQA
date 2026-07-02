@@ -92,6 +92,8 @@ export function tilePassportToTileMeta(passport) {
     truth: passport.truth || { class: "clean", severity: "low" },
     checksum: passport.checksum || "",
     core_pack_source: passport.provenance?.source || "",
+    url: passport.image_refs?.[0]?.url || passport.provenance?.source_url || "",
+    review_prompt: passport.review_prompt || "",
   };
 }
 
