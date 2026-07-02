@@ -12,7 +12,7 @@ COSMOS-CQA is registered on Zenodo as a citable public research software artifac
 - Zenodo license registry value: `other-closed`
 - Zenodo all-versions DOI: `10.5281/zenodo.21112698`
 - Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699`
-- Zenodo `v0.1.2-research-alpha` release DOI: pending GitHub release ingestion
+- Zenodo `v0.1.2-research-alpha` release DOI: `10.5281/zenodo.21142690`
 
 The Zenodo registry value is intentionally conservative. It avoids implying OSI open-source, Creative Commons, commercial reuse, production use, hosted-service use, clinical use, regulatory use, sublicensing, or derivative product rights. The repository `LICENSE.md` controls public-use terms.
 
@@ -36,13 +36,13 @@ Completed for the first DOI-minted release:
 
 ## Current DOI Status
 
-The first Zenodo DOI has been minted, and `v0.1.2-research-alpha` is prepared for a new Zenodo version archive.
+The first Zenodo DOI has been minted, and `v0.1.2-research-alpha` has been archived as a new Zenodo version.
 
-- Zenodo record: `https://zenodo.org/records/21112699`
-- Zenodo API record: `https://zenodo.org/api/records/21112699`
+- Latest Zenodo record: `https://zenodo.org/records/21142690`
+- Latest Zenodo API record: `https://zenodo.org/api/records/21142690`
 - All-versions concept DOI: `https://doi.org/10.5281/zenodo.21112698`
 - `v0.1.1-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21112699`
-- `v0.1.2-research-alpha` release DOI: pending publication after the GitHub release is created
+- `v0.1.2-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21142690`
 
 ## Alignment Responsibilities
 
@@ -61,10 +61,10 @@ Keep these surfaces aligned when a new DOI-minted release is created:
 AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.1-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21112699
 ```
 
-For `v0.1.2-research-alpha`, use the all-versions DOI until the version-specific DOI is published:
+For `v0.1.2-research-alpha`, use the version-specific DOI:
 
 ```text
-AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.2-research-alpha. Research-source software. Zenodo all-versions DOI: https://doi.org/10.5281/zenodo.21112698
+AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.2-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21142690
 ```
 
 Also cite the canonical portal and repository when needed:

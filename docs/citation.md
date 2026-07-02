@@ -12,9 +12,9 @@ The canonical citation metadata is stored in `CITATION.cff`. This page mirrors t
 - Repository: `https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA`
 - Canonical URL: `https://cosmos-cqa.org`
 - License reference: `LicenseRef-COSMOS-CQA-Research-Only`
-- Zenodo all-versions DOI: `10.5281/zenodo.21112698`
-- Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699`
-- Zenodo `v0.1.2-research-alpha` release DOI: pending Zenodo ingestion from the GitHub release
+- Zenodo all-versions DOI: `10.5281/zenodo.21112698` (`https://doi.org/10.5281/zenodo.21112698`)
+- Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699` (`https://doi.org/10.5281/zenodo.21112699`)
+- Zenodo `v0.1.2-research-alpha` release DOI: `10.5281/zenodo.21142690` (`https://doi.org/10.5281/zenodo.21142690`)
 - Zenodo metadata: `.zenodo.json`
 
 ## Suggested Citation
@@ -35,10 +35,10 @@ The first Zenodo DOI was minted from the `v0.1.1-research-alpha` GitHub release:
 AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.1-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21112699
 ```
 
-For `v0.1.2-research-alpha`, cite the exact GitHub tag and the all-versions DOI until Zenodo publishes the version-specific DOI:
+For `v0.1.2-research-alpha`, cite the exact Zenodo release DOI:
 
 ```text
-AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.2-research-alpha. Research-source software. Zenodo all-versions DOI: https://doi.org/10.5281/zenodo.21112698
+AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.2-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21142690
 ```
 
 ## What To Cite Alongside COSMOS-CQA

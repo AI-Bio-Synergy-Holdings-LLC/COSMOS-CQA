@@ -12,6 +12,7 @@ const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.2-research-alpha";
 const zenodoConceptDoi = "10.5281/zenodo.21112698";
 const zenodoPriorReleaseDoi = "10.5281/zenodo.21112699";
+const zenodoCurrentReleaseDoi = "10.5281/zenodo.21142690";
 const publicPagePaths = [
   "demo-workbook.html",
   "research-experiment.html",
@@ -112,8 +113,10 @@ async function validateStaticContract() {
     `"propertyID": "Zenodo all-versions DOI"`,
     `"value": "${zenodoConceptDoi}"`,
     `"url": "https://doi.org/${zenodoConceptDoi}"`,
-    `"propertyID": "Zenodo v0.1.2 release DOI status"`,
-    "pending Zenodo ingestion",
+    `"propertyID": "Zenodo release DOI"`,
+    `"value": "${zenodoCurrentReleaseDoi}"`,
+    `"url": "https://doi.org/${zenodoCurrentReleaseDoi}"`,
+    "https://zenodo.org/records/21142690",
     "Research-only public use",
     "Not a production decision system.",
     "Not an OSI open-source release.",
@@ -173,14 +176,14 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("CITATION.cff", citation, [
-    `doi: "${zenodoConceptDoi}"`,
+    `doi: "${zenodoCurrentReleaseDoi}"`,
     'version: "0.1.2-research-alpha"',
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
     "Zenodo DOI",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
-    "pending Zenodo ingestion",
+    zenodoCurrentReleaseDoi,
     "Canonical public portal",
     "Canonical public source repository",
     owner,
@@ -208,7 +211,7 @@ async function validateStaticContract() {
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
     "v0.1.2-research-alpha",
-    "pending Zenodo ingestion",
+    zenodoCurrentReleaseDoi,
     "docs/zenodo-registration.md",
   ]);
 
@@ -222,8 +225,9 @@ async function validateStaticContract() {
   requirePhrases("docs/citation.md", citationDoc, [
     `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
     `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoPriorReleaseDoi}\``,
-    "Zenodo `v0.1.2-research-alpha` release DOI: pending Zenodo ingestion",
+    `Zenodo \`v0.1.2-research-alpha\` release DOI: \`${zenodoCurrentReleaseDoi}\``,
     ".zenodo.json",
+    `https://doi.org/${zenodoCurrentReleaseDoi}`,
     `https://doi.org/${zenodoPriorReleaseDoi}`,
     `https://doi.org/${zenodoConceptDoi}`,
   ]);
@@ -232,7 +236,7 @@ async function validateStaticContract() {
     "Zenodo DOI active.",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
-    "v0.1.2-research-alpha DOI is pending Zenodo ingestion",
+    zenodoCurrentReleaseDoi,
     "Zenodo DOI record",
   ]);
 
@@ -247,7 +251,8 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/releases.html", releasesPage, [
     "v0.1.2 Research Alpha",
-    "Zenodo DOI status: v0.1.2-research-alpha pending ingestion",
+    "Zenodo DOI status: minted.",
+    zenodoCurrentReleaseDoi,
     "v0.1.1 Research Alpha",
     "v0.1.0 Research Alpha",
     zenodoConceptDoi,
@@ -333,13 +338,13 @@ async function validateStaticContract() {
     "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "other-closed",
     "The first Zenodo DOI has been minted",
-    "https://zenodo.org/records/21112699",
-    "https://zenodo.org/api/records/21112699",
+    "https://zenodo.org/records/21142690",
+    "https://zenodo.org/api/records/21142690",
     "Alignment Responsibilities",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoCurrentReleaseDoi,
     "v0.1.2-research-alpha",
-    "pending publication",
     "v0.1.1-research-alpha",
   ]);
 
@@ -507,11 +512,12 @@ async function validateStaticContract() {
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
     "v0.1.1-research-alpha.md",
+    "https://zenodo.org/records/21142690",
     "https://zenodo.org/records/21112699",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoCurrentReleaseDoi,
     "v0.1.2-research-alpha",
-    "pending Zenodo ingestion",
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
@@ -520,7 +526,8 @@ async function validateStaticContract() {
 
   requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
     "COSMOS-CQA v0.1.2 Research Alpha",
-    "Zenodo status: pending ingestion from the GitHub release.",
+    "Zenodo record: [https://zenodo.org/records/21142690]",
+    zenodoCurrentReleaseDoi,
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
     "The live workbench runtime Self-Checks passed `8/8`.",

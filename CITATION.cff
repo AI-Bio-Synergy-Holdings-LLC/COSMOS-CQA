@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 title: "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts"
-message: "If you use COSMOS-CQA for research, cite this repository, the all-versions Zenodo DOI, and the exact release DOI when available."
+message: "If you use COSMOS-CQA for research, cite this repository, the all-versions Zenodo DOI, and the exact release DOI for the archived version used."
 type: software
 version: "0.1.2-research-alpha"
-doi: "10.5281/zenodo.21112698"
+doi: "10.5281/zenodo.21142690"
 authors:
   - name: "AI-Bio Synergy Holdings LLC"
 repository-code: "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
@@ -22,7 +22,10 @@ identifiers:
     description: "Zenodo all-versions concept DOI"
   - type: doi
     value: "10.5281/zenodo.21112699"
-    description: "Zenodo v0.1.1-research-alpha release DOI; v0.1.2-research-alpha DOI is pending Zenodo ingestion"
+    description: "Zenodo v0.1.1-research-alpha release DOI"
+  - type: doi
+    value: "10.5281/zenodo.21142690"
+    description: "Zenodo v0.1.2-research-alpha release DOI"
 keywords:
   - cosmology
   - citizen-science
