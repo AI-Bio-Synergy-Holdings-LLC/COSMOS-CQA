@@ -59,6 +59,7 @@ async function validateStaticContract() {
   const citationPage = await readText("apps/web/citation.html");
   const docsPage = await readText("apps/web/docs.html");
   const releasesPage = await readText("apps/web/releases.html");
+  const storyPage = await readText("apps/web/story.html");
   const quickstart = await readText("docs/quickstart.md");
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
@@ -239,6 +240,18 @@ async function validateStaticContract() {
     "Zenodo DOI status: minted.",
     zenodoConceptDoi,
     zenodoReleaseDoi,
+  ]);
+
+  requirePhrases("apps/web/story.html", storyPage, [
+    "Who COSMOS-CQA serves",
+    "created to address a practical research gap",
+    "For what",
+    "For who",
+    "Human pattern recognition can help surface possible artifacts",
+    "Public visual review can lose essential context.",
+    "pin a tile location",
+    "require a note before submission",
+    "make deterministic replay possible",
   ]);
 
   requirePhrases("docs/quickstart.md", quickstart, [

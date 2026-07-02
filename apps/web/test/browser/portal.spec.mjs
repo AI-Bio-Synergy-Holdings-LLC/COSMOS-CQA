@@ -164,6 +164,11 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
 
   await page.goto("/story.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("created to address a practical research gap")).toBeVisible();
+  for (const heading of ["For what", "For who", "Why", "Problem", "Solution"]) {
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(page.getByText("pin a tile location, require a note before submission")).toBeVisible();
   for (const source of ["ESA Planck Legacy Archive", "NASA LAMBDA WMAP data products", "Dark Energy Survey Data Release 2", "Galaxy Zoo / Zooniverse"]) {
     await expect(page.getByRole("link", { name: source })).toBeVisible();
   }
