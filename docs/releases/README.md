@@ -4,7 +4,7 @@ This index points public researchers to release notes, validation reports, SBOM 
 
 COSMOS-CQA release artifacts are research evidence. They are not production certifications, clinical artifacts, regulatory submissions, or OSI open-source distribution grants. Public use remains governed by the COSMOS-CQA Research-Only Public License, with AI-Bio Synergy Holdings LLC as owner and steward.
 
-Zenodo DOI status: active. The all-versions concept DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698). The first DOI-minted public release is `v0.1.1-research-alpha` with release DOI [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699). The `v0.1.2-research-alpha` version DOI is pending Zenodo ingestion from the GitHub release.
+Zenodo DOI status: active. The all-versions concept DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698). The first DOI-minted public release is `v0.1.1-research-alpha` with release DOI [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699). The current `v0.1.2-research-alpha` release DOI is [10.5281/zenodo.21142690](https://doi.org/10.5281/zenodo.21142690).
 
 ## v0.1.2-research-alpha
 
@@ -12,7 +12,8 @@ Zenodo DOI status: active. The all-versions concept DOI is [10.5281/zenodo.21112
 - Validation report JSON: [`v0.1.2-research-alpha-validation-report.json`](v0.1.2-research-alpha-validation-report.json)
 - SBOM JSON: [`v0.1.2-research-alpha-sbom.json`](v0.1.2-research-alpha-sbom.json)
 - GitHub release: [`v0.1.2-research-alpha`](https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/releases/tag/v0.1.2-research-alpha)
-- Zenodo release DOI: pending ingestion
+- Zenodo record: [https://zenodo.org/records/21142690](https://zenodo.org/records/21142690)
+- Zenodo release DOI: [10.5281/zenodo.21142690](https://doi.org/10.5281/zenodo.21142690)
 - Zenodo all-versions DOI: [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698)
 - Tag: `v0.1.2-research-alpha`
 - Release title: `COSMOS-CQA v0.1.2 Research Alpha`
