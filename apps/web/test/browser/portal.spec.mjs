@@ -286,6 +286,13 @@ test("serves public resource pages with canonical metadata and notices", async (
 
   await page.goto("/releases.html", { waitUntil: "domcontentloaded" });
   await expectCitationMetadata(page);
+  const v013Release = page.locator(".portal-page-section").filter({ has: page.getByRole("heading", { name: "v0.1.3 Research Alpha" }) });
+  await expect(v013Release).toBeVisible();
+  await expect(v013Release.getByText("Zenodo DOI status: pending until the GitHub release is archived by Zenodo.")).toBeVisible();
+  await expect(v013Release.getByRole("link", { name: "Release notes" })).toHaveAttribute("href", /v0\.1\.3-research-alpha\.md/);
+  await expect(v013Release.getByRole("link", { name: "Validation report JSON" })).toHaveAttribute("href", /v0\.1\.3-research-alpha-validation-report\.json/);
+  await expect(v013Release.getByRole("link", { name: "SBOM JSON" })).toHaveAttribute("href", /v0\.1\.3-research-alpha-sbom\.json/);
+  await expect(v013Release.getByRole("link", { name: "Zenodo all-versions DOI" })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
   const v012Release = page.locator(".portal-page-section").filter({ has: page.getByRole("heading", { name: "v0.1.2 Research Alpha" }) });
   await expect(v012Release).toBeVisible();
   await expect(v012Release.getByText("Zenodo DOI status: minted.")).toBeVisible();

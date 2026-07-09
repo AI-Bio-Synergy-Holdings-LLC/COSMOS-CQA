@@ -1,0 +1,69 @@
+{
+  "schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "report_id": "rpt_0_1_3_research_alpha",
+  "generated_at": "2026-07-09T20:45:00.000Z",
+  "build": {
+    "version": "source-split-public",
+    "sha": "source-split",
+    "dev": false
+  },
+  "license": "Research-only public use; all other rights reserved.",
+  "limitations": [
+    "Validation reports are research artifacts, not production decision-system certifications.",
+    "Diagnostic entries may include caveated placeholders and must not be treated as validated scientific results.",
+    "External datasets, SBOM references, and source artifacts remain subject to their own terms and provenance limits."
+  ],
+  "summary": {
+    "label_count": 1,
+    "feed_error_count": 0,
+    "pass_count": 9,
+    "fail_count": 0
+  },
+  "checks": [
+    {
+      "name": "research-only license notice",
+      "status": "pass",
+      "detail": "LICENSE.md and release notes state research-only public use and reserved rights."
+    },
+    {
+      "name": "archive provenance",
+      "status": "pass",
+      "detail": "Canonical COSMOS v3 materials are inventoried under archive/original-materials/legacy-v3/."
+    },
+    {
+      "name": "source verification command",
+      "status": "pass",
+      "detail": "npm --prefix apps/web run check passed before publishing v0.1.3-research-alpha."
+    },
+    {
+      "name": "contract tests",
+      "status": "pass",
+      "detail": "Label, feed, bookmark/provenance, SBOM, and validation report contracts passed."
+    },
+    {
+      "name": "deterministic replay tests",
+      "status": "pass",
+      "detail": "Golden replay fixture matched tile, sidecar, bookmark, CSV, report, and public/dev policy outputs."
+    },
+    {
+      "name": "legacy syntax check",
+      "status": "pass",
+      "detail": "Canonical legacy HTML script extraction and syntax checks passed."
+    },
+    {
+      "name": "sbom artifact",
+      "status": "pass",
+      "detail": "Release SBOM artifact generated at docs/releases/v0.1.3-research-alpha-sbom.json."
+    },
+    {
+      "name": "public portal performance smoke",
+      "status": "pass",
+      "detail": "Live portal, workbench, and releases pages loaded without console warnings/errors or horizontal overflow during the release QA pass."
+    },
+    {
+      "name": "canonical public URL",
+      "status": "pass",
+      "detail": "Canonical public project identity is https://cosmos-cqa.org; cosmoscqa.org, cosmos-cqa.com, and cosmoscqa.com are redirect domains."
+    }
+  ]
+}
