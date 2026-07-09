@@ -96,6 +96,14 @@ The social preview PNG is generated from `apps/web/social-preview.html`, which r
 
 The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
 
+The quality budgets are maintained in `apps/web/quality-budgets.json` and enforced with:
+
+```bash
+npm --prefix apps/web run check:quality-budgets
+```
+
+The budgets define Lighthouse-style release targets plus deterministic local checks for static asset ceilings, route performance smoke metrics, WCAG-oriented structure, contrast pairs, reduced motion, focus visibility, target-size spot checks, public-link coverage, and Nielsen Norman Group heuristic rows. Passing the budget gate does not claim Lighthouse certification, WCAG conformance, or independent usability validation.
+
 The public safety note is maintained in `docs/public-safety.md` and mirrored by `apps/web/safety.html`. It treats optional audio sonification as the first-class risk surface: no autoplay, loop off by default, bounded frequency/software-gain constants, clear stop behavior, device-volume caveats, and no therapeutic, medical, diagnostic, or scientific-result claims.
 
 The partner-readiness page is maintained at `apps/web/partner-readiness.html`. It distinguishes the public local-first demo from the future selective-access application, explains what partners can evaluate today, lists gates needed before private sharing, and states that the public page is not an access form, timeline, data-use agreement, confidentiality offer, or production capability statement.

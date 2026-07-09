@@ -19,6 +19,7 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/demo-workbook.html` and `apps/web/workbench.html` include canonical URL metadata, social preview metadata, public citation meta tags, and compact DOI citation links for the current DOI-minted demo release;
 - public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, partner readiness, safety, security, copyright, user data, and contact are present;
 - `apps/web/partner-readiness.html` distinguishes the public local-first demo from the future selective-access application without access promises, partnership acceptance claims, backend architecture, operational timelines, data-use agreements, confidentiality offers, support obligations, or production capability statements;
+- the public quality budgets in `apps/web/quality-budgets.json` and `npm --prefix apps/web run check:quality-budgets` enforce Lighthouse-style public-release targets, static asset ceilings, route performance smoke budgets, WCAG-oriented structure checks, contrast pairs, target-size spot checks, public-link requirements, and Nielsen Norman Group heuristic coverage without claiming formal certification;
 - `.zenodo.json`, `CITATION.cff`, citation docs, release pages, README, portal structured data, citation meta tags, and visible DOI affordances preserve controlled Zenodo DOI metadata, minted-DOI wording, and the research-only license boundary;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
@@ -87,7 +88,7 @@ Pull requests and pushes to `main` run the portal deployment validation in CI. T
 
 Pushes to `main` also run the GitHub Pages deployment workflow. The deployment workflow serves the prepared artifact locally with `COSMOS_CQA_STATIC_ROOT=apps/web/dist-pages` before upload, then checks DNS readiness and validates the deployed public URL after `actions/deploy-pages` completes. If DNS still points to Squarespace, the workflow emits a warning and live custom-domain validation waits for DNS propagation instead of treating an external DNS handoff as a code failure.
 
-This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, or OSI open-source status.
+This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, Lighthouse scores, WCAG conformance, independent usability testing, or OSI open-source status.
 
 The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation. The public copyright, safety, security, and user data notices are static public pages, not legal advice or a substitute for counsel review.
 

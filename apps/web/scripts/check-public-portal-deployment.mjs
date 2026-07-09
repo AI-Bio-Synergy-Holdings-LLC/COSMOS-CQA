@@ -77,9 +77,13 @@ async function validateStaticContract() {
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
   const publicSurfaceHardeningDoc = await readText("docs/public-surface-hardening.md");
+  const seoAccessibilityBaseline = await readText("docs/seo-social-accessibility-baseline.md");
   const selectiveAccessDoc = await readText("docs/selective-access-application.md");
   const zenodoDoc = await readText("docs/zenodo-registration.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
+  const packageManifest = await readText("apps/web/package.json");
+  const qualityBudgetsRaw = await readText("apps/web/quality-budgets.json");
+  const qualityBudgets = JSON.parse(qualityBudgetsRaw);
   const publicSafetyDoc = await readText("docs/public-safety.md");
   const securityPolicy = await readText("SECURITY.md");
   const securityDisclosureDoc = await readText("docs/security-disclosure.md");
@@ -363,6 +367,7 @@ async function validateStaticContract() {
     "http://127.0.0.1:4173",
     "public portal release/deployment validation",
     "SEO, social preview, accessibility, and usability baseline",
+    "quality budgets",
     "copyright",
     "user data",
     "demo-workbook.html",
@@ -381,8 +386,22 @@ async function validateStaticContract() {
     "COSMOS-CQA Research Edition",
     "GitHub CodeQL, Dependabot, and secret-scanning",
     "npm --prefix apps/web sbom --sbom-format cyclonedx --sbom-type application --json",
+    "npm --prefix apps/web run check:quality-budgets",
+    "quality budgets",
     "Portal And Demo Polish",
     "Pass Criteria",
+  ]);
+
+  requirePhrases("docs/seo-social-accessibility-baseline.md", seoAccessibilityBaseline, [
+    "Quality Budgets",
+    "apps/web/quality-budgets.json",
+    "Lighthouse-style release targets",
+    "performance_score",
+    "accessibility_score",
+    "best_practices_score",
+    "seo_score",
+    "Nielsen Norman Group Heuristic Baseline",
+    "npm --prefix apps/web run check:quality-budgets",
   ]);
 
   requirePhrases("docs/selective-access-application.md", selectiveAccessDoc, [
@@ -432,8 +451,49 @@ async function validateStaticContract() {
     "HTTPS enforcement",
     "AI-Bio Synergy Holdings LLC",
     "security disclosure routing",
+    "quality budgets",
+    "check:quality-budgets",
+    "Lighthouse scores",
+    "WCAG conformance",
     "Zenodo DOI",
   ]);
+
+  requirePhrases("apps/web/package.json", packageManifest, [
+    "\"check:quality-budgets\"",
+    "check-public-portal-deployment.mjs",
+    "check-quality-budgets.mjs",
+    "check:portal-deploy && npm run check:quality-budgets",
+  ]);
+
+  requirePhrases("apps/web/quality-budgets.json", qualityBudgetsRaw, [
+    "lighthouse_style_thresholds",
+    "performance_score",
+    "accessibility_score",
+    "best_practices_score",
+    "seo_score",
+    "static_assets",
+    "max_local_load_ms",
+    "required_static_checks",
+    "contrast_pairs",
+    "nng_heuristics_required",
+  ]);
+
+  assert(
+    qualityBudgets.lighthouse_style_thresholds?.performance_score >= 0.9,
+    "quality budgets must preserve a Lighthouse-style performance target of at least 0.90.",
+  );
+  assert(
+    qualityBudgets.lighthouse_style_thresholds?.accessibility_score >= 0.95,
+    "quality budgets must preserve a Lighthouse-style accessibility target of at least 0.95.",
+  );
+  assert(
+    qualityBudgets.lighthouse_style_thresholds?.seo_score >= 0.95,
+    "quality budgets must preserve a Lighthouse-style SEO target of at least 0.95.",
+  );
+  assert(
+    qualityBudgets.usability?.nng_heuristics_required === 10,
+    "quality budgets must preserve all 10 Nielsen Norman Group heuristic rows.",
+  );
 
   requirePhrases("docs/public-safety.md", publicSafetyDoc, [
     "Public Safety And Use Boundaries",
