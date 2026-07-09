@@ -31,7 +31,7 @@ http://localhost:4173/
 Open the hosted synthetic Core Pack fixture workflow directly:
 
 ```text
-http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
+http://localhost:4173/workbench.html?demo=core-pack
 ```
 
 The hosted demo path auto-loads `examples/core-pack/core-pack.manifest.json`, keeps public truth labels hidden by default, and prepares the validation report preview.

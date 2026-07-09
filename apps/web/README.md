@@ -69,7 +69,7 @@ http://localhost:4173/workbench.html
 The hosted public demo workflow preloads the synthetic Core Pack fixture at:
 
 ```text
-http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack
+http://localhost:4173/workbench.html?demo=core-pack
 ```
 
 The public demo is local-first and does not authenticate users, collect observations, submit reviewer packets, or operate an institutional queue. A separate COSMOS-CQA application is planned for verified researchers and institutions; public copy should not describe that future surface as available through the hosted demo.

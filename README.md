@@ -69,7 +69,7 @@ Then open:
 http://localhost:4173/
 ```
 
-The public portal is served at `http://localhost:4173/`; the research workbench is served at `http://localhost:4173/workbench.html`. The hosted public demo workflow is served at `http://localhost:4173/workbench.html?demo=core-pack#workspace-core-pack`.
+The public portal is served at `http://localhost:4173/`; the research workbench is served at `http://localhost:4173/workbench.html`. The hosted public demo workflow is served at `http://localhost:4173/workbench.html?demo=core-pack`.
 
 The public demo is local-first and account-free. A separate COSMOS-CQA application is planned for verified researchers and institutions; the public repository should point to that selective-access lane without implying active onboarding, server submission, or authenticated review in the hosted demo.
 

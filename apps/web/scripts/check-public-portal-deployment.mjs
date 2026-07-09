@@ -149,7 +149,7 @@ async function validateStaticContract() {
     "./user-data.html",
     "./governance.html",
     "./ownership-and-use.html",
-    "./workbench.html?demo=core-pack#workspace-core-pack",
+    "./workbench.html?demo=core-pack",
   ]);
 
   requirePhrases("apps/web/workbench.html", workbenchHtml, [

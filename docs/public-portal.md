@@ -28,10 +28,10 @@ Public resource pages are served as top-level static HTML files:
 The hosted public demo path is:
 
 ```text
-https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
+https://cosmos-cqa.org/workbench.html?demo=core-pack
 ```
 
-This path opens the maintained browser workbench, auto-loads the synthetic contract Core Pack fixture, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
+This path opens the maintained browser workbench tile-first, auto-loads the synthetic contract Core Pack fixture, keeps public truth-label policy active by default, and prepares the validation report preview for JSON export.
 
 The portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions. Public copy must keep that notice narrow: the hosted demo remains static, local-first, account-free, and does not collect observations, authenticate reviewers, assign queues, or transmit review packets.
 
@@ -53,7 +53,7 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 
 The public scaffold exposes:
 
-- Demo: `./workbench.html?demo=core-pack#workspace-core-pack`
+- Demo: `./workbench.html?demo=core-pack` (tile-first public entry; Core Pack evidence remains available in the inspector)
 - Workbook: `./demo-workbook.html`
 - Research experiment: `./research-experiment.html`
 - Docs: `./docs.html`
