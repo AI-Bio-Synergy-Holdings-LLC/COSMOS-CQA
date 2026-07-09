@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { readStreamText } from "./fixtures/workbench.mjs";
 
 test("hosted demo path preloads the synthetic Core Pack fixture with public boundaries", async ({ page }) => {
-  await page.goto("/workbench.html?demo=core-pack#workspace-core-pack", { waitUntil: "domcontentloaded" });
+  await page.goto("/workbench.html?demo=core-pack", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.COSMOS_CQA_APP?.state?.corePacks?.length === 1);
 
   await expect(page.locator("#demoModeNotice")).toContainText("Demo ready");
@@ -16,10 +16,29 @@ test("hosted demo path preloads the synthetic Core Pack fixture with public boun
   await expect(page.locator("body")).not.toContainText("truth: stripe");
   await expect(page.locator("#demoModeNotice").getByRole("link", { name: "Open workbook" })).toBeVisible();
   await expect(page.locator("#tileSelect option:checked")).toHaveText("synthetic_residual_stripe_001");
+  await expect(page.locator("#tilePassportDetails")).toContainText("synthetic fixture version; portal v0.1.2");
   await expect(page.locator("#tilePassportDetails")).toContainText("Public truth labels hidden");
+  await expect(page.locator("#corePackManifestSummary")).toContainText("synthetic fixture version; portal v0.1.2");
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
   await expect(page.locator("#reportViewerStatus")).toContainText("Export uses this preview source");
   await expect(page.locator("#reportSummary")).toContainText("Research-only public use");
+
+  const entryLayout = await page.evaluate(() => {
+    const canvas = document.querySelector("#tileCanvas").getBoundingClientRect();
+    const corePack = document.querySelector("#workspace-core-pack").getBoundingClientRect();
+    return {
+      hash: window.location.hash,
+      canvasTop: Math.round(canvas.top),
+      canvasBottom: Math.round(canvas.bottom),
+      corePackTop: Math.round(corePack.top),
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(entryLayout.hash).toBe("");
+  expect(entryLayout.canvasTop).toBeGreaterThanOrEqual(0);
+  expect(entryLayout.canvasTop).toBeLessThan(entryLayout.viewportHeight);
+  expect(entryLayout.canvasBottom).toBeGreaterThan(0);
+  expect(entryLayout.corePackTop).toBeGreaterThan(entryLayout.canvasTop);
 
   const publicBoundary = await page.evaluate(() => ({
     dev: window.__COSMOS_DEV__,
@@ -68,36 +87,48 @@ test("hosted demo path preloads the synthetic Core Pack fixture with public boun
   );
 });
 
-test("hosted demo deep link settles on the Core Pack lane at narrow widths", async ({ page }) => {
+test("hosted demo route settles on the Tile Viewer lane at narrow widths", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/workbench.html?demo=core-pack#workspace-core-pack", { waitUntil: "domcontentloaded" });
+  await page.goto("/workbench.html?demo=core-pack", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.COSMOS_CQA_APP?.state?.corePacks?.length === 1);
   await page.waitForFunction(() => {
-    const target = document.querySelector("#workspace-core-pack");
+    const target = document.querySelector("#tileCanvas");
     if (!target) {
       return false;
     }
-    const top = target.getBoundingClientRect().top;
-    return top >= 80 && top <= 120;
+    const rect = target.getBoundingClientRect();
+    return rect.top >= 0 && rect.top < window.innerHeight && rect.bottom > 0;
   });
 
+  await expect(page.locator("#workspace-tiles")).toContainText("Tile Viewer");
+  await expect(page.locator("#tileCanvas")).toBeVisible();
   await expect(page.locator("#workspace-core-pack")).toContainText("Core Pack Intake");
   await expect(page.locator("#workspace-core-pack")).toContainText("corepack_synthetic-contract-v0.1.1");
 
   const layout = await page.evaluate(() => {
     const inspectorStyle = getComputedStyle(document.querySelector(".research-inspector"));
+    const canvas = document.querySelector("#tileCanvas").getBoundingClientRect();
+    const corePack = document.querySelector("#workspace-core-pack").getBoundingClientRect();
     return {
+      hash: window.location.hash,
       horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
       inspectorPosition: inspectorStyle.position,
       inspectorOverflow: inspectorStyle.overflowY,
       inspectorMaxHeight: inspectorStyle.maxHeight,
+      canvasTop: Math.round(canvas.top),
+      canvasBottom: Math.round(canvas.bottom),
+      corePackTop: Math.round(corePack.top),
+      viewportHeight: window.innerHeight,
     };
   });
 
-  expect(layout).toEqual({
-    horizontalOverflow: false,
-    inspectorPosition: "static",
-    inspectorOverflow: "visible",
-    inspectorMaxHeight: "none",
-  });
+  expect(layout.hash).toBe("");
+  expect(layout.canvasTop).toBeGreaterThanOrEqual(0);
+  expect(layout.canvasTop).toBeLessThan(layout.viewportHeight);
+  expect(layout.canvasBottom).toBeGreaterThan(0);
+  expect(layout.corePackTop).toBeGreaterThan(layout.canvasTop);
+  expect(layout.horizontalOverflow).toBe(false);
+  expect(layout.inspectorPosition).toBe("static");
+  expect(layout.inspectorOverflow).toBe("visible");
+  expect(layout.inspectorMaxHeight).toBe("none");
 });

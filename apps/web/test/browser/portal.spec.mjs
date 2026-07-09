@@ -50,7 +50,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
-  await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
+  await expect(nav.getByRole("link", { name: /^Demo$/ })).toHaveAttribute("href", "./workbench.html?demo=core-pack");
   await expect(nav.getByRole("link", { name: /^Workbook$/ })).toHaveAttribute("href", "./demo-workbook.html");
   await expect(nav.getByRole("link", { name: /^Experiment$/ })).toHaveAttribute("href", "./research-experiment.html");
   await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", "https://cosmos-cqa.org/");
@@ -195,7 +195,7 @@ test("serves public resource pages with canonical metadata and notices", async (
 
   await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
   await expectCitationMetadata(page);
-  await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack#workspace-core-pack");
+  await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack");
   await expect(page.getByText("Cite this demo release:")).toBeVisible();
   await expect(page.locator(".citation-strip").getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.getByText("Public truth labels remain hidden in the visible workflow and public DOM text.")).toBeVisible();

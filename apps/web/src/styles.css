@@ -1086,6 +1086,52 @@ body.calibration-active .guided-calibration-workspace .explain {
   padding-left: 9px;
 }
 
+.next-step-trail {
+  background: rgba(67, 214, 197, 0.08);
+  border: 1px solid rgba(67, 214, 197, 0.28);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--muted-strong);
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.next-step-trail[hidden] {
+  display: none;
+}
+
+.next-step-trail strong {
+  color: var(--text);
+}
+
+.next-step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.next-step-actions a {
+  align-items: center;
+  border: 1px solid rgba(170, 183, 183, 0.24);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  display: inline-flex;
+  font-weight: 800;
+  min-height: 30px;
+  padding: 5px 8px;
+  text-decoration: none;
+}
+
+.next-step-actions a:focus-visible,
+.next-step-actions a:hover {
+  background: rgba(67, 214, 197, 0.12);
+  border-color: rgba(67, 214, 197, 0.52);
+  outline: none;
+}
+
 .audio-safety-note {
   border-left: 2px solid rgba(240, 201, 106, 0.68);
   color: var(--muted);

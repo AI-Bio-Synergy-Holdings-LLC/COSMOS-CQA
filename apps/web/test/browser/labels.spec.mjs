@@ -126,6 +126,9 @@ test("pins tile observation targets and requires notes before synced submission"
   await page.locator("#submitBtn").click();
 
   await expect(page.locator("#caption")).toContainText("Submitted: stripe (medium) at top center.");
+  await expect(page.locator("#labelNextStepTrail")).toContainText("Next: review the pinned observation at top center on tile_001.");
+  await expect(page.locator("#labelNextStepTrail").getByRole("link", { name: "Review observation" })).toHaveAttribute("href", "#observationReviewWorkspace");
+  await expect(page.locator("#labelNextStepTrail").getByRole("link", { name: "Validation report" })).toHaveAttribute("href", "#workspace-reports");
   await expect.poll(() => labelCount(page)).toBe(1);
   await expect.poll(() => observationCount(page)).toBe(1);
   await expect(page.locator(".observation-marker.submitted")).toHaveCount(1);

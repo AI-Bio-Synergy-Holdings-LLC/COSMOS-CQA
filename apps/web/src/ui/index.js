@@ -818,7 +818,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     appendMetadataGrid(dom.tilePassportDetails, [
       ["Tile ID", meta.tile_id],
       ["Dataset", meta.dataset || "n/a"],
-      ["Release", meta.release || "n/a"],
+      ["Release", formatFixtureVersion(meta.release, passport || meta)],
       ["Band", meta.band || "n/a"],
       ["Coordinates", formatCoordinates(meta.ra, meta.dec)],
       ["Checksum", meta.checksum || "not recorded"],
@@ -889,7 +889,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     appendMetadataGrid(dom.corePackManifestSummary, [
       ["Manifest ID", manifest.manifest_id],
       ["Name", manifest.name],
-      ["Version", manifest.version],
+      ["Version", formatFixtureVersion(manifest.version, manifest)],
       ["Generated", formatDate(manifest.generated_at)],
       ["Steward", manifest.steward],
       ["License", manifest.license],
@@ -1382,6 +1382,16 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       : "n/a";
   }
 
+  function formatFixtureVersion(value, context) {
+    const version = value || "n/a";
+    const fixtureSignals = [context?.manifest_id, context?.name, context?.dataset, context?.provenance?.source].filter(Boolean).join(" ");
+    const portalVersion = documentRef.querySelector('meta[name="citation_software_version"]')?.getAttribute("content") || "current release";
+    const portalVersionLabel = portalVersion.startsWith("v") ? portalVersion : `v${portalVersion}`;
+    return /synthetic.*fixture|COSMOS_CQA_SYNTHETIC_FIXTURE/i.test(fixtureSignals)
+      ? `${version} (synthetic fixture version; portal ${portalVersionLabel})`
+      : version;
+  }
+
   function appendMetadataGrid(container, entries) {
     const list = documentRef.createElement("dl");
     list.className = "metadata-grid";
@@ -1638,6 +1648,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     state.labels.push(label);
     saveLabels(state.labels);
     setCaption(observation ? `Submitted: ${label.clazz} (${label.severity}) at ${observation.zone_label}.` : `Submitted: ${label.clazz} (${label.severity}).`);
+    renderLabelNextStepTrail({ label, observation });
 
     const timestamp = Date.now();
     state.startTimes[tile.meta.tile_id] = timestamp;
@@ -1663,6 +1674,47 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     }
     notifyTestBridge("tileObservation.submitted", { label, observation });
     return label;
+  }
+
+  function renderLabelNextStepTrail({ label, observation } = {}) {
+    if (!dom.labelNextStepTrail || !label) {
+      return;
+    }
+
+    const targetSummary = observation ? `${observation.zone_label} on ${observation.tile_id}` : label.tile_id;
+    dom.labelNextStepTrail.hidden = false;
+    dom.labelNextStepTrail.replaceChildren();
+
+    const summary = documentRef.createElement("strong");
+    summary.textContent = observation ? `Next: review the pinned observation at ${targetSummary}.` : `Next: inspect saved label ${label.label_id}.`;
+
+    const detail = documentRef.createElement("span");
+    detail.textContent = observation
+      ? "Use the review workspace, evidence map, and validation report before exporting a bundle."
+      : "For spatial QA evidence, pin a tile sector before submitting the next note.";
+
+    const actions = documentRef.createElement("div");
+    actions.className = "next-step-actions";
+    const links = observation
+      ? [
+          ["Review observation", "#observationReviewWorkspace"],
+          ["Evidence map", "#workspace-provenance"],
+          ["Validation report", "#workspace-reports"],
+          ["Workbook step", "./demo-workbook.html"],
+        ]
+      : [
+          ["Pin observation target", "#workspace-tiles"],
+          ["Workbook step", "./demo-workbook.html"],
+        ];
+
+    for (const [text, href] of links) {
+      const link = documentRef.createElement("a");
+      link.href = href;
+      link.textContent = text;
+      actions.appendChild(link);
+    }
+
+    dom.labelNextStepTrail.append(summary, detail, actions);
   }
 
   function simulateExpertDecision(meta) {
@@ -2147,7 +2199,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
 
   function scrollToDemoSection() {
     const hashId = windowRef.location.hash && !windowRef.location.hash.startsWith("#state=") ? windowRef.location.hash.slice(1) : "";
-    const target = documentRef.getElementById(hashId || "workspace-core-pack");
+    const target = documentRef.getElementById(hashId || "workspace-tiles");
     if (!target) {
       return;
     }
@@ -3264,6 +3316,7 @@ function bindDom(documentRef) {
     sevSel: get("sevSel"),
     note: get("note"),
     submitBtn: get("submitBtn"),
+    labelNextStepTrail: get("labelNextStepTrail"),
     undoBtn: get("undoBtn"),
     observationReviewStatus: get("observationReviewStatus"),
     observationReviewSummary: get("observationReviewSummary"),

@@ -9,10 +9,10 @@ COSMOS-CQA is available for research-only public use under the project-specific 
 Open:
 
 ```text
-https://cosmos-cqa.org/workbench.html?demo=core-pack#workspace-core-pack
+https://cosmos-cqa.org/workbench.html?demo=core-pack
 ```
 
-The hosted demo loads the synthetic contract Core Pack fixture, keeps public truth labels hidden by default, prepares the validation report preview, and exposes Core Pack, report, evidence, and provenance inspection panels.
+The hosted demo opens tile-first, loads the synthetic contract Core Pack fixture, keeps public truth labels hidden by default, prepares the validation report preview, and exposes Core Pack, report, evidence, and provenance inspection panels for follow-up review.
 
 A separate COSMOS-CQA application is planned for verified researchers and institutions. This workbook covers only the static local-first public demo; it does not describe active onboarding, authenticated review, server submission, or institutional access.
 
