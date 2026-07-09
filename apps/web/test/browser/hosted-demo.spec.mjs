@@ -16,9 +16,9 @@ test("hosted demo path preloads the synthetic Core Pack fixture with public boun
   await expect(page.locator("body")).not.toContainText("truth: stripe");
   await expect(page.locator("#demoModeNotice").getByRole("link", { name: "Open workbook" })).toBeVisible();
   await expect(page.locator("#tileSelect option:checked")).toHaveText("synthetic_residual_stripe_001");
-  await expect(page.locator("#tilePassportDetails")).toContainText("synthetic fixture version; portal v0.1.2");
+  await expect(page.locator("#tilePassportDetails")).toContainText("synthetic fixture version; portal v0.1.3-research-alpha");
   await expect(page.locator("#tilePassportDetails")).toContainText("Public truth labels hidden");
-  await expect(page.locator("#corePackManifestSummary")).toContainText("synthetic fixture version; portal v0.1.2");
+  await expect(page.locator("#corePackManifestSummary")).toContainText("synthetic fixture version; portal v0.1.3-research-alpha");
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
   await expect(page.locator("#reportViewerStatus")).toContainText("Export uses this preview source");
   await expect(page.locator("#reportSummary")).toContainText("Research-only public use");
