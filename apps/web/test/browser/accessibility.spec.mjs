@@ -61,9 +61,15 @@ test("keeps the research console hierarchy and responsive visual system coherent
 
   await page.setViewportSize({ width: 390, height: 800 });
   await openWorkbench(page);
+  await expect(page.locator("body")).toHaveClass(/mobile-review-mode/);
+  await expect(page.getByRole("navigation", { name: "Mobile research review mode" })).toBeVisible();
   await expect.poll(() => cssValue(page.locator(".workflow-rail"), "flexDirection")).toBe("row");
   await expect.poll(() => cssValue(page.locator(".viewer"), "flexDirection")).toBe("column");
   await expect.poll(() => cssValue(page.locator(".hotkey-toggle"), "position")).toBe("static");
+  await expect(page.locator(".header-actions")).toBeHidden();
+  await expect(page.locator(".kpis")).toBeHidden();
+  await expect(page.locator("#workspace-core-pack")).not.toHaveAttribute("open", "");
+  await expect(page.locator("#workspace-provenance")).not.toHaveAttribute("open", "");
 
   const mobileCanvasBox = await page.locator("#tileCanvas").boundingBox();
   expect(mobileCanvasBox.width).toBeLessThanOrEqual(358);

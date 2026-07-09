@@ -90,6 +90,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   const dom = bindDom(documentRef);
   const ctx = dom.tileCanvas.getContext("2d", { willReadFrequently: true });
   const build = createBuildInfo(config);
+  const mobileReviewQuery = windowRef.matchMedia?.("(max-width: 760px)") || { matches: false };
+  const disclosureDesktopDefaults = new Map(dom.mobileReviewDisclosures.map((detail) => [detail, detail.open]));
+  let mobileReviewModeActive = false;
   let feedWS = null;
   let feedTimer = null;
   let charts = { pr: null, live: null, ops: null, conf: null };
@@ -2209,6 +2212,65 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     windowRef.requestAnimationFrame?.(() => windowRef.requestAnimationFrame?.(scrollTargetIntoView));
   }
 
+  function hashTargetElement() {
+    const hash = windowRef.location.hash || "";
+    if (!hash || hash.startsWith("#state=")) {
+      return null;
+    }
+
+    try {
+      return documentRef.getElementById(decodeURIComponent(hash.slice(1)));
+    } catch {
+      return documentRef.getElementById(hash.slice(1));
+    }
+  }
+
+  function openDisclosureForTarget(target) {
+    const disclosure = target?.matches?.("details") ? target : target?.closest?.("details");
+    if (disclosure && dom.mobileReviewDisclosures.includes(disclosure)) {
+      disclosure.open = true;
+    }
+  }
+
+  function setMobileReviewDisclosures() {
+    const target = hashTargetElement();
+    for (const disclosure of dom.mobileReviewDisclosures) {
+      disclosure.open = Boolean(target && (disclosure === target || disclosure.contains(target)));
+    }
+  }
+
+  function restoreDesktopDisclosures() {
+    for (const disclosure of dom.mobileReviewDisclosures) {
+      disclosure.open = disclosureDesktopDefaults.get(disclosure) ?? disclosure.open;
+    }
+  }
+
+  function syncMobileReviewMode() {
+    const active = Boolean(mobileReviewQuery.matches);
+    documentRef.body.classList.toggle("mobile-review-mode", active);
+    if (active && !mobileReviewModeActive) {
+      setMobileReviewDisclosures();
+    } else if (!active && mobileReviewModeActive) {
+      restoreDesktopDisclosures();
+    }
+    mobileReviewModeActive = active;
+  }
+
+  function openHashTargetDisclosure() {
+    openDisclosureForTarget(hashTargetElement());
+  }
+
+  function handleAnchorDisclosureClick(event) {
+    const href = event.currentTarget.getAttribute("href") || "";
+    if (!href.startsWith("#") || href.startsWith("#state=")) {
+      return;
+    }
+
+    const id = href.slice(1);
+    const target = documentRef.getElementById(id);
+    openDisclosureForTarget(target);
+  }
+
   function startWs(url) {
     try {
       if (feedWS) {
@@ -3151,8 +3213,18 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
       void loadPublicSample();
     });
     dom.fileInput.addEventListener("change", handleFileLoad);
-    windowRef.addEventListener("hashchange", () => restoreBookmarkFromHash({ notifyMissing: true }));
-    windowRef.addEventListener("resize", renderViewerTransform);
+    for (const link of dom.hashNavigationLinks) {
+      link.addEventListener("click", handleAnchorDisclosureClick);
+    }
+    windowRef.addEventListener("hashchange", () => {
+      restoreBookmarkFromHash({ notifyMissing: true });
+      openHashTargetDisclosure();
+    });
+    windowRef.addEventListener("resize", () => {
+      renderViewerTransform();
+      syncMobileReviewMode();
+    });
+    mobileReviewQuery.addEventListener?.("change", syncMobileReviewMode);
   }
 
   function init() {
@@ -3168,7 +3240,9 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     installKeyboardScope();
     updateCalibrationUI();
     addHotkeyToggle();
+    syncMobileReviewMode();
     const restoredBookmark = restoreBookmarkFromHash();
+    openHashTargetDisclosure();
     recalcKPIs();
     refreshValidationReportPreview();
     if (!restoredBookmark) {
@@ -3291,6 +3365,8 @@ function bindDom(documentRef) {
     clearObservationBtn: get("clearObservationBtn"),
     calibrationTileBanner: get("calibrationTileBanner"),
     calibrationTileBannerText: get("calibrationTileBannerText"),
+    mobileReviewDisclosures: [...documentRef.querySelectorAll(".inspector-disclosure, .evidence-drawer details")],
+    hashNavigationLinks: [...documentRef.querySelectorAll('a[href^="#"]')],
     reviewControls: get("reviewControls"),
     workspaceLabels: get("workspace-labels"),
     tileSelect: get("tileSelect"),
