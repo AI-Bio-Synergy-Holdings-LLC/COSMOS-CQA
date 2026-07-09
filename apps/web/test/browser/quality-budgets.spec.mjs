@@ -22,7 +22,7 @@ for (const route of budgets.performance.routes) {
         domNodes: document.getElementsByTagName("*").length,
         firstPartyResourceCount: firstPartyResources.length,
         loadMs: Math.round(Math.max(0, (navigation?.loadEventEnd || 0) - (navigation?.startTime || 0))),
-        scriptCount: document.scripts.length,
+        scriptCount: [...document.scripts].filter((script) => script.type !== "application/ld+json").length,
         stylesheetCount: document.querySelectorAll('link[rel="stylesheet"]').length,
       };
     });

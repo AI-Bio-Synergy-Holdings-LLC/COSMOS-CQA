@@ -19,6 +19,7 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/demo-workbook.html` and `apps/web/workbench.html` include canonical URL metadata, social preview metadata, public citation meta tags, and compact DOI citation links for the current DOI-minted demo release;
 - public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, partner readiness, safety, security, copyright, user data, and contact are present;
 - `apps/web/partner-readiness.html` distinguishes the public local-first demo from the future selective-access application without access promises, partnership acceptance claims, backend architecture, operational timelines, data-use agreements, confidentiality offers, support obligations, or production capability statements;
+- `npm --prefix apps/web run check:seo-exposure` verifies indexable page titles, descriptions, canonical URLs, Open Graph and Twitter/X cards, social preview image dimensions and alt text, `WebPage` JSON-LD, sitemap coverage, sitemap `lastmod`, and `robots.txt` sitemap discovery;
 - the public quality budgets in `apps/web/quality-budgets.json` and `npm --prefix apps/web run check:quality-budgets` enforce Lighthouse-style public-release targets, static asset ceilings, route performance smoke budgets, WCAG-oriented structure checks, contrast pairs, target-size spot checks, public-link requirements, and Nielsen Norman Group heuristic coverage without claiming formal certification;
 - `.zenodo.json`, `CITATION.cff`, citation docs, release pages, README, portal structured data, citation meta tags, and visible DOI affordances preserve controlled Zenodo DOI metadata, minted-DOI wording, and the research-only license boundary;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
@@ -90,7 +91,7 @@ Pushes to `main` also run the GitHub Pages deployment workflow. The deployment w
 
 This is intentionally release/deployment validation, not scientific validation. Passing this workflow does not certify diagnostics, production readiness, clinical use, regulatory use, commercial use, Lighthouse scores, WCAG conformance, independent usability testing, or OSI open-source status.
 
-The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim WCAG certification or independent usability validation. The public copyright, safety, security, and user data notices are static public pages, not legal advice or a substitute for counsel review.
+The SEO, social preview, accessibility, and usability baseline is documented in `docs/seo-social-accessibility-baseline.md`. That baseline is an internal quality gate and does not claim search ranking, indexing, WCAG certification, or independent usability validation. The public copyright, safety, security, and user data notices are static public pages, not legal advice or a substitute for counsel review.
 
 ## Release Responsibility
 
@@ -98,6 +99,7 @@ Before a public release or portal deployment, confirm:
 
 - `npm --prefix apps/web run check` passes;
 - `npm --prefix apps/web run check:portal-deploy` passes locally;
+- `npm --prefix apps/web run check:seo-exposure` passes locally;
 - `npm --prefix apps/web run pages:prepare` produces a deploy artifact with `CNAME`, `packages/`, and `examples/`;
 - `npm --prefix apps/web run pages:check-dns` passes after the Squarespace DNS handoff is complete;
 - CI public portal deployment validation passes on the release PR or merge commit;

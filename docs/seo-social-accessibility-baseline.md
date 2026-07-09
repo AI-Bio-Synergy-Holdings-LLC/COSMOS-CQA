@@ -6,6 +6,10 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 
 ## Reference Standards
 
+- Google Search Central SEO Starter Guide, `https://developers.google.com/search/docs/fundamentals/seo-starter-guide`
+- Google Search Central structured data introduction, `https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data`
+- Google Search Central snippet/meta description guidance, `https://developers.google.com/search/docs/appearance/snippet`
+- Bing Webmaster Guidelines, `https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a`
 - WCAG reference: W3C Web Content Accessibility Guidelines 2.2, `https://www.w3.org/TR/WCAG22/`
 - Usability reference: Nielsen Norman Group 10 Usability Heuristics for User Interface Design, `https://www.nngroup.com/articles/ten-usability-heuristics/`
 
@@ -20,6 +24,18 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 | Meta descriptions | Portal and workbench describe research-only artifact QA, evidence, provenance, and replay. | In place | Maintain claim-boundary review before future public copy changes. |
 | Structured data | Portal publishes `Organization`, `WebSite`, and `SoftwareSourceCode` JSON-LD with Zenodo release DOI, all-versions DOI, and current DOI-minted release version. | In place | Update DOI/version fields after each new DOI-minted release. |
 | Indexable routes | Root portal and workbench route are indexable. | In place | Avoid indexing generated test artifacts, package source paths, or dev-only routes. |
+
+## SEO Exposure Gate
+
+The maintained deterministic SEO gate is:
+
+```bash
+npm --prefix apps/web run check:seo-exposure
+```
+
+It verifies that indexable public pages keep one title, one meta description, one canonical URL, `index,follow` robots metadata, complete Open Graph metadata, complete Twitter/X large-card metadata, social preview image dimensions and alt text, page-level `WebPage` JSON-LD, sitemap coverage, sitemap `lastmod`, and the canonical `robots.txt` sitemap pointer.
+
+This gate is an exposure-readiness control, not a ranking guarantee. After public release, submit or inspect `https://cosmos-cqa.org/sitemap.xml` in Google Search Console and Bing Webmaster Tools, then use their live URL inspection tools for the portal root, workbench, research experiment, demo workbook, docs, releases, story, and partner-readiness pages.
 
 ## Social Preview Baseline
 
@@ -80,6 +96,7 @@ These targets guide release QA and future Lighthouse CI adoption. The current re
 
 ```bash
 npm --prefix apps/web run check:portal-deploy
+npm --prefix apps/web run check:seo-exposure
 npm --prefix apps/web run check:quality-budgets
 npm --prefix apps/web run test:browser -- portal.spec.mjs accessibility.spec.mjs
 npm --prefix apps/web run pages:prepare

@@ -68,7 +68,7 @@ async function validateRouteContracts() {
       failures.push(`${label}: expected exactly one h1`);
     }
 
-    const scripts = countMatches(html, /<script\b/gi);
+    const scripts = countExecutableScripts(html);
     if (scripts > route.max_scripts) {
       failures.push(`${label}: ${scripts} script tags exceeds budget ${route.max_scripts}`);
     }
@@ -174,6 +174,10 @@ function requirePhrase(label, text, phrase) {
 
 function countMatches(text, pattern) {
   return (text.match(pattern) || []).length;
+}
+
+function countExecutableScripts(text) {
+  return (text.match(/<script\b[^>]*>/gi) || []).filter((scriptTag) => !/type="application\/ld\+json"/i.test(scriptTag)).length;
 }
 
 function contrastRatio(foreground, background) {
