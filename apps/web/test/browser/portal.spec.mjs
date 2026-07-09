@@ -20,15 +20,16 @@ const publicPages = [
   { path: "/contact.html", title: /Contact \| COSMOS-CQA/, text: "Developer and public research route." },
 ];
 
-const currentReleaseDoi = "10.5281/zenodo.21142690";
+const currentReleaseDoi = "10.5281/zenodo.21285595";
+const previousReleaseDoi = "10.5281/zenodo.21142690";
 const allVersionsDoi = "10.5281/zenodo.21112698";
 
 async function expectCitationMetadata(page) {
   await expect(page.locator("meta[name='citation_title']")).toHaveAttribute("content", "COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts");
   await expect(page.locator("meta[name='citation_author']")).toHaveAttribute("content", "AI-Bio Synergy Holdings LLC");
-  await expect(page.locator("meta[name='citation_publication_date']")).toHaveAttribute("content", "2026-07-02");
+  await expect(page.locator("meta[name='citation_publication_date']")).toHaveAttribute("content", "2026-07-09");
   await expect(page.locator("meta[name='citation_doi']")).toHaveAttribute("content", currentReleaseDoi);
-  await expect(page.locator("meta[name='citation_software_version']")).toHaveAttribute("content", "0.1.2-research-alpha");
+  await expect(page.locator("meta[name='citation_software_version']")).toHaveAttribute("content", "0.1.3-research-alpha");
   await expect(page.locator("meta[name='DC.identifier']")).toHaveAttribute("content", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.locator("meta[name='DC.relation']")).toHaveAttribute("content", `https://doi.org/${allVersionsDoi}`);
 }
@@ -120,9 +121,9 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   expect(structuredData["@context"]).toBe("https://schema.org");
   const softwareMetadata = structuredData["@graph"].find((item) => item["@type"] === "SoftwareSourceCode" && item.name === "COSMOS-CQA");
   expect(softwareMetadata).toBeTruthy();
-  expect(softwareMetadata.version).toBe("0.1.2-research-alpha");
+  expect(softwareMetadata.version).toBe("0.1.3-research-alpha");
   expect(softwareMetadata.sameAs).toContain(`https://doi.org/${currentReleaseDoi}`);
-  expect(softwareMetadata.sameAs).toContain("https://zenodo.org/records/21142690");
+  expect(softwareMetadata.sameAs).toContain("https://zenodo.org/records/21285595");
   expect(softwareMetadata.sameAs).toContain(`https://doi.org/${allVersionsDoi}`);
   expect(softwareMetadata.sameAs).toContain("https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA");
   expect(softwareMetadata.identifier).toEqual(
@@ -140,7 +141,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
     }),
   );
 
-  await expect(page.getByText("Cite v0.1.2:")).toBeVisible();
+  await expect(page.getByText("Cite v0.1.3:")).toBeVisible();
   await expect(page.getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.getByRole("link", { name: allVersionsDoi })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
 
@@ -278,8 +279,9 @@ test("serves public resource pages with canonical metadata and notices", async (
   await page.goto("/citation.html", { waitUntil: "domcontentloaded" });
   await expectCitationMetadata(page);
   await expect(page.getByText("Zenodo DOI active.")).toBeVisible();
-  await expect(page.getByText("Use DOI 10.5281/zenodo.21142690 when citing v0.1.2-research-alpha")).toBeVisible();
+  await expect(page.getByText("Use DOI 10.5281/zenodo.21285595 when citing v0.1.3-research-alpha")).toBeVisible();
   await expect(page.getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
+  await expect(page.getByRole("link", { name: previousReleaseDoi })).toHaveAttribute("href", `https://doi.org/${previousReleaseDoi}`);
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112699" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112699");
   await expect(page.getByRole("link", { name: "10.5281/zenodo.21112698" })).toHaveAttribute("href", "https://doi.org/10.5281/zenodo.21112698");
   await expect(page.getByRole("link", { name: "Zenodo DOI record" })).toHaveAttribute("href", /docs\/zenodo-registration\.md/);
@@ -288,15 +290,16 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expectCitationMetadata(page);
   const v013Release = page.locator(".portal-page-section").filter({ has: page.getByRole("heading", { name: "v0.1.3 Research Alpha" }) });
   await expect(v013Release).toBeVisible();
-  await expect(v013Release.getByText("Zenodo DOI status: pending until the GitHub release is archived by Zenodo.")).toBeVisible();
+  await expect(v013Release.getByText("Zenodo DOI status: minted.")).toBeVisible();
   await expect(v013Release.getByRole("link", { name: "Release notes" })).toHaveAttribute("href", /v0\.1\.3-research-alpha\.md/);
   await expect(v013Release.getByRole("link", { name: "Validation report JSON" })).toHaveAttribute("href", /v0\.1\.3-research-alpha-validation-report\.json/);
   await expect(v013Release.getByRole("link", { name: "SBOM JSON" })).toHaveAttribute("href", /v0\.1\.3-research-alpha-sbom\.json/);
+  await expect(v013Release.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(v013Release.getByRole("link", { name: "Zenodo all-versions DOI" })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
   const v012Release = page.locator(".portal-page-section").filter({ has: page.getByRole("heading", { name: "v0.1.2 Research Alpha" }) });
   await expect(v012Release).toBeVisible();
   await expect(v012Release.getByText("Zenodo DOI status: minted.")).toBeVisible();
-  await expect(v012Release.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
+  await expect(v012Release.getByRole("link", { name: "Zenodo DOI" })).toHaveAttribute("href", `https://doi.org/${previousReleaseDoi}`);
   await expect(v012Release.getByRole("link", { name: "Zenodo all-versions DOI" })).toHaveAttribute("href", `https://doi.org/${allVersionsDoi}`);
 
   await page.goto("/research-experiment.html", { waitUntil: "domcontentloaded" });
