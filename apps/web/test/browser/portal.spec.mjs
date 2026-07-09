@@ -12,6 +12,7 @@ const publicPages = [
   { path: "/governance.html", title: /Governance \| COSMOS-CQA/, text: "Stewarded public research infrastructure." },
   { path: "/ownership-and-use.html", title: /Ownership and Use \| COSMOS-CQA/, text: "Owned and stewarded by AI-Bio Synergy Holdings LLC." },
   { path: "/story.html", title: /Story Behind the Research \| COSMOS-CQA/, text: "From artifact intuition to public research infrastructure." },
+  { path: "/partner-readiness.html", title: /Partner Readiness \| COSMOS-CQA/, text: "Public demo boundary and future selective-access lane." },
   { path: "/safety.html", title: /Safety and Use Boundaries \| COSMOS-CQA/, text: "Safety boundaries for public research use." },
   { path: "/security.html", title: /Security and Disclosure \| COSMOS-CQA/, text: "Security and responsible disclosure." },
   { path: "/copyright.html", title: /Copyright Notice \| COSMOS-CQA/, text: "Copyright, notices, and third-party boundaries." },
@@ -46,7 +47,7 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
   await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const label of ["Demo", "Workbook", "Experiment", "Docs", "Releases", "Story", "Safety", "Contact"]) {
+  for (const label of ["Demo", "Workbook", "Experiment", "Docs", "Releases", "Story", "Partners", "Safety", "Contact"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`) })).toBeVisible();
   }
 
@@ -72,6 +73,9 @@ test("serves the canonical public portal at the root route", async ({ page }) =>
     "./releases.html",
   );
   await expect(page.getByRole("link", { name: "Story Behind the Research Origin concept, public science references, and the path to a citable research workbench." })).toHaveAttribute("href", "./story.html");
+  await expect(
+    page.getByRole("link", { name: "Partner Readiness Public demo boundaries and future selective-access application gates for verified research and institutional conversations." }),
+  ).toHaveAttribute("href", "./partner-readiness.html");
   await expect(page.getByRole("link", { name: "Safety and Use Boundaries Audio sonification limits, visual review cautions, local-first data, and public non-claims." })).toHaveAttribute("href", "./safety.html");
   await expect(page.getByRole("link", { name: "Security and Disclosure Private vulnerability route, public safety and accessibility reporting lanes, and data-sharing guardrails." })).toHaveAttribute(
     "href",
@@ -143,6 +147,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   expect(sitemapText).toContain("https://cosmos-cqa.org/demo-workbook.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/research-experiment.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/story.html");
+  expect(sitemapText).toContain("https://cosmos-cqa.org/partner-readiness.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/safety.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/security.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/contact.html");
@@ -193,6 +198,19 @@ test("serves public resource pages with canonical metadata and notices", async (
     await expect(page.getByRole("link", { name: source })).toBeVisible();
   }
 
+  await page.goto("/partner-readiness.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("No access promise is made here.")).toBeVisible();
+  await expect(page.getByText("not an application form, grant of access, institutional agreement, data-use agreement, timeline, or production capability statement")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What partners can evaluate today" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Public demo versus selective-access application" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Readiness gates before private sharing" })).toBeVisible();
+  await expect(page.getByText("No public account creation, researcher onboarding, institutional access, API keys, hosted reviewer queue, or live observation submission is available here.")).toBeVisible();
+  await expect(page.getByText("No timeline, partnership acceptance, funding commitment, data-use agreement, confidentiality, or support obligation is implied")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Start a Non-Confidential Conversation" })).toHaveAttribute("href", "./contact.html");
+  await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
+  await expect(page.locator("body")).not.toContainText("Researcher access is open now");
+  await expect(page.locator("body")).not.toContainText("Observations are submitted to COSMOS-CQA reviewers");
+
   await page.goto("/demo-workbook.html", { waitUntil: "domcontentloaded" });
   await expectCitationMetadata(page);
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toHaveAttribute("href", "./workbench.html?demo=core-pack");
@@ -205,12 +223,17 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("Prepare local review packets.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Research Experiment" })).toHaveAttribute("href", "./research-experiment.html");
   await expect(page.getByRole("link", { name: "Safety and Use Boundaries" })).toHaveAttribute("href", "./safety.html");
+  await expect(page.getByRole("link", { name: "Partner Readiness" })).toHaveAttribute("href", "./partner-readiness.html");
 
   await page.goto("/docs.html", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Selective-access application planned.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Selective Access Notice Public wording for the planned verified researcher and institution application, without backend promises." })).toHaveAttribute(
     "href",
     /docs\/selective-access-application\.md/,
+  );
+  await expect(page.getByRole("link", { name: "Partner Readiness Public page distinguishing the local-first demo from future selective-access application requirements and non-promises." })).toHaveAttribute(
+    "href",
+    "./partner-readiness.html",
   );
   await expect(page.getByRole("link", { name: "Zenodo DOI Record Controlled Zenodo metadata, active all-versions DOI, release DOI status, and citation guidance." })).toHaveAttribute(
     "href",
@@ -282,7 +305,7 @@ test("serves public resource pages with canonical metadata and notices", async (
 test("keeps public page inline action buttons visually aligned", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
 
-  for (const path of ["/releases.html", "/story.html", "/research-experiment.html"]) {
+  for (const path of ["/releases.html", "/story.html", "/research-experiment.html", "/partner-readiness.html"]) {
     await page.goto(path, { waitUntil: "domcontentloaded" });
     const inlineListRows = await page.locator(".portal-inline-list").evaluateAll((lists) =>
       lists.map((list) =>
@@ -358,6 +381,7 @@ test("keeps the portal usable on narrow screens", async ({ page }) => {
 
   await expect(page.getByRole("banner")).toBeVisible();
   await expect(page.getByRole("link", { name: /^Demo$/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Partners$/ })).toBeVisible();
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toBeVisible();
 
   const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);

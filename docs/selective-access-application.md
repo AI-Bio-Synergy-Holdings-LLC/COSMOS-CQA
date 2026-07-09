@@ -4,6 +4,14 @@ COSMOS-CQA's public repository and hosted demo remain local-first public researc
 
 A separate COSMOS-CQA application is planned for verified researchers and institutions. That selective-access application is expected to be handled outside the public demo surface and should not be described as available until access terms, data handling, security controls, and operational responsibilities are ready.
 
+The maintained public page for this distinction is:
+
+```text
+https://cosmos-cqa.org/partner-readiness.html
+```
+
+That page may invite non-confidential partner-readiness conversations, but it must not act as an application form, access grant, timeline, data-use agreement, confidentiality offer, or production capability statement.
+
 ## Public Wording
 
 Use language such as:
@@ -27,6 +35,7 @@ Those claims require a separate authenticated application, access process, and o
 - Public workbench: static, local-first, research-only demo.
 - Reviewer handoff packets: local JSON artifacts for replay/testing.
 - Selective-access application: separate future surface for verified researchers and institutions.
-- Public documentation: may point to the planned selective-access lane, but should not publish backend architecture, access promises, or operational timelines prematurely.
+- Partner-readiness page: public explanation of what can be evaluated now and what gates must exist before private sharing.
+- Public documentation: may point to the planned selective-access lane, but should not publish backend architecture, access promises, operational timelines, partnership acceptance criteria, or support commitments prematurely.
 
 This notice complements `docs/reviewer-access-boundary.md`, `docs/data-governance.md`, and `docs/public-portal.md`.

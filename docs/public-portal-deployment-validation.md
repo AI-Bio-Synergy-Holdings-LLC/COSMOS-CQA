@@ -17,7 +17,8 @@ Without a server, the command checks repository files and release artifacts:
 - `apps/web/CNAME` contains only `cosmos-cqa.org`;
 - `apps/web/index.html` includes canonical URL metadata, social preview metadata, structured data, public citation meta tags, visible DOI links, public research-only copy, license boundaries, safety and use boundaries, security disclosure routing, GitHub release links, release artifact index links, and the hosted demo route;
 - `apps/web/demo-workbook.html` and `apps/web/workbench.html` include canonical URL metadata, social preview metadata, public citation meta tags, and compact DOI citation links for the current DOI-minted demo release;
-- public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, and contact are present;
+- public resource pages for docs, workbook, research experiment, releases, citation, license, governance, ownership and use, story, partner readiness, safety, security, copyright, user data, and contact are present;
+- `apps/web/partner-readiness.html` distinguishes the public local-first demo from the future selective-access application without access promises, partnership acceptance claims, backend architecture, operational timelines, data-use agreements, confidentiality offers, support obligations, or production capability statements;
 - `.zenodo.json`, `CITATION.cff`, citation docs, release pages, README, portal structured data, citation meta tags, and visible DOI affordances preserve controlled Zenodo DOI metadata, minted-DOI wording, and the research-only license boundary;
 - `apps/web/robots.txt`, `apps/web/sitemap.xml`, `apps/web/social-preview.html`, and the social preview assets are present;
 - `CITATION.cff` points to `https://cosmos-cqa.org` and the research-only license reference;
@@ -50,6 +51,7 @@ The HTTP mode checks:
 - public data-use copy remains local-first, non-confidential, and explicit that GitHub issues and pull requests are public by default.
 - vulnerability and sensitive safety reporting copy keeps private disclosure separate from public issue templates.
 - selective-access application copy remains a future-facing public notice and does not imply active onboarding, backend authentication, network submission, hosted reviewer queues, or institutional access through the public demo.
+- partner-readiness copy remains non-confidential and does not imply an application form, access grant, partnership acceptance, data-use agreement, timeline, confidentiality, support obligation, or production capability.
 
 ## GitHub Pages Deployment
 

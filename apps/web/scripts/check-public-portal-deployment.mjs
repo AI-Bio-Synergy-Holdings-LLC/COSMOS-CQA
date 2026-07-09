@@ -32,6 +32,7 @@ const publicPagePaths = [
   "governance.html",
   "ownership-and-use.html",
   "story.html",
+  "partner-readiness.html",
   "safety.html",
   "security.html",
   "copyright.html",
@@ -71,6 +72,7 @@ async function validateStaticContract() {
   const docsPage = await readText("apps/web/docs.html");
   const releasesPage = await readText("apps/web/releases.html");
   const storyPage = await readText("apps/web/story.html");
+  const partnerReadinessPage = await readText("apps/web/partner-readiness.html");
   const quickstart = await readText("docs/quickstart.md");
   const projectNotes = await readText("docs/project-notes.md");
   const publicPortalDoc = await readText("docs/public-portal.md");
@@ -142,6 +144,7 @@ async function validateStaticContract() {
     "./research-experiment.html",
     "./releases.html",
     "./story.html",
+    "./partner-readiness.html",
     "./safety.html",
     "./security.html",
     "./contact.html",
@@ -200,6 +203,7 @@ async function validateStaticContract() {
     `<loc>${canonicalUrl}docs.html</loc>`,
     `<loc>${canonicalUrl}releases.html</loc>`,
     `<loc>${canonicalUrl}story.html</loc>`,
+    `<loc>${canonicalUrl}partner-readiness.html</loc>`,
     `<loc>${canonicalUrl}safety.html</loc>`,
     `<loc>${canonicalUrl}security.html</loc>`,
     `<loc>${canonicalUrl}contact.html</loc>`,
@@ -303,11 +307,34 @@ async function validateStaticContract() {
     "make deterministic replay possible",
   ]);
 
+  requirePhrases("apps/web/partner-readiness.html", partnerReadinessPage, [
+    "<title>Partner Readiness | COSMOS-CQA</title>",
+    `<link rel="canonical" href="${canonicalUrl}partner-readiness.html">`,
+    `<meta property="og:url" content="${canonicalUrl}partner-readiness.html">`,
+    `<meta property="og:image" content="${canonicalUrl}assets/social-preview.png">`,
+    "Public demo boundary and future selective-access lane.",
+    "No access promise is made here.",
+    "not an application form, grant of access, institutional agreement, data-use agreement, timeline, or production capability statement",
+    "What partners can evaluate today",
+    "Public demo versus selective-access application",
+    "Selective-access application would require",
+    "Readiness gates before private sharing",
+    "What is not offered through the public page",
+    "No public account creation, researcher onboarding, institutional access, API keys, hosted reviewer queue, or live observation submission is available here.",
+    "No timeline, partnership acceptance, funding commitment, data-use agreement, confidentiality, or support obligation is implied",
+    "Start a Non-Confidential Conversation",
+    "./contact.html",
+    "./security.html",
+    "./user-data.html",
+    "./license.html",
+  ]);
+
   requirePhrases("docs/quickstart.md", quickstart, [
     "https://cosmos-cqa.org",
     "demo workbook",
     "synthetic Core Pack fixture workflow",
     "https://cosmos-cqa.org/safety.html",
+    "https://cosmos-cqa.org/partner-readiness.html",
     "Export Validation Report JSON",
     "npm --prefix apps/web run check",
     "npm --prefix apps/web run check:portal-deploy",
@@ -342,6 +369,7 @@ async function validateStaticContract() {
     "research-experiment.html",
     "safety.html",
     "security.html",
+    "partner-readiness.html",
     "docs/security-disclosure.md",
     "docs/public-safety.md",
     "selective-access application",
@@ -362,7 +390,9 @@ async function validateStaticContract() {
     "verified researchers and institutions",
     "public demo remains local-first",
     "does not authenticate users, collect observations, or transmit review packets",
-    "should not publish backend architecture, access promises, or operational timelines prematurely",
+    "https://cosmos-cqa.org/partner-readiness.html",
+    "not act as an application form, access grant, timeline, data-use agreement, confidentiality offer, or production capability statement",
+    "should not publish backend architecture, access promises, operational timelines, partnership acceptance criteria, or support commitments prematurely",
   ]);
 
   requirePhrases("docs/zenodo-registration.md", zenodoDoc, [
@@ -630,6 +660,7 @@ async function validateHttpSurface() {
         `${canonicalUrl}demo-workbook.html`,
         `${canonicalUrl}research-experiment.html`,
         `${canonicalUrl}story.html`,
+        `${canonicalUrl}partner-readiness.html`,
         `${canonicalUrl}safety.html`,
         `${canonicalUrl}security.html`,
         `${canonicalUrl}contact.html`,

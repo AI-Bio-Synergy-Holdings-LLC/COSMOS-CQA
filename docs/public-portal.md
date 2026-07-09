@@ -19,6 +19,7 @@ Public resource pages are served as top-level static HTML files:
 - `governance.html`
 - `ownership-and-use.html`
 - `story.html`
+- `partner-readiness.html`
 - `safety.html`
 - `security.html`
 - `copyright.html`
@@ -48,6 +49,7 @@ The portal must present COSMOS-CQA as research-only public infrastructure, not a
 - state that all rights not expressly granted are reserved by AI-Bio Synergy Holdings LLC;
 - avoid diagnostic, cosmology, clinical, operational, or production claims that are not validated in the repository evidence.
 - identify any selective-access application as a separate planned surface, not an active feature of the public demo.
+- route partner-readiness interest through non-confidential public wording without access promises, onboarding claims, backend architecture, operational timelines, or support commitments.
 
 ## Required Navigation
 
@@ -63,6 +65,7 @@ The public scaffold exposes:
 - Governance: `./governance.html`
 - Ownership and use: `./ownership-and-use.html`
 - Story behind the research: `./story.html`
+- Partner readiness: `./partner-readiness.html`
 - Safety and use boundaries: `./safety.html`
 - Security and disclosure: `./security.html`
 - Copyright notice: `./copyright.html`
@@ -94,6 +97,8 @@ The social preview PNG is generated from `apps/web/social-preview.html`, which r
 The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
 
 The public safety note is maintained in `docs/public-safety.md` and mirrored by `apps/web/safety.html`. It treats optional audio sonification as the first-class risk surface: no autoplay, loop off by default, bounded frequency/software-gain constants, clear stop behavior, device-volume caveats, and no therapeutic, medical, diagnostic, or scientific-result claims.
+
+The partner-readiness page is maintained at `apps/web/partner-readiness.html`. It distinguishes the public local-first demo from the future selective-access application, explains what partners can evaluate today, lists gates needed before private sharing, and states that the public page is not an access form, timeline, data-use agreement, confidentiality offer, or production capability statement.
 
 The user data notice is maintained in `apps/web/user-data.html` with companion data governance in `docs/data-governance.md`. It describes the static local-first browser posture, public GitHub issue/reporting boundaries, contact email routing, external service logs, and non-confidential reporting guardrails.
 
