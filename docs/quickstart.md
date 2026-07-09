@@ -36,7 +36,7 @@ http://localhost:4173/workbench.html?demo=core-pack
 
 The hosted demo path auto-loads `examples/core-pack/core-pack.manifest.json`, keeps public truth labels hidden by default, and prepares the validation report preview.
 
-The public demo remains local-first: it does not authenticate users, collect observations, operate a reviewer queue, or transmit reviewer packets. A separate COSMOS-CQA application is planned for verified researchers and institutions; see `docs/selective-access-application.md` for the public wording boundary.
+The public demo remains local-first: it does not authenticate users, collect observations, operate a reviewer queue, or transmit reviewer packets. A separate COSMOS-CQA application is planned for verified researchers and institutions; see `docs/selective-access-application.md` and `https://cosmos-cqa.org/partner-readiness.html` for the public wording boundary.
 
 The public workbook for the hosted sample workflow is served at:
 
@@ -48,6 +48,12 @@ The bounded research experiment framing is served at:
 
 ```text
 https://cosmos-cqa.org/research-experiment.html
+```
+
+The partner-readiness public boundary is served at:
+
+```text
+https://cosmos-cqa.org/partner-readiness.html
 ```
 
 The public safety and use boundaries are served at:

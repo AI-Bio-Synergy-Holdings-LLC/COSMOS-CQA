@@ -352,6 +352,20 @@ a {
   max-width: 820px;
 }
 
+.partner-readiness-hero {
+  padding-bottom: clamp(30px, 4vw, 56px);
+  padding-top: clamp(38px, 5vw, 68px);
+}
+
+.partner-readiness-hero h1 {
+  font-size: clamp(36px, 5.2vw, 64px);
+  max-width: 980px;
+}
+
+.partner-readiness-hero p {
+  max-width: 860px;
+}
+
 .portal-page-content {
   padding: clamp(38px, 6vw, 84px) clamp(18px, 5vw, 76px);
 }
@@ -499,6 +513,52 @@ a {
   left: 0;
   position: absolute;
   top: 12px;
+}
+
+.readiness-table-wrap {
+  border: 1px solid var(--portal-border);
+  border-radius: 8px;
+  box-shadow: 0 18px 34px var(--portal-shadow);
+  margin-top: 22px;
+  overflow: auto;
+}
+
+.readiness-table {
+  background: rgba(21, 32, 42, 0.76);
+  border-collapse: collapse;
+  min-width: 820px;
+  width: 100%;
+}
+
+.readiness-table th,
+.readiness-table td {
+  border-bottom: 1px solid rgba(170, 183, 183, 0.16);
+  padding: 15px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.readiness-table thead th {
+  background: rgba(7, 11, 13, 0.72);
+  color: var(--portal-text);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.readiness-table tbody th {
+  color: var(--portal-gold);
+  font-size: 14px;
+  width: 18%;
+}
+
+.readiness-table td {
+  color: var(--portal-muted);
+  font-size: 14px;
+}
+
+.readiness-table tr:last-child th,
+.readiness-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .contact-card {

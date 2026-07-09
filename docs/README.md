@@ -14,7 +14,7 @@ Start with:
 - `contracts.md` for research workflow contracts.
 - `reviewer-access-boundary.md` for the local reviewer handoff boundary before authenticated reviewer access exists.
 - `selective-access-application.md` for public wording about the planned verified researcher and institution application.
-- Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, and contact.
+- Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, partner readiness, safety, security, copyright, user data, and contact.
 
 Core documents:
 
@@ -36,6 +36,7 @@ Core documents:
 - `evidence-bundles.md` defines research session and evidence bundle contracts for replay, citation, and expert review.
 - `reviewer-access-boundary.md` defines reviewer packet boundaries, current static-portal limits, and future authenticated reviewer pipeline requirements.
 - `selective-access-application.md` keeps public copy aligned around the planned separate application without backend or access promises.
+- `apps/web/partner-readiness.html` is the maintained public page for public-demo versus selective-access-application boundaries.
 - `public-portal.md` defines the canonical website scaffold and public copy boundaries.
 - `public-portal-deployment-validation.md` defines the portal release/deployment validation workflow.
 - `public-surface-hardening.md` defines the public-surface quality gate for repo identity, security, data, SBOMs, releases, and UI/UX polish.
