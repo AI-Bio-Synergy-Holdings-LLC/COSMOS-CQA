@@ -112,9 +112,14 @@ test("hosted demo route settles on the Tile Viewer lane at narrow widths", async
     return {
       hash: window.location.hash,
       horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+      mobileBarDisplay: getComputedStyle(document.querySelector(".mobile-review-mode-bar")).display,
+      headerActionsDisplay: getComputedStyle(document.querySelector(".header-actions")).display,
+      kpisDisplay: getComputedStyle(document.querySelector(".kpis")).display,
       inspectorPosition: inspectorStyle.position,
       inspectorOverflow: inspectorStyle.overflowY,
       inspectorMaxHeight: inspectorStyle.maxHeight,
+      closedInspectorPanels: [...document.querySelectorAll(".research-inspector details:not([open])")].map((detail) => detail.id),
+      closedDrawerPanels: document.querySelectorAll(".evidence-drawer details:not([open])").length,
       canvasTop: Math.round(canvas.top),
       canvasBottom: Math.round(canvas.bottom),
       corePackTop: Math.round(corePack.top),
@@ -123,12 +128,37 @@ test("hosted demo route settles on the Tile Viewer lane at narrow widths", async
   });
 
   expect(layout.hash).toBe("");
+  expect(layout.mobileBarDisplay).toBe("flex");
+  expect(layout.headerActionsDisplay).toBe("none");
+  expect(layout.kpisDisplay).toBe("none");
   expect(layout.canvasTop).toBeGreaterThanOrEqual(0);
   expect(layout.canvasTop).toBeLessThan(layout.viewportHeight);
+  expect(layout.canvasTop).toBeLessThan(560);
   expect(layout.canvasBottom).toBeGreaterThan(0);
   expect(layout.corePackTop).toBeGreaterThan(layout.canvasTop);
   expect(layout.horizontalOverflow).toBe(false);
   expect(layout.inspectorPosition).toBe("static");
   expect(layout.inspectorOverflow).toBe("visible");
   expect(layout.inspectorMaxHeight).toBe("none");
+  expect(layout.closedInspectorPanels).toEqual(
+    expect.arrayContaining(["workspace-tile-passport", "workspace-core-pack", "workspace-diagnostics", "workspace-provenance", "workspace-reports"]),
+  );
+  expect(layout.closedDrawerPanels).toBeGreaterThan(0);
+
+  await page.getByRole("link", { name: "Evidence" }).click();
+  await expect(page).toHaveURL(/#workspace-provenance$/);
+  await expect(page.locator("#workspace-provenance")).toHaveAttribute("open", "");
+  await expect(page.locator("#workspace-core-pack")).not.toHaveAttribute("open", "");
+
+  await page.getByRole("navigation", { name: "Workbench workflow" }).getByRole("link", { name: "Core Pack" }).click();
+  await expect(page).toHaveURL(/#workspace-core-pack$/);
+  await expect(page.locator("#workspace-core-pack")).toHaveAttribute("open", "");
+
+  const openedCorePackLayout = await page.evaluate(() => ({
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+    contractLineWidth: Math.round(document.querySelector(".contract-line").getBoundingClientRect().width),
+    viewportWidth: window.innerWidth,
+  }));
+  expect(openedCorePackLayout.horizontalOverflow).toBe(false);
+  expect(openedCorePackLayout.contractLineWidth).toBeLessThanOrEqual(openedCorePackLayout.viewportWidth);
 });

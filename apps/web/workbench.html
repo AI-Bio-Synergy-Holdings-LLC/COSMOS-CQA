@@ -64,6 +64,13 @@
   <div id="demoModeNotice" class="demo-mode-notice" role="status" hidden>
     Hosted demo mode is loading the synthetic contract Core Pack fixture.
   </div>
+  <nav class="mobile-review-mode-bar" aria-label="Mobile research review mode">
+    <a href="#workspace-tiles">Tile</a>
+    <a href="#workspace-labels">Label</a>
+    <a href="#observationReviewWorkspace">QA</a>
+    <a href="#workspace-provenance">Evidence</a>
+    <a href="#workspace-reports">Report</a>
+  </nav>
 
   <main id="main" class="research-shell" tabindex="-1">
     <nav class="workflow-rail" aria-label="Workbench workflow">
@@ -393,21 +400,21 @@
     </section>
 
     <aside class="research-inspector" aria-label="Research inspector">
-      <section class="card inspector-panel" aria-labelledby="tile-passport-title">
-        <div class="panel-header compact">
+      <details id="workspace-tile-passport" class="card inspector-panel inspector-disclosure" aria-labelledby="tile-passport-title" open>
+        <summary class="panel-header compact">
           <h2 id="tile-passport-title">Tile Passport</h2>
           <span id="tilePassportStatus" class="panel-status">Current tile</span>
-        </div>
+        </summary>
         <div id="tilePassportDetails" class="metadata-panel"></div>
         <div id="tilePassportProvenance" class="metadata-panel divided"></div>
         <div id="tilePassportSidecars" class="metadata-panel divided"></div>
-      </section>
+      </details>
 
-      <section id="workspace-core-pack" class="card inspector-panel" aria-labelledby="core-pack-title">
-        <div class="panel-header compact">
+      <details id="workspace-core-pack" class="card inspector-panel inspector-disclosure" aria-labelledby="core-pack-title" open>
+        <summary class="panel-header compact">
           <h2 id="core-pack-title">Core Pack Intake</h2>
           <span class="panel-status">Contracted</span>
-        </div>
+        </summary>
         <p class="small">Load a stored tile set, synthetic contract fixture, or live research artifact stream.</p>
         <div class="small contract-line">
           <em>Schema:</em> <code>{ type:"tile", tile_id, dataset, ra, dec, band, overlay, checksum, png }</code>
@@ -447,22 +454,22 @@
             <div id="corePackDiagnosticRefs" class="reference-list"></div>
           </div>
         </div>
-      </section>
+      </details>
 
-      <section id="workspace-diagnostics" class="card inspector-panel" aria-labelledby="diagnostics-title">
-        <div class="panel-header compact">
+      <details id="workspace-diagnostics" class="card inspector-panel inspector-disclosure" aria-labelledby="diagnostics-title" open>
+        <summary class="panel-header compact">
           <h2 id="diagnostics-title">Diagnostic Placeholders</h2>
           <span class="panel-status warning">Caveated</span>
-        </div>
+        </summary>
         <div id="diagnosticSummary" class="small">No diagnostic placeholders loaded.</div>
         <div id="diagnosticList" class="diagnostic-list"></div>
-      </section>
+      </details>
 
-      <section id="workspace-provenance" class="card inspector-panel" aria-labelledby="provenance-title">
-        <div class="panel-header compact">
+      <details id="workspace-provenance" class="card inspector-panel inspector-disclosure" aria-labelledby="provenance-title" open>
+        <summary class="panel-header compact">
           <h2 id="provenance-title">Evidence Workspace</h2>
           <span class="panel-status">Inspectable</span>
-        </div>
+        </summary>
         <div id="evidenceWorkspaceStatus" class="small inspector-status">No imported or exported evidence artifacts yet.</div>
         <div class="evidence-workspace" aria-label="Evidence workspace">
           <div>
@@ -504,13 +511,13 @@
             <div id="evidenceValidationChecks" class="reference-list"></div>
           </div>
         </div>
-      </section>
+      </details>
 
-      <section id="workspace-reports" class="card inspector-panel" aria-labelledby="reports-title">
-        <div class="panel-header compact">
+      <details id="workspace-reports" class="card inspector-panel inspector-disclosure" aria-labelledby="reports-title" open>
+        <summary class="panel-header compact">
           <h2 id="reports-title">Reports</h2>
           <span class="panel-status">Artifacts</span>
-        </div>
+        </summary>
         <div class="report-actions">
           <button id="refreshReportPreview" type="button" class="pill">Refresh Validation Preview</button>
           <button id="exportSBOM" type="button" class="pill">Export SBOM</button>
@@ -565,7 +572,7 @@
           <span>All versions</span>
           <a href="https://doi.org/10.5281/zenodo.21112698">10.5281/zenodo.21112698</a>
         </div>
-      </section>
+      </details>
     </aside>
 
     <section class="card evidence-drawer" aria-label="Evidence drawer">
