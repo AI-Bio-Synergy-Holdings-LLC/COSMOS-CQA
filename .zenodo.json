@@ -14,7 +14,7 @@
       "type": "RightsHolder"
     }
   ],
-  "description": "COSMOS-CQA is research-source software for citizen-assisted quality assurance of cosmology artifacts, including public demo workflows for tile review, provenance hashes, evidence bundles, Core Pack intake, reviewer handoff packets, and deterministic replay. The public repository and portal are stewarded by AI-Bio Synergy Holdings LLC and are provided for research-only public use.",
+  "description": "COSMOS-CQA is research-source software for citizen-assisted quality assurance of cosmology artifacts, including public demo workflows for tile review, provenance hashes, evidence bundles, Core Pack intake, reviewer handoff packets, deterministic replay, release validation reports, quality budgets, and SEO exposure checks. The public repository and portal are stewarded by AI-Bio Synergy Holdings LLC and are provided for research-only public use.",
   "access_right": "open",
   "license": "other-closed",
   "keywords": [
@@ -31,7 +31,7 @@
     "research-only license"
   ],
   "language": "eng",
-  "version": "0.1.2-research-alpha",
+  "version": "0.1.3-research-alpha",
   "related_identifiers": [
     {
       "identifier": "https://cosmos-cqa.org",
