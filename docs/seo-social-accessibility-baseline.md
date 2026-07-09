@@ -34,12 +34,32 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 
 | WCAG Area | Current Baseline | Status | Next Evidence Move |
 | --- | --- | --- | --- |
-| Perceivable | Semantic text is used for primary portal/workbench content; decorative canvases are hidden from assistive tech; form controls and key selects have accessible names. | Partially covered | Add automated contrast and non-text-content checks with an accessibility scanner. |
-| Operable | Portal and workbench expose skip links, keyboard-addressable native controls, visible focus checks, and reduced-motion handling for the portal canvas. | Partially covered | Add full keyboard traversal tests for portal nav, workbench rail, dialogs, imports, exports, and evidence drawer. |
+| Perceivable | Semantic text is used for primary portal/workbench content; decorative canvases are hidden from assistive tech; form controls and key selects have accessible names; contrast pairs are tracked in `apps/web/quality-budgets.json`. | Partially covered | Add an axe-style scanner before making stronger conformance claims. |
+| Operable | Portal and workbench expose skip links, keyboard-addressable native controls, visible focus checks, reduced-motion CSS, and target-size spot checks. | Partially covered | Add full keyboard traversal tests for portal nav, workbench rail, dialogs, imports, exports, and evidence drawer. |
 | Understandable | Public copy states research-only use, claim boundaries, license limits, and stewardship. Workbench controls use stable labels and status captions. | Partially covered | Add error-message tests for import failures, validation failures, and unsupported file paths. |
-| Robust | The app uses HTML landmarks, headings, native controls, ARIA labels where needed, and browser automation around key accessibility targets. | Partially covered | Add axe-style regression checks and a screen-reader smoke checklist before claiming higher maturity. |
-| WCAG 2.2 additions | Focus visibility is tested; target sizing is mostly supported by existing control dimensions; drag-only workflows are not required for core use. | Early baseline | Add explicit Focus Not Obscured, Target Size, and Accessible Authentication checklist rows before v0.2.x release. |
+| Robust | The app uses HTML landmarks, headings, native controls, ARIA labels where needed, and browser automation around key accessibility targets. | Partially covered | Add a screen-reader smoke checklist before claiming higher maturity. |
+| WCAG 2.2 additions | Focus visibility is tested; target sizing is budgeted for primary controls; drag-only workflows are not required for core use; the public demo does not require authentication. | Budgeted baseline | Add explicit Focus Not Obscured and accessible-authentication manual review notes before v0.2.x release. |
 | Audio control | Optional sonification is user initiated, loop-off by default, visibly caveated, and immediately stoppable. Browser code bounds frequency and software gain but does not control hardware volume or individual sensitivity. | Partially covered | Keep audio safety tests aligned with `docs/public-safety.md` and add screen-reader/audio-conflict review before claiming higher maturity. |
+
+## Quality Budgets
+
+The maintained budget contract is `apps/web/quality-budgets.json`. It defines Lighthouse-style release targets and CI-enforced supporting budgets for:
+
+- static asset size ceilings for public HTML, CSS, JavaScript, and the social preview image;
+- local route performance smoke ceilings for DOM node count, first-party resource count, script count, stylesheet count, and load timing;
+- WCAG-oriented structure checks for language, viewport metadata, title, description, canonical links, skip links, main landmarks, single `h1`, canvas accessibility, focus visibility, reduced motion, contrast pairs, and primary target size;
+- usability checks for no horizontal overflow at desktop/mobile widths, first-viewport heading placement, required public links, claim-boundary phrases, and all 10 Nielsen Norman Group heuristic rows.
+
+Current Lighthouse-style public-release targets are:
+
+| Category | JSON key | Target |
+| --- | --- | --- |
+| Performance | `performance_score` | `>= 0.90` |
+| Accessibility | `accessibility_score` | `>= 0.95` |
+| Best Practices | `best_practices_score` | `>= 0.90` |
+| SEO | `seo_score` | `>= 0.95` |
+
+These targets guide release QA and future Lighthouse CI adoption. The current repository gate is deterministic and local: it does not claim a formal Lighthouse score, WCAG conformance, or independent usability certification.
 
 ## Nielsen Norman Group Heuristic Baseline
 
@@ -60,6 +80,7 @@ It is a research-infrastructure quality gate, not a claim of formal WCAG certifi
 
 ```bash
 npm --prefix apps/web run check:portal-deploy
+npm --prefix apps/web run check:quality-budgets
 npm --prefix apps/web run test:browser -- portal.spec.mjs accessibility.spec.mjs
 npm --prefix apps/web run pages:prepare
 ```

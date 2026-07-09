@@ -72,6 +72,7 @@ Run these from the repository root for a public-surface sweep:
 ```bash
 npm --prefix apps/web ci
 npm --prefix apps/web run check
+npm --prefix apps/web run check:quality-budgets
 npm --prefix apps/web run release:artifacts
 npm --prefix apps/web run check:portal-deploy
 npm --prefix apps/web run pages:prepare
@@ -95,6 +96,7 @@ The portal, workbook, and demo should feel like a high-end research tool:
 - first-screen copy should be concise, scientific, and claim-bounded;
 - navigation should make demo, workbook, experiment, docs, releases, story, safety, and contact easy to reach;
 - public pages should use consistent canonical metadata and social preview assets;
+- quality budgets should remain explicit in `apps/web/quality-budgets.json` for Lighthouse-style targets, static asset ceilings, WCAG-oriented structure checks, contrast pairs, first-viewport usability checks, and Nielsen Norman Group heuristic coverage;
 - the workbench should prioritize tile review, label workflow, calibration, observation review, evidence, validation reports, and export paths without visual clutter;
 - audio sonification must remain optional, user initiated, loop-off by default, bounded, captioned, and clearly described as a review aid;
 - public truth labels must remain hidden outside dev mode;
@@ -107,6 +109,7 @@ A public-surface sweep passes when:
 - all verification commands pass or any unavailable command has a documented reason;
 - GitHub CodeQL, Dependabot, and secret-scanning open-alert checks return no open alerts or have tracked dispositions;
 - release artifacts regenerate without drift against deployment validation;
+- public quality budgets pass and remain documented without claiming Lighthouse certification, WCAG conformance, independent usability validation, or scientific validation;
 - public project names, license posture, DOI metadata, and canonical URL are consistent;
 - portal/demo/workbook rendered checks show no blank page, framework overlay, console errors, major overlap, or incoherent navigation;
 - no new public copy weakens research-only, safety, security, data, or claim boundaries.

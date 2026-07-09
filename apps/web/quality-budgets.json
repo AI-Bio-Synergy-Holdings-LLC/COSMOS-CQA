@@ -1,0 +1,121 @@
+{
+  "version": "2026-07-09.pr81",
+  "scope": "Public portal, public resource pages, and hosted synthetic Core Pack workbench route.",
+  "lighthouse_style_thresholds": {
+    "performance_score": 0.9,
+    "accessibility_score": 0.95,
+    "best_practices_score": 0.9,
+    "seo_score": 0.95,
+    "note": "These are public-release Lighthouse targets. The local CI gate enforces supporting static and browser budgets without claiming Lighthouse certification."
+  },
+  "performance": {
+    "static_assets": [
+      { "path": "apps/web/index.html", "max_bytes": 20000 },
+      { "path": "apps/web/workbench.html", "max_bytes": 45000 },
+      { "path": "apps/web/demo-workbook.html", "max_bytes": 22000 },
+      { "path": "apps/web/docs.html", "max_bytes": 16000 },
+      { "path": "apps/web/partner-readiness.html", "max_bytes": 18000 },
+      { "path": "apps/web/src/portal.css", "max_bytes": 22000 },
+      { "path": "apps/web/src/styles.css", "max_bytes": 42000 },
+      { "path": "apps/web/src/portal.js", "max_bytes": 8000 },
+      { "path": "apps/web/src/main.js", "max_bytes": 2000 },
+      { "path": "apps/web/assets/social-preview.png", "max_bytes": 700000 }
+    ],
+    "routes": [
+      {
+        "path": "/",
+        "label": "Public portal",
+        "max_dom_nodes": 240,
+        "max_first_party_resources": 4,
+        "max_scripts": 2,
+        "max_stylesheets": 1,
+        "max_local_load_ms": 1800
+      },
+      {
+        "path": "/docs.html",
+        "label": "Docs page",
+        "max_dom_nodes": 180,
+        "max_first_party_resources": 3,
+        "max_scripts": 0,
+        "max_stylesheets": 1,
+        "max_local_load_ms": 1200
+      },
+      {
+        "path": "/partner-readiness.html",
+        "label": "Partner readiness page",
+        "max_dom_nodes": 220,
+        "max_first_party_resources": 3,
+        "max_scripts": 0,
+        "max_stylesheets": 1,
+        "max_local_load_ms": 1200
+      },
+      {
+        "path": "/demo-workbook.html",
+        "label": "Demo workbook",
+        "max_dom_nodes": 220,
+        "max_first_party_resources": 3,
+        "max_scripts": 0,
+        "max_stylesheets": 1,
+        "max_local_load_ms": 1200
+      },
+      {
+        "path": "/workbench.html?demo=core-pack",
+        "label": "Hosted demo workbench",
+        "max_dom_nodes": 1100,
+        "max_first_party_resources": 40,
+        "max_scripts": 3,
+        "max_stylesheets": 1,
+        "max_local_load_ms": 6000
+      }
+    ]
+  },
+  "accessibility": {
+    "routes": ["/", "/docs.html", "/partner-readiness.html", "/demo-workbook.html", "/workbench.html?demo=core-pack"],
+    "required_static_checks": [
+      "html-lang",
+      "viewport-meta",
+      "page-title",
+      "meta-description",
+      "canonical-link",
+      "skip-link",
+      "main-landmark",
+      "single-h1",
+      "social-preview-alt",
+      "canvas-accessibility",
+      "reduced-motion-css",
+      "focus-visible-css"
+    ],
+    "min_primary_target_size_css_px": 32,
+    "contrast_pairs": [
+      { "label": "portal body text on background", "foreground": "#f2f7f4", "background": "#090d10", "minimum_ratio": 4.5 },
+      { "label": "portal muted text on surface", "foreground": "#aab7b7", "background": "#111820", "minimum_ratio": 4.5 },
+      { "label": "portal accent action text", "foreground": "#061010", "background": "#43d6c5", "minimum_ratio": 4.5 },
+      { "label": "workbench body text on background", "foreground": "#ecf4ef", "background": "#0d1014", "minimum_ratio": 4.5 },
+      { "label": "workbench muted text on surface", "foreground": "#9eb0ad", "background": "#151c23", "minimum_ratio": 4.5 }
+    ]
+  },
+  "usability": {
+    "nng_heuristics_required": 10,
+    "viewport_checks": [
+      { "width": 1280, "height": 720 },
+      { "width": 390, "height": 844 }
+    ],
+    "max_horizontal_overflow_px": 1,
+    "first_viewport_h1_top_max_px": 320,
+    "required_public_links": [
+      "./workbench.html?demo=core-pack",
+      "./demo-workbook.html",
+      "./research-experiment.html",
+      "./partner-readiness.html",
+      "./safety.html",
+      "./security.html",
+      "./contact.html"
+    ],
+    "claim_boundary_phrases": [
+      "research-only",
+      "not a production decision system",
+      "does not publish validated cosmology diagnostics",
+      "does not authenticate users"
+    ]
+  }
+}
