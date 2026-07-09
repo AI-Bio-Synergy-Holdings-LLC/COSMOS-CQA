@@ -131,6 +131,14 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
       expect.objectContaining({ propertyID: "Zenodo all-versions DOI", value: allVersionsDoi, url: `https://doi.org/${allVersionsDoi}` }),
     ]),
   );
+  const webPageMetadata = structuredData["@graph"].find((item) => item["@type"] === "WebPage" && item["@id"] === "https://cosmos-cqa.org/#webpage");
+  expect(webPageMetadata).toEqual(
+    expect.objectContaining({
+      url: "https://cosmos-cqa.org/",
+      name: "COSMOS-CQA Public Research Portal",
+      inLanguage: "en",
+    }),
+  );
 
   await expect(page.getByText("Cite v0.1.2:")).toBeVisible();
   await expect(page.getByRole("link", { name: currentReleaseDoi })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
@@ -143,6 +151,7 @@ test("publishes SEO, social preview, and structured metadata", async ({ page, re
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
   const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("<lastmod>2026-07-09</lastmod>");
   expect(sitemapText).toContain("https://cosmos-cqa.org/workbench.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/demo-workbook.html");
   expect(sitemapText).toContain("https://cosmos-cqa.org/research-experiment.html");
@@ -172,6 +181,28 @@ test("serves public resource pages with canonical metadata and notices", async (
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(publicPage.text);
     await expect(page.locator("link[rel='canonical']")).toHaveAttribute("href", `https://cosmos-cqa.org${publicPage.path}`);
     await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+    await expect(page.locator("meta[property='og:image:alt']")).toHaveAttribute(
+      "content",
+      "COSMOS-CQA research-only public portal for cosmology artifact QA evidence, provenance, and replay.",
+    );
+    await expect(page.locator("meta[property='og:image:width']")).toHaveAttribute("content", "1200");
+    await expect(page.locator("meta[property='og:image:height']")).toHaveAttribute("content", "630");
+    await expect(page.locator("meta[name='twitter:card']")).toHaveAttribute("content", "summary_large_image");
+    await expect(page.locator("meta[name='twitter:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
+    await expect(page.locator("meta[name='twitter:image:alt']")).toHaveAttribute(
+      "content",
+      "COSMOS-CQA research-only public portal for cosmology artifact QA evidence, provenance, and replay.",
+    );
+    const publicPageStructuredData = await page.locator("script[type='application/ld+json']").evaluateAll((scripts) => scripts.map((script) => JSON.parse(script.textContent)));
+    const publicPageNodes = publicPageStructuredData.flatMap((payload) => (Array.isArray(payload["@graph"]) ? payload["@graph"] : [payload]));
+    expect(publicPageNodes).toContainEqual(
+      expect.objectContaining({
+        "@type": "WebPage",
+        "@id": `https://cosmos-cqa.org${publicPage.path}#webpage`,
+        url: `https://cosmos-cqa.org${publicPage.path}`,
+        inLanguage: "en",
+      }),
+    );
     await expect(page.locator("body")).not.toContainText("scientifically validated diagnostics");
   }
 
@@ -306,7 +337,7 @@ test("keeps public page inline action buttons visually aligned", async ({ page }
   await page.setViewportSize({ width: 1280, height: 720 });
 
   for (const path of ["/releases.html", "/story.html", "/research-experiment.html", "/partner-readiness.html"]) {
-    await page.goto(path, { waitUntil: "domcontentloaded" });
+    await page.goto(path, { waitUntil: "load" });
     const inlineListRows = await page.locator(".portal-inline-list").evaluateAll((lists) =>
       lists.map((list) =>
         [...list.querySelectorAll("a")].map((link) => {
@@ -359,6 +390,19 @@ test("keeps the research workbench discoverability metadata aligned with the por
   await expect(page.locator("meta[property='og:url']")).toHaveAttribute("content", "https://cosmos-cqa.org/workbench.html");
   await expect(page.locator("meta[property='og:image']")).toHaveAttribute("content", "https://cosmos-cqa.org/assets/social-preview.png");
   await expect(page.locator("meta[name='twitter:card']")).toHaveAttribute("content", "summary_large_image");
+  await expect(page.locator("meta[name='twitter:image:alt']")).toHaveAttribute(
+    "content",
+    "COSMOS-CQA research-only public portal for cosmology artifact QA evidence, provenance, and replay.",
+  );
+  const workbenchStructuredData = await page.locator("script[type='application/ld+json']").evaluateAll((scripts) => scripts.map((script) => JSON.parse(script.textContent)));
+  expect(workbenchStructuredData).toContainEqual(
+    expect.objectContaining({
+      "@type": "WebPage",
+      "@id": "https://cosmos-cqa.org/workbench.html#webpage",
+      url: "https://cosmos-cqa.org/workbench.html",
+      inLanguage: "en",
+    }),
+  );
   await expect(page.getByRole("link", { name: "Cite DOI" })).toHaveAttribute("href", `https://doi.org/${currentReleaseDoi}`);
   await expect(page.getByText("Cite this demo release")).toBeVisible();
 });

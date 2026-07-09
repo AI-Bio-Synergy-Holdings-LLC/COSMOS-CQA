@@ -72,6 +72,7 @@ Run these from the repository root for a public-surface sweep:
 ```bash
 npm --prefix apps/web ci
 npm --prefix apps/web run check
+npm --prefix apps/web run check:seo-exposure
 npm --prefix apps/web run check:quality-budgets
 npm --prefix apps/web run release:artifacts
 npm --prefix apps/web run check:portal-deploy
@@ -109,6 +110,7 @@ A public-surface sweep passes when:
 - all verification commands pass or any unavailable command has a documented reason;
 - GitHub CodeQL, Dependabot, and secret-scanning open-alert checks return no open alerts or have tracked dispositions;
 - release artifacts regenerate without drift against deployment validation;
+- public SEO exposure checks pass for metadata, structured data, sitemap, robots, and social preview completeness without claiming search ranking or indexing;
 - public quality budgets pass and remain documented without claiming Lighthouse certification, WCAG conformance, independent usability validation, or scientific validation;
 - public project names, license posture, DOI metadata, and canonical URL are consistent;
 - portal/demo/workbook rendered checks show no blank page, framework overlay, console errors, major overlap, or incoherent navigation;

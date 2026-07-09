@@ -96,6 +96,14 @@ The social preview PNG is generated from `apps/web/social-preview.html`, which r
 
 The baseline assessment is maintained in `docs/seo-social-accessibility-baseline.md`. It maps the current portal/workbench surface to WCAG 2.2 areas and Nielsen Norman Group usability heuristics without claiming formal conformance or certification.
 
+The SEO exposure gate is maintained in `apps/web/scripts/check-seo-exposure.mjs` and enforced with:
+
+```bash
+npm --prefix apps/web run check:seo-exposure
+```
+
+It verifies page-level titles, descriptions, canonical URLs, indexability, Open Graph and Twitter/X cards, social preview alt text and dimensions, `WebPage` JSON-LD, sitemap coverage, sitemap `lastmod`, and `robots.txt` sitemap discovery. Passing this gate does not guarantee ranking or indexing; it only proves the public site is technically ready for search-console inspection and sitemap submission.
+
 The quality budgets are maintained in `apps/web/quality-budgets.json` and enforced with:
 
 ```bash

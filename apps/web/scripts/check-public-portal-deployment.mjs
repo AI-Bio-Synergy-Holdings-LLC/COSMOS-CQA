@@ -97,6 +97,7 @@ async function validateStaticContract() {
   const pagesWorkflow = await readText(".github/workflows/pages.yml");
   const artifactPrepScript = await readText("apps/web/scripts/prepare-pages-artifact.mjs");
   const pagesDnsScript = await readText("apps/web/scripts/check-pages-dns.mjs");
+  const seoExposureScript = await readText("apps/web/scripts/check-seo-exposure.mjs");
   const releaseIndex = await readText("docs/releases/README.md");
   const releaseNotes = await readText(`docs/releases/${releaseId}.md`);
   const validationReport = JSON.parse(await readText(`docs/releases/${releaseId}-validation-report.json`));
@@ -211,6 +212,7 @@ async function validateStaticContract() {
     `<loc>${canonicalUrl}safety.html</loc>`,
     `<loc>${canonicalUrl}security.html</loc>`,
     `<loc>${canonicalUrl}contact.html</loc>`,
+    "<lastmod>2026-07-09</lastmod>",
   ]);
 
   requirePhrases("CITATION.cff", citation, [
@@ -367,6 +369,7 @@ async function validateStaticContract() {
     "http://127.0.0.1:4173",
     "public portal release/deployment validation",
     "SEO, social preview, accessibility, and usability baseline",
+    "check:seo-exposure",
     "quality budgets",
     "copyright",
     "user data",
@@ -386,6 +389,7 @@ async function validateStaticContract() {
     "COSMOS-CQA Research Edition",
     "GitHub CodeQL, Dependabot, and secret-scanning",
     "npm --prefix apps/web sbom --sbom-format cyclonedx --sbom-type application --json",
+    "npm --prefix apps/web run check:seo-exposure",
     "npm --prefix apps/web run check:quality-budgets",
     "quality budgets",
     "Portal And Demo Polish",
@@ -394,6 +398,7 @@ async function validateStaticContract() {
 
   requirePhrases("docs/seo-social-accessibility-baseline.md", seoAccessibilityBaseline, [
     "Quality Budgets",
+    "SEO Exposure Gate",
     "apps/web/quality-budgets.json",
     "Lighthouse-style release targets",
     "performance_score",
@@ -401,6 +406,7 @@ async function validateStaticContract() {
     "best_practices_score",
     "seo_score",
     "Nielsen Norman Group Heuristic Baseline",
+    "npm --prefix apps/web run check:seo-exposure",
     "npm --prefix apps/web run check:quality-budgets",
   ]);
 
@@ -460,9 +466,20 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/package.json", packageManifest, [
     "\"check:quality-budgets\"",
+    "\"check:seo-exposure\"",
     "check-public-portal-deployment.mjs",
     "check-quality-budgets.mjs",
-    "check:portal-deploy && npm run check:quality-budgets",
+    "check-seo-exposure.mjs",
+    "check:portal-deploy && npm run check:seo-exposure && npm run check:quality-budgets",
+  ]);
+
+  requirePhrases("apps/web/scripts/check-seo-exposure.mjs", seoExposureScript, [
+    "SEO exposure check failed",
+    "og:image:alt",
+    "twitter:image:alt",
+    "WebPage",
+    "sitemap lastmod",
+    "robots.txt",
   ]);
 
   requirePhrases("apps/web/quality-budgets.json", qualityBudgetsRaw, [
