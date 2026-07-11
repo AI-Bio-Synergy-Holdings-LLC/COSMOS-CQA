@@ -58,6 +58,12 @@ const researchSessionFixture = JSON.parse(
 const evidenceBundleFixture = JSON.parse(
   await readFile(new URL("../../../examples/evidence-bundle/evidence-bundle.json", import.meta.url), "utf8"),
 );
+const computationalReferenceFixture = JSON.parse(
+  await readFile(
+    new URL("../../../examples/computational-references/synthetic-computational-reference.json", import.meta.url),
+    "utf8",
+  ),
+);
 const legacyChecklistSource = await readFile(
   new URL("../../../archive/original-materials/legacy-v3/COSMOS_TEST_CHECKLIST_v3.html", import.meta.url),
   "utf8",
@@ -523,6 +529,61 @@ test("tile passport and core pack manifests satisfy evidence contracts", () => {
       },
     ],
   });
+});
+
+test("computational reference fixture is synthetic, non-live, and non-diagnostic", () => {
+  assertContract("computationalReference", computationalReferenceFixture);
+  assert.equal(computationalReferenceFixture.synthetic_fixture, true);
+  assert.equal(computationalReferenceFixture.live_api_call, false);
+  assert.equal(computationalReferenceFixture.api_client_implemented, false);
+  assert.equal(computationalReferenceFixture.mcp_config_included, false);
+  assert.equal(computationalReferenceFixture.external_content_copied, false);
+  assert.equal(computationalReferenceFixture.diagnostic_validation, false);
+  assert.equal(computationalReferenceFixture.training_data_use, false);
+  assert.equal(computationalReferenceFixture.provider_type, "synthetic");
+  assert.equal(computationalReferenceFixture.review_state, "not-reviewed");
+  assert.match(computationalReferenceFixture.claim_boundary, /not diagnostic validation/);
+
+  const serializedFixture = JSON.stringify(computationalReferenceFixture);
+  assert.doesNotMatch(serializedFixture, /wolfram|appid|api\.wolframalpha|mcpServers|podstate|subpod|plaintext/i);
+  assert.doesNotMatch(serializedFixture, /https?:\/\//i);
+});
+
+test("computational reference contract rejects live clients and validation claims", () => {
+  const liveApi = validateContract("computationalReference", {
+    ...computationalReferenceFixture,
+    live_api_call: true,
+  });
+  assert.equal(liveApi.valid, false);
+  assert.ok(liveApi.errors.some((error) => error.path === "computationalReference.live_api_call"));
+
+  const apiClient = validateContract("computationalReference", {
+    ...computationalReferenceFixture,
+    api_client_implemented: true,
+  });
+  assert.equal(apiClient.valid, false);
+  assert.ok(apiClient.errors.some((error) => error.path === "computationalReference.api_client_implemented"));
+
+  const mcpConfig = validateContract("computationalReference", {
+    ...computationalReferenceFixture,
+    mcp_config_included: true,
+  });
+  assert.equal(mcpConfig.valid, false);
+  assert.ok(mcpConfig.errors.some((error) => error.path === "computationalReference.mcp_config_included"));
+
+  const diagnosticClaim = validateContract("computationalReference", {
+    ...computationalReferenceFixture,
+    diagnostic_validation: true,
+  });
+  assert.equal(diagnosticClaim.valid, false);
+  assert.ok(diagnosticClaim.errors.some((error) => error.path === "computationalReference.diagnostic_validation"));
+
+  const copiedContent = validateContract("computationalReference", {
+    ...computationalReferenceFixture,
+    external_content_copied: true,
+  });
+  assert.equal(copiedContent.valid, false);
+  assert.ok(copiedContent.errors.some((error) => error.path === "computationalReference.external_content_copied"));
 });
 
 test("legacy checklist targets are tracked as evidence contract data", () => {

@@ -12,6 +12,9 @@ export const DIAGNOSTIC_STATUSES = ["concept-only", "prototype-note", "review-re
 export const DIAGNOSTIC_IMPLEMENTATION_STATES = ["not-implemented", "documentation-only", "planned"];
 export const DIAGNOSTIC_RESULT_STATUSES = ["placeholder", "review-required"];
 export const DIAGNOSTIC_RESULT_IMPLEMENTATION_STATES = ["placeholder"];
+export const COMPUTATIONAL_REFERENCE_KINDS = ["synthetic-mock", "external-service-candidate", "private-app-reference"];
+export const COMPUTATIONAL_REFERENCE_PROVIDER_TYPES = ["synthetic", "candidate-external", "private-server-side"];
+export const COMPUTATIONAL_REFERENCE_REVIEW_STATES = ["not-reviewed", "human-reviewed", "rejected"];
 export const RESEARCH_ARTIFACT_KINDS = ["feed", "core-pack", "sbom", "validation-report"];
 export const OBSERVATION_REVIEW_STATUSES = ["pending-review", "reviewed", "needs-adjudication"];
 export const OBSERVATION_CONSENSUS_STATUSES = ["not-assessed", "single-reviewer", "needs-adjudication", "consensus-placeholder"];
@@ -660,6 +663,69 @@ export const schemas = {
         minItems: 1,
         items: { type: "string", minLength: 1, maxLength: 2048 },
       },
+    },
+  },
+
+  computationalReference: {
+    $id: "cosmos-cqa/computational-reference.schema.json",
+    type: "object",
+    required: [
+      "schema_version",
+      "reference_id",
+      "kind",
+      "provider_type",
+      "provider_label",
+      "created_at",
+      "query_text",
+      "result_summary",
+      "result_units",
+      "synthetic_fixture",
+      "live_api_call",
+      "api_client_implemented",
+      "mcp_config_included",
+      "external_content_copied",
+      "diagnostic_validation",
+      "training_data_use",
+      "privacy_boundary",
+      "license_boundary",
+      "claim_boundary",
+      "private_app_note",
+      "review_state",
+      "evidence_hash",
+    ],
+    additionalProperties: false,
+    properties: {
+      schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      reference_id: { type: "string", pattern: "^cref_[A-Za-z0-9._:-]+$" },
+      kind: { type: "string", enum: COMPUTATIONAL_REFERENCE_KINDS },
+      provider_type: { type: "string", enum: COMPUTATIONAL_REFERENCE_PROVIDER_TYPES },
+      provider_label: { type: "string", minLength: 1, maxLength: 128 },
+      created_at: { type: "string", format: "date-time" },
+      query_text: { type: "string", minLength: 1, maxLength: 512 },
+      result_summary: { type: "string", minLength: 1, maxLength: 1000 },
+      result_units: { type: "string", minLength: 1, maxLength: 128 },
+      assumptions: {
+        type: "array",
+        items: { type: "string", minLength: 1, maxLength: 512 },
+      },
+      source_terms: {
+        type: "array",
+        items: { type: "string", minLength: 1, maxLength: 2048 },
+      },
+      synthetic_fixture: { type: "boolean", const: true },
+      live_api_call: { type: "boolean", const: false },
+      api_client_implemented: { type: "boolean", const: false },
+      mcp_config_included: { type: "boolean", const: false },
+      external_content_copied: { type: "boolean", const: false },
+      diagnostic_validation: { type: "boolean", const: false },
+      training_data_use: { type: "boolean", const: false },
+      privacy_boundary: { type: "string", minLength: 80, maxLength: 1000 },
+      license_boundary: { type: "string", minLength: 80, maxLength: 1000 },
+      claim_boundary: { type: "string", minLength: 80, maxLength: 1000 },
+      private_app_note: { type: "string", minLength: 80, maxLength: 1000 },
+      review_state: { type: "string", enum: COMPUTATIONAL_REFERENCE_REVIEW_STATES },
+      reviewer_note: { type: "string", maxLength: 512 },
+      evidence_hash: { type: "string", pattern: checksumPattern },
     },
   },
 
