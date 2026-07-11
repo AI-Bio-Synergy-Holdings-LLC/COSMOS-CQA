@@ -30,6 +30,12 @@ Reviewer handoff and return packets are also local JSON artifacts in the current
 
 A separate selective-access COSMOS-CQA application is planned for verified researchers and institutions. Until that application has its own access terms, data handling, security controls, and operational responsibilities, public documentation should not imply that the hosted demo collects, stores, or routes research submissions.
 
+## Private Application Transition
+
+The private application must use the classification, dataset intake, lifecycle, tenant isolation, retention, deletion, export, backup, and partner-exit gates in `docs/private-application-transition-map.md` and `docs/private-application-readiness-gates.md` before real partner data is accepted.
+
+Restricted or regulated data remains excluded by default. Technical access does not establish consent, redistribution rights, ethics approval, data-processing authority, or publication rights.
+
 ## Evidence Artifacts
 
 Expected evidence artifacts include:

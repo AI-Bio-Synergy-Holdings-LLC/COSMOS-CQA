@@ -48,6 +48,8 @@ A production-grade reviewer lane would need a separate service layer with:
 
 Until that service exists, COSMOS-CQA should describe review/adjudication as local research workflow evidence only.
 
+The control-level transition path for authenticated identity, tenant-scoped authorization, immutable audit evidence, data governance, and partner onboarding is defined in `docs/private-application-transition-map.md`. Stage-gate evidence is defined in `docs/private-application-readiness-gates.md`. Implementation details belong in the future private repository.
+
 ## Public Copy Rule
 
 Use language such as:

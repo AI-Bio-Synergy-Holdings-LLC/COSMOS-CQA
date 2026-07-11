@@ -84,6 +84,8 @@ async function validateStaticContract() {
   const publicSurfaceHardeningDoc = await readText("docs/public-surface-hardening.md");
   const seoAccessibilityBaseline = await readText("docs/seo-social-accessibility-baseline.md");
   const selectiveAccessDoc = await readText("docs/selective-access-application.md");
+  const privateApplicationTransitionMap = await readText("docs/private-application-transition-map.md");
+  const privateApplicationReadinessGates = await readText("docs/private-application-readiness-gates.md");
   const zenodoDoc = await readText("docs/zenodo-registration.md");
   const deploymentDoc = await readText("docs/public-portal-deployment-validation.md");
   const packageManifest = await readText("apps/web/package.json");
@@ -304,6 +306,10 @@ async function validateStaticContract() {
     "release DOI status",
     "Public Surface Hardening",
     "Repo identity, security, data, SBOM, release, and UI/UX sweep standard.",
+    "Private Application Transition Map",
+    "Control-level boundaries, architecture, identity, data governance, and research-partner onboarding plan.",
+    "Private Application Readiness Gates",
+    "Auditable stage gates and private-tracker seed required before implementation and real-data use.",
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
@@ -353,6 +359,8 @@ async function validateStaticContract() {
     "No public account creation, researcher onboarding, institutional access, API keys, hosted reviewer queue, or live observation submission is available here.",
     "No timeline, partnership acceptance, funding commitment, data-use agreement, confidentiality, or support obligation is implied",
     "Start a Non-Confidential Conversation",
+    "Transition Map",
+    "Readiness Gates",
     "./contact.html",
     "./security.html",
     "./user-data.html",
@@ -441,7 +449,27 @@ async function validateStaticContract() {
     "does not authenticate users, collect observations, or transmit review packets",
     "https://cosmos-cqa.org/partner-readiness.html",
     "not act as an application form, access grant, timeline, data-use agreement, confidentiality offer, or production capability statement",
-    "should not publish backend architecture, access promises, operational timelines, partnership acceptance criteria, or support commitments prematurely",
+    "should not publish deployment-specific backend internals, credentials, private topology, access promises, operational timelines, partnership acceptance decisions, or support commitments prematurely",
+  ]);
+
+  requirePhrases("docs/private-application-transition-map.md", privateApplicationTransitionMap, [
+    "Private Application Transition Execution Map",
+    "separate private repository",
+    "modular monolith",
+    "NIST SP 800-63-4",
+    "OWASP ASVS 5.0.0",
+    "Restricted or regulated",
+    "Research Partner Onboarding",
+    "not application code",
+  ]);
+
+  requirePhrases("docs/private-application-readiness-gates.md", privateApplicationReadinessGates, [
+    "Private Application Readiness Gates",
+    "Implementation may begin only after Gates 0 and 1 are approved",
+    "Real partner data and a controlled research pilot are prohibited until Gate 6",
+    "Private Tracker Seed",
+    "Do not open implementation-detail issues in the public tracker",
+    "Gate 6: Operational Pilot Readiness",
   ]);
 
   requirePhrases("docs/zenodo-registration.md", zenodoDoc, [
