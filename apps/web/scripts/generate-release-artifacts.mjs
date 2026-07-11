@@ -48,7 +48,7 @@ const checks = [
   {
     name: "contract tests",
     status: "pass",
-    detail: "Label, feed, bookmark/provenance, SBOM, and validation report contracts passed.",
+    detail: "Label, feed, bookmark/provenance, SBOM, computational-reference, and validation report contracts passed.",
   },
   {
     name: "deterministic replay tests",
