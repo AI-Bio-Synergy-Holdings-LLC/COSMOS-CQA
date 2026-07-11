@@ -4,7 +4,20 @@ This index points public researchers to release notes, validation reports, SBOM 
 
 COSMOS-CQA release artifacts are research evidence. They are not production certifications, clinical artifacts, regulatory submissions, or OSI open-source distribution grants. Public use remains governed by the COSMOS-CQA Research-Only Public License, with AI-Bio Synergy Holdings LLC as owner and steward.
 
-Zenodo DOI status: active. The all-versions concept DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698). The first DOI-minted public release is `v0.1.1-research-alpha` with release DOI [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699). The `v0.1.2-research-alpha` release DOI is [10.5281/zenodo.21142690](https://doi.org/10.5281/zenodo.21142690). The current `v0.1.3-research-alpha` release DOI is [10.5281/zenodo.21285595](https://doi.org/10.5281/zenodo.21285595).
+Zenodo DOI status: active for DOI-minted releases. The all-versions concept DOI is [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698). The first DOI-minted public release is `v0.1.1-research-alpha` with release DOI [10.5281/zenodo.21112699](https://doi.org/10.5281/zenodo.21112699). The `v0.1.2-research-alpha` release DOI is [10.5281/zenodo.21142690](https://doi.org/10.5281/zenodo.21142690). The latest DOI-minted release is `v0.1.3-research-alpha` with release DOI [10.5281/zenodo.21285595](https://doi.org/10.5281/zenodo.21285595). The `v0.1.4-research-alpha` release package is prepared; its exact Zenodo release DOI is pending until the GitHub release is archived by Zenodo.
+
+## v0.1.4-research-alpha
+
+- Release notes: [`v0.1.4-research-alpha.md`](v0.1.4-research-alpha.md)
+- Validation report JSON: [`v0.1.4-research-alpha-validation-report.json`](v0.1.4-research-alpha-validation-report.json)
+- SBOM JSON: [`v0.1.4-research-alpha-sbom.json`](v0.1.4-research-alpha-sbom.json)
+- GitHub release target: [`v0.1.4-research-alpha`](https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/releases/tag/v0.1.4-research-alpha)
+- Zenodo release DOI status: pending until the GitHub release is archived by Zenodo
+- Zenodo all-versions DOI: [10.5281/zenodo.21112698](https://doi.org/10.5281/zenodo.21112698)
+- Latest DOI-minted release before this tag: [10.5281/zenodo.21285595](https://doi.org/10.5281/zenodo.21285595)
+- Tag: `v0.1.4-research-alpha`
+- Release title: `COSMOS-CQA v0.1.4 Research Alpha`
+- Canonical URL: `https://cosmos-cqa.org`
 
 ## v0.1.3-research-alpha
 

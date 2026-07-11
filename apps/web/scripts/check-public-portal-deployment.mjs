@@ -9,10 +9,10 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 const canonicalUrl = "https://cosmos-cqa.org/";
 const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
-const releaseId = "v0.1.3-research-alpha";
-const releaseVersion = "0.1.3-research-alpha";
-const currentDoiReleaseId = releaseId;
-const currentDoiReleaseVersion = releaseVersion;
+const releaseId = "v0.1.4-research-alpha";
+const releaseVersion = "0.1.4-research-alpha";
+const currentDoiReleaseId = "v0.1.3-research-alpha";
+const currentDoiReleaseVersion = "0.1.3-research-alpha";
 const zenodoConceptDoi = "10.5281/zenodo.21112698";
 const zenodoPriorReleaseDoi = "10.5281/zenodo.21112699";
 const zenodoPreviousReleaseDoi = "10.5281/zenodo.21142690";
@@ -220,8 +220,9 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("CITATION.cff", citation, [
-    `doi: "${zenodoCurrentReleaseDoi}"`,
+    `doi: "${zenodoConceptDoi}"`,
     `version: "${releaseVersion}"`,
+    "Zenodo v0.1.4-research-alpha release DOI pending archive",
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
     "Zenodo DOI",
@@ -259,6 +260,7 @@ async function validateStaticContract() {
     currentDoiReleaseId,
     zenodoCurrentReleaseDoi,
     releaseId,
+    "exact release DOI is pending",
     "docs/zenodo-registration.md",
   ]);
 
@@ -273,7 +275,8 @@ async function validateStaticContract() {
     `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
     `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoPriorReleaseDoi}\``,
     `Zenodo \`v0.1.2-research-alpha\` release DOI: \`${zenodoPreviousReleaseDoi}\``,
-    `Zenodo \`${releaseId}\` release DOI: \`${zenodoCurrentReleaseDoi}\``,
+    `Zenodo \`${currentDoiReleaseId}\` release DOI: \`${zenodoCurrentReleaseDoi}\``,
+    `Zenodo \`${releaseId}\` release DOI: pending`,
     ".zenodo.json",
     `https://doi.org/${zenodoCurrentReleaseDoi}`,
     `https://doi.org/${zenodoPreviousReleaseDoi}`,
@@ -301,10 +304,12 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("apps/web/releases.html", releasesPage, [
-    "v0.1.3 Research Alpha",
-    "Zenodo DOI status: minted.",
+    "v0.1.4 Research Alpha",
+    "Zenodo DOI status: pending until the GitHub release is archived by Zenodo.",
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
+    "v0.1.3 Research Alpha",
+    "Zenodo DOI status: minted.",
     "v0.1.2 Research Alpha",
     ...citationMetaPhrases,
     "Zenodo DOI status: minted.",
@@ -449,6 +454,7 @@ async function validateStaticContract() {
     zenodoCurrentReleaseDoi,
     currentDoiReleaseId,
     releaseId,
+    "pending until Zenodo archives the GitHub release",
     "v0.1.1-research-alpha",
   ]);
 
@@ -677,23 +683,24 @@ async function validateStaticContract() {
     zenodoCurrentReleaseDoi,
     currentDoiReleaseId,
     releaseId,
+    "Zenodo release DOI status: pending",
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
-    "Zenodo DOI status: active.",
+    "Zenodo DOI status: active for DOI-minted releases.",
   ]);
 
   requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
-    "COSMOS-CQA v0.1.3 Research Alpha",
-    "Zenodo record: [https://zenodo.org/records/21285595]",
+    "COSMOS-CQA v0.1.4 Research Alpha",
+    "Zenodo release DOI: pending until the GitHub release is archived by Zenodo",
     zenodoCurrentReleaseDoi,
     zenodoConceptDoi,
-    "check:seo-exposure",
-    "check:quality-budgets",
+    "external computational references",
+    "not an API client or MCP configuration",
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
     "research-only public use",
-    "SEO exposure checks and search inspection/submission do not guarantee search ranking",
+    "No public API calls, MCP configuration, API keys, endpoint code, or provider-response redistribution are included.",
   ]);
 
   requirePhrases("docs/releases/v0.1.1-research-alpha.md", await readText("docs/releases/v0.1.1-research-alpha.md"), [

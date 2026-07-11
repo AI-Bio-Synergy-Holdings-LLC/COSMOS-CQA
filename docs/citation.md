@@ -16,6 +16,7 @@ The canonical citation metadata is stored in `CITATION.cff`. This page mirrors t
 - Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699` (`https://doi.org/10.5281/zenodo.21112699`)
 - Zenodo `v0.1.2-research-alpha` release DOI: `10.5281/zenodo.21142690` (`https://doi.org/10.5281/zenodo.21142690`)
 - Zenodo `v0.1.3-research-alpha` release DOI: `10.5281/zenodo.21285595` (`https://doi.org/10.5281/zenodo.21285595`)
+- Zenodo `v0.1.4-research-alpha` release DOI: pending until the GitHub release is archived by Zenodo
 - Zenodo metadata: `.zenodo.json`
 
 ## Suggested Citation
@@ -46,6 +47,12 @@ For `v0.1.3-research-alpha`, cite the exact Zenodo release DOI:
 
 ```text
 AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.3-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21285595
+```
+
+For `v0.1.4-research-alpha`, use the all-versions DOI until Zenodo mints the version-specific release DOI:
+
+```text
+AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.4-research-alpha. Research-source software. Zenodo DOI pending. https://doi.org/10.5281/zenodo.21112698
 ```
 
 ## What To Cite Alongside COSMOS-CQA
