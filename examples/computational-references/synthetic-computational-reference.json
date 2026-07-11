@@ -1,0 +1,30 @@
+{
+  "schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "reference_id": "cref_synthetic_angular_scale_001",
+  "kind": "synthetic-mock",
+  "provider_type": "synthetic",
+  "provider_label": "Synthetic offline arithmetic fixture",
+  "created_at": "2026-07-11T00:00:00.000Z",
+  "query_text": "Given a synthetic 512 px tile spanning 1.0 degree, compute the angular width per pixel.",
+  "result_summary": "For this synthetic fixture only, 1.0 degree divided by 512 pixels equals about 0.001953 degrees per pixel, or 7.03125 arcseconds per pixel.",
+  "result_units": "degrees per pixel; arcseconds per pixel",
+  "assumptions": [
+    "The tile span and pixel count are synthetic fixture values.",
+    "No external computational service produced this response.",
+    "This arithmetic reference is not tied to any real sky survey, real tile, or restricted dataset."
+  ],
+  "synthetic_fixture": true,
+  "live_api_call": false,
+  "api_client_implemented": false,
+  "mcp_config_included": false,
+  "external_content_copied": false,
+  "diagnostic_validation": false,
+  "training_data_use": false,
+  "privacy_boundary": "This fixture contains no personal data, contributor data, credentials, remote request logs, or external service response payloads.",
+  "license_boundary": "This fixture is authored synthetic content for the COSMOS-CQA research-only public repository and does not redistribute external provider content.",
+  "claim_boundary": "This computational reference is a synthetic arithmetic example only; it is not diagnostic validation, scientific confirmation, production guidance, or evidence of artifact classification.",
+  "private_app_note": "Live external computational services belong only in the private application, server-side, authenticated, rate-limited, audited, and reviewed before any evidence-bundle use.",
+  "review_state": "not-reviewed",
+  "reviewer_note": "Public fixture exists only to exercise the computationalReference contract.",
+  "evidence_hash": "sha256:synthetic_computational_reference_v0.1.0"
+}

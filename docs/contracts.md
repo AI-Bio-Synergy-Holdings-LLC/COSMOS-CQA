@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, reviewer intake/return packets, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, validation reports, checklist target evidence, research sessions, and evidence bundles.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, reviewer intake/return packets, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, computational references, validation reports, checklist target evidence, research sessions, and evidence bundles.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -13,7 +13,7 @@ Current version:
 cosmos-cqa.contracts.v0.1.0
 ```
 
-Bookmark payloads, tile passports, core pack manifests, SBOM references, validation reports, checklist target manifests, research sessions, and evidence bundles include this version as `schema_version`.
+Bookmark payloads, tile passports, core pack manifests, SBOM references, computational references, validation reports, checklist target manifests, research sessions, and evidence bundles include this version as `schema_version`.
 
 ## Covered Shapes
 
@@ -36,6 +36,7 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, validat
 - `tilePassport`: tile-level provenance, checksum, truth, coordinate, and sidecar metadata.
 - `diagnosticConcept`: review-gated diagnostic concept metadata with required scientific caveats.
 - `diagnosticResult`: deterministic placeholder diagnostic output for report plumbing, with required caveats, limitations, and claim-boundary references.
+- `computationalReference`: synthetic or future private-app reference calculation metadata with explicit non-live, non-MCP, non-diagnostic, non-training, and no-copied-content flags.
 - `sbomReference`: release or core-pack pointer to a generated SBOM artifact.
 - `corePackManifest`: bundle manifest tying tile passports, SBOM references, steward, license, evidence references, and optional diagnostic concept references together.
 - `cycloneDxSbom`: minimal CycloneDX SBOM JSON export.
@@ -51,6 +52,8 @@ Research sessions are intended to capture what was loaded, selected, generated, 
 Spatial observation notes are interpreted under `docs/tile-observation-notes.md`. They are reviewer-authored location cues inside the reviewed tile, not measured sky coordinates or validated detections. Observation review ledger fields are QA workflow records only; `needs-adjudication`, adjudication queue decisions, and consensus placeholder values do not create scientific validation claims.
 
 Reviewer packet boundaries are interpreted under `docs/reviewer-access-boundary.md`. The static public portal can prepare/import local handoff JSON, but it does not authenticate reviewers, assign expert queues, transmit observations, or verify reviewer qualifications.
+
+Computational reference boundaries are interpreted under `docs/integrations/computational-references.md` and `docs/integrations/wolfram.md`. The public repository only includes synthetic fixtures and safety contracts; it does not implement live external API calls, MCP configuration, provider credentials, copied provider output, or diagnostic validation.
 
 ## Verification
 

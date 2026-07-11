@@ -12,6 +12,7 @@ Start with:
 - `public-surface-hardening.md` for the public repo, portal, security, data, SBOM, release, and UI/UX sweep standard.
 - `seo-social-accessibility-baseline.md` and `../apps/web/quality-budgets.json` for SEO, social preview, WCAG 2.2 baseline assessment, Lighthouse-style targets, static performance budgets, and Nielsen Norman Group heuristic review.
 - `contracts.md` for research workflow contracts.
+- `integrations/computational-references.md` and `integrations/wolfram.md` for optional external computational reference boundaries.
 - `reviewer-access-boundary.md` for the local reviewer handoff boundary before authenticated reviewer access exists.
 - `selective-access-application.md` for public wording about the planned verified researcher and institution application.
 - Public static pages in `apps/web/*.html` for docs, releases, citation, license, governance, ownership and use, story, partner readiness, safety, security, copyright, user data, and contact.
@@ -22,6 +23,8 @@ Core documents:
 - `project-notes.md` records completed public hardening trails, including the PR #51 safety review trail.
 - `checklist-to-test-migration.md` defines the legacy checklist target migration plan.
 - `contracts.md` defines the first data contract set.
+- `integrations/computational-references.md` defines the generic external computational reference safety contract.
+- `integrations/wolfram.md` defines the Wolfram-specific public boundary and private-application review posture.
 - `core-pack-intake.md` defines the safe Core Pack intake lane before diagnostic import.
 - `core-pack-import-checklist.md` defines provenance, rights, scientific, and engineering gates for Core Pack imports.
 - `citation.md` mirrors `CITATION.cff` for public research citation.
