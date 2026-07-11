@@ -14,7 +14,7 @@ COSMOS-CQA is registered on Zenodo as a citable public research software artifac
 - Zenodo `v0.1.1-research-alpha` release DOI: `10.5281/zenodo.21112699`
 - Zenodo `v0.1.2-research-alpha` release DOI: `10.5281/zenodo.21142690`
 - Zenodo `v0.1.3-research-alpha` release DOI: `10.5281/zenodo.21285595`
-- Zenodo `v0.1.4-research-alpha` release DOI: pending until the GitHub release is archived by Zenodo
+- Zenodo `v0.1.4-research-alpha` release DOI: `10.5281/zenodo.21315776`
 
 The Zenodo registry value is intentionally conservative. It avoids implying OSI open-source, Creative Commons, commercial reuse, production use, hosted-service use, clinical use, regulatory use, sublicensing, or derivative product rights. The repository `LICENSE.md` controls public-use terms.
 
@@ -41,15 +41,15 @@ Completed for the first DOI-minted release:
 
 ## Current DOI Status
 
-The first Zenodo DOI has been minted, and `v0.1.3-research-alpha` has been archived as a new Zenodo version. The `v0.1.4-research-alpha` release package is prepared for publication, with its exact release DOI pending until Zenodo archives the GitHub release.
+The first Zenodo DOI has been minted, and `v0.1.4-research-alpha` has been archived as the latest Zenodo version.
 
-- Latest Zenodo record: `https://zenodo.org/records/21285595`
-- Latest Zenodo API record: `https://zenodo.org/api/records/21285595`
+- Latest Zenodo record: `https://zenodo.org/records/21315776`
+- Latest Zenodo API record: `https://zenodo.org/api/records/21315776`
 - All-versions concept DOI: `https://doi.org/10.5281/zenodo.21112698`
 - `v0.1.1-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21112699`
 - `v0.1.2-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21142690`
 - `v0.1.3-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21285595`
-- `v0.1.4-research-alpha` release DOI: pending archive
+- `v0.1.4-research-alpha` release DOI: `https://doi.org/10.5281/zenodo.21315776`
 
 ## Alignment Responsibilities
 
@@ -61,8 +61,6 @@ Keep these surfaces aligned when a new DOI-minted release is created:
 - `apps/web/index.html` structured data, public citation meta tags, `apps/web/demo-workbook.html`, `apps/web/workbench.html`, `apps/web/citation.html`, `apps/web/releases.html`, and `apps/web/docs.html`;
 - GitHub repository description and homepage URL;
 - Zenodo record title, creator, publication date, release DOI, all-versions DOI, repository link, canonical portal link, license marker, and rights notes.
-
-For `v0.1.4-research-alpha`, `.zenodo.json` and `CITATION.cff` are prepared before the DOI exists. After Zenodo mints the version-specific DOI, replace the pending DOI wording with the exact DOI in the surfaces above.
 
 ## Post-Mint Citation Pattern
 
@@ -82,10 +80,10 @@ For `v0.1.3-research-alpha`, use the version-specific DOI:
 AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.3-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21285595
 ```
 
-For `v0.1.4-research-alpha`, use the all-versions DOI until Zenodo mints the version-specific DOI:
+For `v0.1.4-research-alpha`, use the version-specific DOI:
 
 ```text
-AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.4-research-alpha. Research-source software. Zenodo DOI pending. https://doi.org/10.5281/zenodo.21112698
+AI-Bio Synergy Holdings LLC. COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts, v0.1.4-research-alpha. Research-source software. Zenodo. https://doi.org/10.5281/zenodo.21315776
 ```
 
 Also cite the canonical portal and repository when needed:
