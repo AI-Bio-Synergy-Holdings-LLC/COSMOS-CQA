@@ -11,16 +11,17 @@ const canonicalHost = "cosmos-cqa.org";
 const owner = "AI-Bio Synergy Holdings LLC";
 const releaseId = "v0.1.4-research-alpha";
 const releaseVersion = "0.1.4-research-alpha";
-const currentDoiReleaseId = "v0.1.3-research-alpha";
-const currentDoiReleaseVersion = "0.1.3-research-alpha";
+const currentDoiReleaseId = releaseId;
+const currentDoiReleaseVersion = releaseVersion;
 const zenodoConceptDoi = "10.5281/zenodo.21112698";
 const zenodoPriorReleaseDoi = "10.5281/zenodo.21112699";
-const zenodoPreviousReleaseDoi = "10.5281/zenodo.21142690";
-const zenodoCurrentReleaseDoi = "10.5281/zenodo.21285595";
+const zenodoEarlierReleaseDoi = "10.5281/zenodo.21142690";
+const zenodoPreviousReleaseDoi = "10.5281/zenodo.21285595";
+const zenodoCurrentReleaseDoi = "10.5281/zenodo.21315776";
 const citationMetaPhrases = [
   '<meta name="citation_title" content="COSMOS-CQA: Citizen Quality Assurance for Cosmology Artifacts">',
   `<meta name="citation_author" content="${owner}">`,
-  '<meta name="citation_publication_date" content="2026-07-09">',
+  '<meta name="citation_publication_date" content="2026-07-11">',
   `<meta name="citation_doi" content="${zenodoCurrentReleaseDoi}">`,
   `<meta name="citation_software_version" content="${currentDoiReleaseVersion}">`,
   `<meta name="DC.identifier" content="https://doi.org/${zenodoCurrentReleaseDoi}">`,
@@ -138,8 +139,8 @@ async function validateStaticContract() {
     `"propertyID": "Zenodo release DOI"`,
     `"value": "${zenodoCurrentReleaseDoi}"`,
     `"url": "https://doi.org/${zenodoCurrentReleaseDoi}"`,
-    "https://zenodo.org/records/21285595",
-    "Cite v0.1.3:",
+    "https://zenodo.org/records/21315776",
+    "Cite v0.1.4:",
     `https://doi.org/${zenodoCurrentReleaseDoi}`,
     "Research-only public use",
     "Not a production decision system.",
@@ -220,14 +221,14 @@ async function validateStaticContract() {
   ]);
 
   requirePhrases("CITATION.cff", citation, [
-    `doi: "${zenodoConceptDoi}"`,
+    `doi: "${zenodoCurrentReleaseDoi}"`,
     `version: "${releaseVersion}"`,
-    "Zenodo v0.1.4-research-alpha release DOI pending archive",
     `url: "${canonicalUrl.slice(0, -1)}"`,
     'license: "LicenseRef-COSMOS-CQA-Research-Only"',
     "Zenodo DOI",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     zenodoCurrentReleaseDoi,
     "Canonical public portal",
@@ -256,11 +257,11 @@ async function validateStaticContract() {
     "zenodo.org/badge/DOI/10.5281/zenodo.21112698.svg",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     currentDoiReleaseId,
     zenodoCurrentReleaseDoi,
     releaseId,
-    "exact release DOI is pending",
     "docs/zenodo-registration.md",
   ]);
 
@@ -274,12 +275,13 @@ async function validateStaticContract() {
   requirePhrases("docs/citation.md", citationDoc, [
     `Zenodo all-versions DOI: \`${zenodoConceptDoi}\``,
     `Zenodo \`v0.1.1-research-alpha\` release DOI: \`${zenodoPriorReleaseDoi}\``,
-    `Zenodo \`v0.1.2-research-alpha\` release DOI: \`${zenodoPreviousReleaseDoi}\``,
-    `Zenodo \`${currentDoiReleaseId}\` release DOI: \`${zenodoCurrentReleaseDoi}\``,
-    `Zenodo \`${releaseId}\` release DOI: pending`,
+    `Zenodo \`v0.1.2-research-alpha\` release DOI: \`${zenodoEarlierReleaseDoi}\``,
+    `Zenodo \`v0.1.3-research-alpha\` release DOI: \`${zenodoPreviousReleaseDoi}\``,
+    `Zenodo \`${releaseId}\` release DOI: \`${zenodoCurrentReleaseDoi}\``,
     ".zenodo.json",
     `https://doi.org/${zenodoCurrentReleaseDoi}`,
     `https://doi.org/${zenodoPreviousReleaseDoi}`,
+    `https://doi.org/${zenodoEarlierReleaseDoi}`,
     `https://doi.org/${zenodoPriorReleaseDoi}`,
     `https://doi.org/${zenodoConceptDoi}`,
   ]);
@@ -289,6 +291,7 @@ async function validateStaticContract() {
     ...citationMetaPhrases,
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     zenodoCurrentReleaseDoi,
     "Zenodo DOI record",
@@ -305,7 +308,7 @@ async function validateStaticContract() {
 
   requirePhrases("apps/web/releases.html", releasesPage, [
     "v0.1.4 Research Alpha",
-    "Zenodo DOI status: pending until the GitHub release is archived by Zenodo.",
+    "Zenodo DOI status: minted.",
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
     "v0.1.3 Research Alpha",
@@ -313,6 +316,7 @@ async function validateStaticContract() {
     "v0.1.2 Research Alpha",
     ...citationMetaPhrases,
     "Zenodo DOI status: minted.",
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     zenodoCurrentReleaseDoi,
     "v0.1.1 Research Alpha",
@@ -445,16 +449,16 @@ async function validateStaticContract() {
     "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
     "other-closed",
     "The first Zenodo DOI has been minted",
-    "https://zenodo.org/records/21285595",
-    "https://zenodo.org/api/records/21285595",
+    "https://zenodo.org/records/21315776",
+    "https://zenodo.org/api/records/21315776",
     "Alignment Responsibilities",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     zenodoCurrentReleaseDoi,
     currentDoiReleaseId,
     releaseId,
-    "pending until Zenodo archives the GitHub release",
     "v0.1.1-research-alpha",
   ]);
 
@@ -674,25 +678,26 @@ async function validateStaticContract() {
     `${releaseId}-validation-report.json`,
     `${releaseId}-sbom.json`,
     "v0.1.1-research-alpha.md",
+    "https://zenodo.org/records/21315776",
     "https://zenodo.org/records/21285595",
     "https://zenodo.org/records/21142690",
     "https://zenodo.org/records/21112699",
     zenodoConceptDoi,
     zenodoPriorReleaseDoi,
+    zenodoEarlierReleaseDoi,
     zenodoPreviousReleaseDoi,
     zenodoCurrentReleaseDoi,
     currentDoiReleaseId,
     releaseId,
-    "Zenodo release DOI status: pending",
     "known limitations",
     canonicalUrl.slice(0, -1),
     "COSMOS-CQA Research-Only Public License",
-    "Zenodo DOI status: active for DOI-minted releases.",
+    "Zenodo DOI status: active.",
   ]);
 
   requirePhrases(`docs/releases/${releaseId}.md`, releaseNotes, [
     "COSMOS-CQA v0.1.4 Research Alpha",
-    "Zenodo release DOI: pending until the GitHub release is archived by Zenodo",
+    "Zenodo record: [https://zenodo.org/records/21315776]",
     zenodoCurrentReleaseDoi,
     zenodoConceptDoi,
     "external computational references",
