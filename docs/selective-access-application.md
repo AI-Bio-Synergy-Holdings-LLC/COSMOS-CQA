@@ -36,6 +36,15 @@ Those claims require a separate authenticated application, access process, and o
 - Reviewer handoff packets: local JSON artifacts for replay/testing.
 - Selective-access application: separate future surface for verified researchers and institutions.
 - Partner-readiness page: public explanation of what can be evaluated now and what gates must exist before private sharing.
-- Public documentation: may point to the planned selective-access lane, but should not publish backend architecture, access promises, operational timelines, partnership acceptance criteria, or support commitments prematurely.
+- Public documentation: may point to the planned selective-access lane and control-level readiness map, but should not publish deployment-specific backend internals, credentials, private topology, access promises, operational timelines, partnership acceptance decisions, or support commitments prematurely.
+
+## Transition Execution Map
+
+The public control-level transition plan is maintained in:
+
+- `docs/private-application-transition-map.md`;
+- `docs/private-application-readiness-gates.md`.
+
+Those documents define boundaries, control objectives, stage gates, and a private-tracker seed. They do not identify the private repository location, deployment accounts, credentials, provider configuration, partner decisions, or access timeline.
 
 This notice complements `docs/reviewer-access-boundary.md`, `docs/data-governance.md`, and `docs/public-portal.md`.

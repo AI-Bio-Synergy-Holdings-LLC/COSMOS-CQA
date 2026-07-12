@@ -240,6 +240,8 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByText("No public account creation, researcher onboarding, institutional access, API keys, hosted reviewer queue, or live observation submission is available here.")).toBeVisible();
   await expect(page.getByText("No timeline, partnership acceptance, funding commitment, data-use agreement, confidentiality, or support obligation is implied")).toBeVisible();
   await expect(page.getByRole("link", { name: "Start a Non-Confidential Conversation" })).toHaveAttribute("href", "./contact.html");
+  await expect(page.getByRole("link", { name: "Transition Map" })).toHaveAttribute("href", /docs\/private-application-transition-map\.md/);
+  await expect(page.getByRole("link", { name: "Readiness Gates" })).toHaveAttribute("href", /docs\/private-application-readiness-gates\.md/);
   await expect(page.getByRole("link", { name: "Security and Disclosure" })).toHaveAttribute("href", "./security.html");
   await expect(page.locator("body")).not.toContainText("Researcher access is open now");
   await expect(page.locator("body")).not.toContainText("Observations are submitted to COSMOS-CQA reviewers");
@@ -267,6 +269,14 @@ test("serves public resource pages with canonical metadata and notices", async (
   await expect(page.getByRole("link", { name: "Partner Readiness Public page distinguishing the local-first demo from future selective-access application requirements and non-promises." })).toHaveAttribute(
     "href",
     "./partner-readiness.html",
+  );
+  await expect(page.getByRole("link", { name: "Private Application Transition Map Control-level boundaries, architecture, identity, data governance, and research-partner onboarding plan." })).toHaveAttribute(
+    "href",
+    /docs\/private-application-transition-map\.md/,
+  );
+  await expect(page.getByRole("link", { name: "Private Application Readiness Gates Auditable stage gates and private-tracker seed required before implementation and real-data use." })).toHaveAttribute(
+    "href",
+    /docs\/private-application-readiness-gates\.md/,
   );
   await expect(page.getByRole("link", { name: "Zenodo DOI Record Controlled Zenodo metadata, active all-versions DOI, release DOI status, and citation guidance." })).toHaveAttribute(
     "href",

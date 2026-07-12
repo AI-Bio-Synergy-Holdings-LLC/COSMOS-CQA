@@ -20,7 +20,7 @@ Keep these surfaces present, current, and mutually consistent:
 
 - `README.md`, `CITATION.cff`, `.zenodo.json`, `LICENSE.md`, `NOTICE`, `OWNERSHIP_AND_USE.md`, `GOVERNANCE.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md`;
 - `.github/CODEOWNERS`, pull request template, issue templates, branch/ruleset expectations, and private vulnerability routing;
-- `docs/quickstart.md`, `docs/citation.md`, `docs/public-portal.md`, `docs/public-portal-deployment-validation.md`, `docs/release-checklist.md`, `docs/security-disclosure.md`, `docs/data-governance.md`, `docs/public-safety.md`, `docs/seo-social-accessibility-baseline.md`, `docs/scientific-scope.md`, `docs/claim-boundaries.md`, `docs/releases/README.md`, and this document;
+- `docs/quickstart.md`, `docs/citation.md`, `docs/public-portal.md`, `docs/public-portal-deployment-validation.md`, `docs/release-checklist.md`, `docs/security-disclosure.md`, `docs/data-governance.md`, `docs/public-safety.md`, `docs/seo-social-accessibility-baseline.md`, `docs/scientific-scope.md`, `docs/claim-boundaries.md`, `docs/private-application-transition-map.md`, `docs/private-application-readiness-gates.md`, `docs/releases/README.md`, and this document;
 - portal pages for docs, releases, citation, license, governance, ownership and use, story, safety, security, copyright, user data, contact, research experiment, workbook, and hosted demo;
 - release validation reports, SBOM artifacts, known limitations, archive/provenance notes, and Zenodo DOI metadata when a DOI-minted release exists.
 

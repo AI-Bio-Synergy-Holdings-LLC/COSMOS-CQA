@@ -58,4 +58,10 @@ After PR #62, the public demo has a clear local-first reviewer boundary:
 - `authenticated_access` and `network_submission` remain false for public reviewer packets;
 - the hosted demo does not authenticate reviewers, assign expert queues, collect observations, or transmit review packets.
 
-The public portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions, but should not publish backend architecture, onboarding promises, operational timelines, or access claims for that future surface.
+The public portal may point to a planned separate COSMOS-CQA application for verified researchers and institutions, but should not publish deployment-specific backend internals, onboarding promises, operational timelines, or access claims for that future surface.
+
+## Private Application Transition Planning Boundary
+
+The public repository now records a control-level execution map and readiness gates for the planned selective-access application. The public artifacts may define trust boundaries, control objectives, role and data classifications, partner qualification requirements, and exit evidence.
+
+The private repository location, implementation backlog, deployment-specific topology, credentials, provider configuration, partner decisions, confidential agreements, and security findings remain outside the public repository. Application implementation should not begin until the transition authorization and architecture/threat-model gates are approved.
