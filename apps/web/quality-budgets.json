@@ -36,7 +36,7 @@
         "label": "Docs page",
         "max_dom_nodes": 180,
         "max_first_party_resources": 3,
-        "max_scripts": 0,
+        "max_scripts": 1,
         "max_stylesheets": 1,
         "max_local_load_ms": 1200
       },
@@ -45,7 +45,7 @@
         "label": "Partner readiness page",
         "max_dom_nodes": 220,
         "max_first_party_resources": 3,
-        "max_scripts": 0,
+        "max_scripts": 1,
         "max_stylesheets": 1,
         "max_local_load_ms": 1200
       },
@@ -54,7 +54,7 @@
         "label": "Demo workbook",
         "max_dom_nodes": 220,
         "max_first_party_resources": 3,
-        "max_scripts": 0,
+        "max_scripts": 1,
         "max_stylesheets": 1,
         "max_local_load_ms": 1200
       },

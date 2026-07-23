@@ -454,8 +454,15 @@ test("keeps the portal usable on narrow screens", async ({ page }) => {
   await page.waitForFunction(() => Boolean(window.COSMOS_CQA_PORTAL));
 
   await expect(page.getByRole("banner")).toBeVisible();
+  const navigationToggle = page.getByRole("button", { name: "Menu" });
+  await expect(navigationToggle).toBeVisible();
+  await expect(navigationToggle).toHaveAttribute("aria-expanded", "false");
+  await navigationToggle.click();
+  await expect(navigationToggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("link", { name: /^Demo$/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /^Partners$/ })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(navigationToggle).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByRole("link", { name: "Open Demo Workbench" })).toBeVisible();
 
   const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
