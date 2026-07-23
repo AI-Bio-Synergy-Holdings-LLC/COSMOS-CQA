@@ -8,7 +8,7 @@ const appRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const repoRoot = path.resolve(appRoot, "..", "..");
 const artifactRoot = path.resolve(repoRoot, process.env.COSMOS_CQA_PAGES_ARTIFACT_ROOT || "apps/web/dist-pages");
 const topLevelHtmlFiles = (await readdir(appRoot)).filter((entry) => entry.endsWith(".html"));
-const siteFiles = [...topLevelHtmlFiles, "CNAME", "robots.txt", "sitemap.xml", "src", "assets"];
+const siteFiles = [...topLevelHtmlFiles, "CNAME", "robots.txt", "sitemap.xml", "_headers", "src", "assets"];
 const sharedStaticRoots = ["packages", "examples"];
 
 await rm(artifactRoot, { recursive: true, force: true });
