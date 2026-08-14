@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "cosmos-cqa.controlled-restart-override-remediation.v1",
+  "recordedAt": "2026-08-14T04:40:35.701Z",
+  "repository": "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
+  "status": "PENDING_CONDITIONAL_CLOSEOUT",
+  "delivery": {
+    "pullRequest": 93,
+    "title": "feat(evidence): add deterministic integrity receipts",
+    "headSha": "84781812fa9acb70bc924baee1387639ea139803",
+    "baseSha": "fc9d8d51d4d203eef136920d77da6c10a3e00f33",
+    "mergedAt": "2026-08-14T04:30:18Z",
+    "mergeCommit": "21b76f208809670c5952a6d709cd03fada2bba81"
+  },
+  "override": {
+    "action": "protected_branch.policy_override",
+    "auditDocumentId": "c6VU5TOvEQp-1JpwstGa3g",
+    "timestamp": "2026-08-14T04:30:18.507Z",
+    "actor": "SIONSOULSION",
+    "branch": "refs/heads/main",
+    "before": "fc9d8d51d4d203eef136920d77da6c10a3e00f33",
+    "after": "21b76f208809670c5952a6d709cd03fada2bba81",
+    "overriddenCodes": [
+      "required_status_checks"
+    ],
+    "reasons": [
+      {
+        "code": "required_status_checks",
+        "message": "Required status check \"Analyze (actions)\" is expected."
+      }
+    ],
+    "referrer": "https://github.com/AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA/pull/93"
+  },
+  "preMergeCheckEvidence": {
+    "requiredCheckWasPresentOnExactHead": true,
+    "check": {
+      "name": "Analyze (actions)",
+      "appId": 15368,
+      "runId": 31769007910,
+      "jobId": 94670797050,
+      "headSha": "84781812fa9acb70bc924baee1387639ea139803",
+      "conclusion": "success"
+    },
+    "codeqlAnalysis": {
+      "id": 1617471659,
+      "tool": "CodeQL",
+      "category": "/language:actions",
+      "ref": "refs/pull/93/head",
+      "commitSha": "84781812fa9acb70bc924baee1387639ea139803",
+      "resultsCount": 0,
+      "rulesCount": 17
+    },
+    "classification": "required_check_evaluation_inconsistency",
+    "vendorInternalRootCauseKnown": false
+  },
+  "postMergeEvidence": {
+    "headSha": "21b76f208809670c5952a6d709cd03fada2bba81",
+    "runs": {
+      "ci": 31770071558,
+      "publicDeployment": 31770071378,
+      "organizationPolicy": 31770071365,
+      "codeql": [
+        31770070849,
+        31770071256
+      ]
+    },
+    "allConclusions": "success",
+    "securityCounts": {
+      "dependabotHigh": 0,
+      "dependabotCritical": 0,
+      "codeqlOpen": 0,
+      "secretScanningOpen": 0
+    }
+  },
+  "enforcementCorrection": {
+    "noEnforcementGap": true,
+    "semanticRuleCreatedFirst": true,
+    "codeScanningRuleset": {
+      "id": 20831277,
+      "name": "CodeQL semantic merge protection",
+      "target": "branch",
+      "enforcement": "active",
+      "defaultBranchOnly": true,
+      "tool": "CodeQL",
+      "securityAlertsThreshold": "high_or_higher",
+      "alertsThreshold": "errors",
+      "bypassActors": [],
+      "currentUserCanBypass": "never",
+      "createdAt": "2026-08-14T04:40:25.613Z",
+      "auditDocumentId": "cxNbkP6YkgY3Kctcqfdghw"
+    },
+    "classicRequiredChecks": {
+      "strict": true,
+      "checks": [
+        {
+          "context": "Web checks",
+          "appId": 15368
+        },
+        {
+          "context": "policy / Organization baseline",
+          "appId": 15368
+        },
+        {
+          "context": "metadata / PR metadata",
+          "appId": 15368
+        }
+      ],
+      "removedBrittleJobNameBindings": [
+        {
+          "context": "Analyze (actions)",
+          "auditDocumentId": "utO3xXAgpZunWpJKHWZTBw"
+        },
+        {
+          "context": "Analyze (javascript-typescript)",
+          "auditDocumentId": "fy95v80LgSgwmglbMKUePw"
+        }
+      ],
+      "updatedAt": "2026-08-14T04:40:35.701Z"
+    },
+    "codeqlDefaultSetupRemainsConfigured": true,
+    "languages": [
+      "actions",
+      "javascript",
+      "javascript-typescript",
+      "typescript"
+    ]
+  },
+  "conditionalCloseout": {
+    "cleanMergeClaim": false,
+    "overrideEventIsImmutable": true,
+    "proofMergeRequired": true,
+    "proofMergeMustNotUseBypass": true,
+    "controlPlaneSignedReviewRequired": true,
+    "centralProtectedLedgerRecordRequired": true,
+    "engineeringActiveRepositoryCount": 4,
+    "fifthRepositoryAdmissionAllowed": false
+  },
+  "authorityBoundary": {
+    "backendAuthorized": false,
+    "providerAuthorized": false,
+    "authenticationAuthorized": false,
+    "privateApplicationAuthorized": false,
+    "holdingsConnectorAuthorized": false,
+    "executionAuthorized": false,
+    "actuationAuthorized": false,
+    "releaseAuthorityAuthorized": false,
+    "gate6Authorized": false
+  }
+}

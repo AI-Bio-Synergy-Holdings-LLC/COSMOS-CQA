@@ -6,6 +6,7 @@ Start with:
 
 - `quickstart.md` for local use and hosted demo workflow.
 - `project-notes.md` for public execution notes and completed PR trails.
+- `controlled-restart-override-remediation-2026-08-14.md` for the immutable PR #93 policy-override record, enforcement correction, and conditional-closeout gate.
 - `public-portal.md` for the canonical public site and deployment surface.
 - `public-safety.md` for audio-first public safety and use boundaries.
 - `security-disclosure.md` for private vulnerability reporting and non-sensitive public safety/accessibility report routing.
@@ -22,6 +23,7 @@ Start with:
 Core documents:
 
 - `canonical-v3-import.md` records the first stable legacy import.
+- `controlled-restart-override-remediation-2026-08-14.md` records the protected merge-control deviation and proof requirements without claiming a clean charter closeout.
 - `project-notes.md` records completed public hardening trails, including the PR #51 safety review trail.
 - `checklist-to-test-migration.md` defines the legacy checklist target migration plan.
 - `contracts.md` defines the first data contract set.

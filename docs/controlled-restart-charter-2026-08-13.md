@@ -2,6 +2,13 @@
 
 Date: 2026-08-13
 
+Post-delivery control exception: pull request `#93` reached `main` with a
+recorded `protected_branch.policy_override` event. The original no-override
+exit criterion remains historically accurate and was not satisfied. See
+`controlled-restart-override-remediation-2026-08-14.md` for the protected
+conditional-closeout path. No fifth repository may enter engineering until
+that path is complete.
+
 Repository: `AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA`
 
 Baseline default head: `8b7174dab0ea4176f2823828f75abb8120adb6e7`
