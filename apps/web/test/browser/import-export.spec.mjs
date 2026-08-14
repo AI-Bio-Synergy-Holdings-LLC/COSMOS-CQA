@@ -35,6 +35,7 @@ test("migrates CSV export download targets into browser automation", async ({ pa
 test("exports schema-ready evidence bundle JSON with archive metadata", async ({ page }) => {
   await openWorkbench(page);
   await disableSimulation(page);
+  await expect(page.locator("#exportBundleReceipt")).toBeDisabled();
 
   await page.locator("#loadSample").click();
   await expect(page.locator("#diagnosticSummary")).toContainText("2 caveated diagnostic placeholder(s)");
@@ -47,7 +48,8 @@ test("exports schema-ready evidence bundle JSON with archive metadata", async ({
   await page.locator("#exportBundle").click();
   const bundleDownload = await bundleDownloadPromise;
   expect(bundleDownload.suggestedFilename()).toBe("cosmos-cqa-evidence-bundle.json");
-  const bundle = JSON.parse(await bundleDownload.createReadStream().then(readStreamText));
+  const bundleText = await bundleDownload.createReadStream().then(readStreamText);
+  const bundle = JSON.parse(bundleText);
 
   expect(bundle.schema_version).toBe("cosmos-cqa.contracts.v0.1.0");
   expect(bundle.bundle_id).toMatch(/^bundle_/);
@@ -86,8 +88,42 @@ test("exports schema-ready evidence bundle JSON with archive metadata", async ({
     format: "CycloneDX",
     spec_version: "1.4",
   });
+  await expect(page.locator("#exportBundleReceipt")).toBeEnabled();
+
+  const receiptDownloadPromise = page.waitForEvent("download");
+  await page.locator("#exportBundleReceipt").click();
+  const receiptDownload = await receiptDownloadPromise;
+  expect(receiptDownload.suggestedFilename()).toBe("cosmos-cqa-evidence-bundle.receipt.json");
+  const receiptText = await receiptDownload.createReadStream().then(readStreamText);
+  const receipt = JSON.parse(receiptText);
+  expect(receipt).toMatchObject({
+    receipt_version: "cosmos-cqa.evidence-bundle-receipt.v1",
+    canonicalization: "cosmos-cqa/evidence-bundle-json-v1",
+    bundle_schema_version: bundle.schema_version,
+    bundle_id: bundle.bundle_id,
+    canonical_byte_length: Buffer.byteLength(bundleText),
+  });
+  expect(receipt.bundle_sha256).toMatch(/^sha256:[a-f0-9]{64}$/);
+  expect(receipt.claim_boundary).toContain("byte-level consistency only");
+
+  const stateBeforeVerification = await page.evaluate(() => JSON.stringify(window.COSMOS_CQA_APP.state));
+  await page.locator("#bundleReceiptInput").setInputFiles([
+    { name: "bundle.json", mimeType: "application/json", buffer: Buffer.from(bundleText) },
+    { name: "bundle.receipt.json", mimeType: "application/json", buffer: Buffer.from(receiptText) },
+  ]);
+  await expect(page.locator("#bundleReceiptStatus")).toContainText(`Receipt verified for ${bundle.bundle_id}`);
+  await expect(page.locator("#bundleReceiptStatus")).toContainText("byte consistency only");
+
+  const tamperedBundle = `${JSON.stringify({ ...bundle, steward: "AI-Bio Synergy Holdings LLX" }, null, 2)}\n`;
+  await page.locator("#bundleReceiptInput").setInputFiles([
+    { name: "bundle.json", mimeType: "application/json", buffer: Buffer.from(tamperedBundle) },
+    { name: "bundle.receipt.json", mimeType: "application/json", buffer: Buffer.from(receiptText) },
+  ]);
+  await expect(page.locator("#bundleReceiptStatus")).toContainText("Receipt rejected");
+  await expect(page.locator("#bundleReceiptStatus")).toContainText("SHA-256 digest does not match");
+  expect(await page.evaluate(() => JSON.stringify(window.COSMOS_CQA_APP.state))).toBe(stateBeforeVerification);
   await expect(page.locator("#sessionStatus")).toContainText("Exported");
-  await expect(page.locator("#caption")).toContainText("Evidence bundle JSON exported.");
+  await expect(page.locator("#caption")).toContainText("current state preserved");
 });
 
 test("migrates data import and synthetic fixture targets into browser automation", async ({ page }) => {
