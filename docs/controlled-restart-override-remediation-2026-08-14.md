@@ -109,4 +109,3 @@ execution, actuation, release-authority, or Gate 6 path.
 
 The machine-readable evidence record is
 `docs/evidence/controlled-restart-override-remediation-2026-08-14.json`.
-
