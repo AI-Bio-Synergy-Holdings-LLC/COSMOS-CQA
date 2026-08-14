@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "recordType": "CONTROLLED_RESTART_REPOSITORY_CHARTER",
+  "recordedOn": "2026-08-13",
+  "capturedAt": "2026-08-14T02:00:31.0010080Z",
+  "organization": "AI-Bio-Synergy-Holdings-LLC",
+  "authorizationBasis": "explicit owner instruction to proceed with the implementation order",
+  "repository": {
+    "slug": "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
+    "visibility": "public",
+    "defaultBranch": "main",
+    "baselineHeadSha": "8b7174dab0ea4176f2823828f75abb8120adb6e7",
+    "baselineStatusRollup": "SUCCESS"
+  },
+  "operationalProjectId": "cosmos-cqa",
+  "assetRegistryId": null,
+  "assetMappingStatus": "UNASSIGNED",
+  "repositoryNameIsAssetIdentity": false,
+  "admission": {
+    "sequence": 4,
+    "preMergeStatus": "PENDING_KICKOFF",
+    "postProtectedMergeStatus": "ACTIVE_CONTROLLED",
+    "newRepositoriesAdmitted": 1,
+    "engineeringActiveRepositoryCountAfterMerge": 4,
+    "engineeringActiveRepositoriesAfterMerge": [
+      "AI-Bio-Synergy-Holdings-LLC/portfolio-control-plane",
+      "AI-Bio-Synergy-Holdings-LLC/lumical-studio",
+      "AI-Bio-Synergy-Holdings-LLC/QS-DMSS",
+      "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
+    ],
+    "allOtherOrganizationRepositoriesStatus": "PENDING_KICKOFF",
+    "maximumActiveFeaturePullRequestsInRepository": 1
+  },
+  "firstBoundedDelivery": {
+    "title": "deterministic integrity receipts for existing evidence bundles",
+    "authorizedScope": [
+      "closed versioned receipt contract with bundle version, bundle ID, canonical byte length, and SHA-256 digest",
+      "deterministic receipt creation from canonical evidence-bundle serialization",
+      "local non-executing verification of receipt and bundle consistency before state mutation",
+      "bounded package or browser export and verification surface with no network submission or new runtime dependency",
+      "golden fixtures, negative-path tests, CI, and supporting documentation",
+      "explicit checksum-only claim boundary"
+    ],
+    "scientificValidationClaimAuthorized": false,
+    "authenticityOrAuthorshipClaimAuthorized": false,
+    "productionOrRegulatoryClaimAuthorized": false,
+    "newRuntimeDependencyAuthorized": false,
+    "networkSubmissionAuthorized": false
+  },
+  "retainedProhibitions": [
+    "scientific-validation, authenticity, authorship, certification, regulatory, production-readiness, or survey-performance claim based on a receipt",
+    "evidence-bundle semantic, scientific conclusion, diagnostic behavior, observation interpretation, or claim-boundary change in the first delivery",
+    "executable CSSFP or Core Pack diagnostic repair before existing gates pass",
+    "backend, database, account system, identity provider, partner-data lane, server submission, private-application implementation, or live external computational integration",
+    "release or package publication or production deployment-authority change",
+    "Holdings connector, credential, mount, token, network path, or private asset-data access",
+    "Control Plane repository execution, actuation, automated merge, deployment, transaction, diligence, or Gate 6 authority",
+    "internal development identifier represented as registered asset identity",
+    "admin bypass, force push, history rewrite, unprotected merge, or weakened required checks",
+    "activation of another repository without a protected charter and explicit owner approval"
+  ],
+  "entryEvidence": {
+    "openPullRequests": 0,
+    "requiredChecksStrict": true,
+    "requiredChecks": [
+      { "context": "Web checks", "appId": 15368 },
+      { "context": "Analyze (javascript-typescript)", "appId": 15368 },
+      { "context": "Analyze (actions)", "appId": 15368 },
+      { "context": "policy / Organization baseline", "appId": 15368 },
+      { "context": "metadata / PR metadata", "appId": 15368 }
+    ],
+    "openDependabotHighCritical": 0,
+    "openCodeqlAlerts": 0,
+    "openSecretScanningAlerts": 0,
+    "dependabotSecurityUpdates": "enabled",
+    "secretScanning": "enabled",
+    "pushProtection": "enabled",
+    "publicPortalDeployVerificationRunId": 30781005088,
+    "mainCiRunId": 30781005082,
+    "latestScheduledCodeqlRunIds": [31569185478, 31384059220]
+  },
+  "firstDeliveryExitCriteria": [
+    "exact-head protected pull request with all required checks successful",
+    "repository health, source, contract, unit, replay, browser, legacy, and applicable build and deployment checks successful",
+    "zero high or critical dependency, CodeQL, and secret-scanning findings unless separately accepted",
+    "deterministic dependency-free receipt contract with negative-path tests",
+    "no authenticity, authorship, scientific-validation, production-readiness, or certification claim",
+    "no backend, provider, authentication, private-application, Holdings, execution, actuation, deployment-authority, or Gate 6 path",
+    "green public static deployment and exact-head main rollup after protected merge",
+    "signed observe-only Control Plane review",
+    "protected central-ledger record"
+  ],
+  "charterChangesRuntime": false,
+  "charterChangesDependencies": false,
+  "charterChangesDeployment": false,
+  "ownerApprovalRequiredForNextRepository": true,
+  "publicWebsiteMonorepo": {
+    "repository": "SIONSOULSION/AI-Bio-Synergy-Holdings-LLC",
+    "insideOrganizationCensus": false,
+    "engineeringAdmission": false
+  }
+}
