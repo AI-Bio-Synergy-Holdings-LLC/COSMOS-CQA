@@ -33,11 +33,14 @@ import {
 } from "../provenance/index.js";
 import {
   createEvidenceBundle,
+  createEvidenceBundleReceipt,
   createResearchSession,
   createResearchSessionReloadPlan,
   serializeEvidenceBundle,
+  serializeEvidenceBundleReceipt,
   serializeResearchSession,
   validateResearchSessionJson,
+  verifyEvidenceBundleReceipt,
 } from "../evidence/index.js";
 import {
   REVIEW_PACKET_CLAIM_BOUNDARY,
@@ -96,6 +99,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   let feedWS = null;
   let feedTimer = null;
   let charts = { pr: null, live: null, ops: null, conf: null };
+  let lastEvidenceBundleExport = null;
   const liveSeries = [];
   const calibration = { mode: "wizard", gate: "learning", active: false, completed: false, tiles: [], index: 0, correct: 0 };
   const observationCoordinateNotePattern =
@@ -2486,6 +2490,7 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function exportEvidenceBundle() {
     const bundle = buildEvidenceBundle();
     const contents = serializeEvidenceBundle(bundle);
+    lastEvidenceBundleExport = { bundle, contents };
     downloadBlob({
       contents,
       type: "application/json",
@@ -2495,8 +2500,86 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     renderSessionStatus(
       `Exported ${bundle.bundle_id}: ${bundle.summary.artifact_count} artifact(s)${observationText}, ${bundle.summary.report_count} report(s), ${bundle.summary.sbom_ref_count} SBOM ref(s).`,
     );
+    dom.exportBundleReceipt.disabled = false;
+    renderEvidenceReceiptStatus(
+      `Bundle ${bundle.bundle_id} is ready for a deterministic integrity receipt. The receipt verifies canonical bytes only.`,
+    );
     setCaption("Evidence bundle JSON exported.");
     notifyTestBridge("evidenceBundle.exported", { bundle, contents });
+  }
+
+  async function exportEvidenceBundleReceipt() {
+    if (!lastEvidenceBundleExport) {
+      renderEvidenceReceiptStatus("Export an evidence bundle before creating its integrity receipt.");
+      return null;
+    }
+
+    const receipt = await createEvidenceBundleReceipt(lastEvidenceBundleExport.bundle);
+    const contents = serializeEvidenceBundleReceipt(receipt);
+    downloadBlob({
+      contents,
+      type: "application/json",
+      filename: "cosmos-cqa-evidence-bundle.receipt.json",
+    });
+    renderEvidenceReceiptStatus(
+      `Exported receipt for ${receipt.bundle_id}: ${receipt.canonical_byte_length} canonical byte(s), ${receipt.bundle_sha256}.`,
+    );
+    setCaption("Evidence bundle integrity receipt exported; checksum claims remain byte-limited.");
+    notifyTestBridge("evidenceBundleReceipt.exported", {
+      receipt,
+      contents,
+      bundleContents: lastEvidenceBundleExport.contents,
+    });
+    return { receipt, contents };
+  }
+
+  async function verifyEvidenceBundleReceiptTexts(bundleText, receiptText, { source = "inline" } = {}) {
+    const result = await verifyEvidenceBundleReceipt(bundleText, receiptText);
+    if (!result.valid) {
+      const message = result.errors[0] || "Invalid evidence bundle receipt.";
+      renderEvidenceReceiptStatus(`Receipt rejected: ${message}`);
+      setCaption("Evidence bundle receipt rejected; current state preserved.");
+      notifyTestBridge("evidenceBundleReceipt.verified", { ok: false, source, error: message });
+      return { ok: false, error: message };
+    }
+
+    renderEvidenceReceiptStatus(
+      `Receipt verified for ${result.receipt.bundle_id}: ${result.receipt.canonical_byte_length} canonical byte(s). This proves byte consistency only.`,
+    );
+    setCaption("Evidence bundle receipt verified locally; no workbench state was changed.");
+    notifyTestBridge("evidenceBundleReceipt.verified", { ok: true, source, ...result });
+    return { ok: true, ...result };
+  }
+
+  async function handleEvidenceBundleReceiptVerification(event) {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+    if (files.length !== 2) {
+      renderEvidenceReceiptStatus("Choose exactly one evidence bundle JSON file and one receipt JSON file.");
+      return;
+    }
+
+    const entries = await Promise.all(files.map(async (file) => ({ name: file.name, text: await file.text() })));
+    const receiptEntries = entries.filter((entry) => {
+      if (/receipt/i.test(entry.name)) {
+        return true;
+      }
+      try {
+        return Boolean(JSON.parse(entry.text)?.receipt_version);
+      } catch {
+        return false;
+      }
+    });
+    if (receiptEntries.length !== 1) {
+      renderEvidenceReceiptStatus("Could not identify exactly one receipt file; retain 'receipt' in its filename.");
+      return;
+    }
+
+    const receiptEntry = receiptEntries[0];
+    const bundleEntry = entries.find((entry) => entry !== receiptEntry);
+    await verifyEvidenceBundleReceiptTexts(bundleEntry.text, receiptEntry.text, {
+      source: `files:${bundleEntry.name},${receiptEntry.name}`,
+    });
   }
 
   function createLocalReviewerIdentity() {
@@ -2716,6 +2799,12 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
   function renderSessionStatus(message) {
     if (dom.sessionStatus) {
       dom.sessionStatus.textContent = message;
+    }
+  }
+
+  function renderEvidenceReceiptStatus(message) {
+    if (dom.bundleReceiptStatus) {
+      dom.bundleReceiptStatus.textContent = message;
     }
   }
 
@@ -3189,6 +3278,12 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     dom.exportCSV.addEventListener("click", exportLabelsCsv);
     dom.exportSession.addEventListener("click", exportResearchSession);
     dom.exportBundle.addEventListener("click", exportEvidenceBundle);
+    dom.exportBundleReceipt.addEventListener("click", () => {
+      void exportEvidenceBundleReceipt();
+    });
+    dom.bundleReceiptInput.addEventListener("change", (event) => {
+      void handleEvidenceBundleReceiptVerification(event);
+    });
     dom.sessionInput.addEventListener("change", handleSessionImport);
     dom.exportReviewIntake.addEventListener("click", () => {
       void exportReviewIntake();
@@ -3269,6 +3364,8 @@ export function createCosmosWorkbench({ documentRef = document, windowRef = wind
     charts,
     exportResearchSession,
     exportEvidenceBundle,
+    exportEvidenceBundleReceipt,
+    verifyEvidenceBundleReceiptTexts,
     importResearchSessionText,
     buildReviewIntakeEnvelope,
     buildReviewReturnEnvelope,
@@ -3454,6 +3551,9 @@ function bindDom(documentRef) {
     exportCSV: get("exportCSV"),
     exportSession: get("exportSession"),
     exportBundle: get("exportBundle"),
+    exportBundleReceipt: get("exportBundleReceipt"),
+    bundleReceiptInput: get("bundleReceiptInput"),
+    bundleReceiptStatus: get("bundleReceiptStatus"),
     sessionInput: get("sessionInput"),
     sessionStatus: get("sessionStatus"),
     exportReviewIntake: get("exportReviewIntake"),

@@ -21,6 +21,7 @@ Fixture examples live in:
 
 - `examples/evidence-bundle/research-session.json`
 - `examples/evidence-bundle/evidence-bundle.json`
+- `examples/evidence-bundle/evidence-bundle.receipt.json`
 - `examples/evidence-bundle/session-roundtrip.json`
 - `examples/evidence-bundle/core-pack-evidence-bundle-golden.json`
 
@@ -34,9 +35,23 @@ Pinned observation evidence is visualized as a 3x3 zone map and a derived summar
 
 Evidence bundle exports are schema-validated JSON artifacts suitable for research archive comparison. The golden Core Pack fixture records the serialized bundle hash, steward, research-only license notice, limitations, report summary counts, diagnostics, provenance subjects, and SBOM references so future refactors can prove the archive shape stayed stable.
 
+## Deterministic Integrity Receipts
+
+After exporting an evidence bundle, the browser can export a matching `cosmos-cqa.evidence-bundle-receipt.v1` JSON receipt. The receipt records:
+
+- canonicalization identifier `cosmos-cqa/evidence-bundle-json-v1`;
+- evidence-bundle contract version and bundle ID;
+- canonical UTF-8 byte length;
+- SHA-256 digest; and
+- the checksum-only claim boundary.
+
+The local **Verify Bundle + Receipt** control accepts exactly one bundle and one receipt. It rejects malformed or noncanonical JSON, contract or identifier drift, byte-length mismatch, and digest mismatch before any workbench state mutation. Verification is entirely local and introduces no network, authentication, provider, connector, or execution path.
+
+Keep the bundle and receipt together without reformatting either file. Even semantically equivalent JSON with different whitespace or key ordering is not the canonical byte sequence and is rejected.
+
 ## Claim Boundaries
 
-Evidence bundles are research artifacts. They are not production decision-system certifications, scientific validation packages, regulatory submissions, or claims that diagnostic placeholder outputs are scientifically validated measurements.
+Evidence bundles are research artifacts. Their receipts prove byte consistency only. Neither the bundle nor its receipt establishes authorship, authenticity, scientific validity, production readiness, regulatory suitability, certification, or a production decision-system claim.
 
 External datasets, source artifacts, SBOM references, imported Core Packs, and generated reports remain subject to their own terms, provenance limits, and caveats. Public descriptions should continue to follow `docs/claim-boundaries.md` and `docs/scientific-scope.md`.
 

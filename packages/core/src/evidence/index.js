@@ -1,6 +1,6 @@
 import { CONTRACT_SCHEMA_VERSION, assertContract } from "../../../schemas/src/index.js";
 import { summarizeTileObservations } from "../observations/index.js";
-import { createBuildInfo } from "../provenance/index.js";
+import { createBuildInfo, sha256Text } from "../provenance/index.js";
 
 export const EVIDENCE_BUNDLE_STEWARD = "AI-Bio Synergy Holdings LLC";
 export const EVIDENCE_BUNDLE_LICENSE = "Research-only public use; all other rights reserved.";
@@ -9,6 +9,10 @@ export const EVIDENCE_BUNDLE_LIMITATIONS = Object.freeze([
   "Diagnostic entries may include caveated placeholders and must not be treated as validated scientific results.",
   "External datasets, SBOM references, and source artifacts remain subject to their own terms and provenance limits.",
 ]);
+export const EVIDENCE_BUNDLE_RECEIPT_VERSION = "cosmos-cqa.evidence-bundle-receipt.v1";
+export const EVIDENCE_BUNDLE_CANONICALIZATION = "cosmos-cqa/evidence-bundle-json-v1";
+export const EVIDENCE_BUNDLE_RECEIPT_CLAIM_BOUNDARY =
+  "SHA-256 verifies canonical byte-level consistency only; it does not establish authorship, authenticity, scientific validity, production readiness, regulatory suitability, or certification.";
 
 export const SESSION_IMPORT_ERROR_PREFIX = "Invalid COSMOS-CQA research session";
 
@@ -151,6 +155,107 @@ export function validateEvidenceBundleJson(text) {
       bundle: null,
       errors: [error.message],
     };
+  }
+}
+
+export async function createEvidenceBundleReceipt(bundle, { cryptoRef = globalThis.crypto } = {}) {
+  const normalizedBundle = normalizeEvidenceBundle(bundle);
+  const canonicalBundle = `${JSON.stringify(normalizedBundle, null, 2)}\n`;
+  const receipt = {
+    receipt_version: EVIDENCE_BUNDLE_RECEIPT_VERSION,
+    canonicalization: EVIDENCE_BUNDLE_CANONICALIZATION,
+    bundle_schema_version: normalizedBundle.schema_version,
+    bundle_id: normalizedBundle.bundle_id,
+    canonical_byte_length: new TextEncoder().encode(canonicalBundle).byteLength,
+    bundle_sha256: `sha256:${await sha256Text(canonicalBundle, cryptoRef)}`,
+    claim_boundary: EVIDENCE_BUNDLE_RECEIPT_CLAIM_BOUNDARY,
+  };
+
+  return normalizeEvidenceBundleReceipt(receipt);
+}
+
+export function normalizeEvidenceBundleReceipt(receipt) {
+  const validReceipt = assertContract("evidenceBundleReceipt", receipt);
+  return {
+    receipt_version: validReceipt.receipt_version,
+    canonicalization: validReceipt.canonicalization,
+    bundle_schema_version: validReceipt.bundle_schema_version,
+    bundle_id: validReceipt.bundle_id,
+    canonical_byte_length: validReceipt.canonical_byte_length,
+    bundle_sha256: validReceipt.bundle_sha256,
+    claim_boundary: validReceipt.claim_boundary,
+  };
+}
+
+export function serializeEvidenceBundleReceipt(receipt) {
+  return `${JSON.stringify(normalizeEvidenceBundleReceipt(receipt), null, 2)}\n`;
+}
+
+export function parseEvidenceBundleReceiptJson(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(String(text || ""));
+  } catch (error) {
+    throw new TypeError(`Invalid COSMOS-CQA evidence bundle receipt: malformed JSON (${error.message})`);
+  }
+
+  try {
+    return normalizeEvidenceBundleReceipt(parsed);
+  } catch (error) {
+    throw new TypeError(`Invalid COSMOS-CQA evidence bundle receipt: ${error.message}`);
+  }
+}
+
+export function validateEvidenceBundleReceiptJson(text) {
+  try {
+    return {
+      valid: true,
+      receipt: parseEvidenceBundleReceiptJson(text),
+      errors: [],
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      receipt: null,
+      errors: [error.message],
+    };
+  }
+}
+
+export async function verifyEvidenceBundleReceipt(bundleText, receiptText, { cryptoRef = globalThis.crypto } = {}) {
+  try {
+    const sourceBundleText = String(bundleText || "");
+    const bundle = parseEvidenceBundleJson(sourceBundleText);
+    const canonicalBundle = serializeEvidenceBundle(bundle);
+    if (sourceBundleText !== canonicalBundle) {
+      throw new TypeError("Evidence bundle bytes are not canonical for cosmos-cqa/evidence-bundle-json-v1.");
+    }
+
+    const sourceReceiptText = String(receiptText || "");
+    const receipt = parseEvidenceBundleReceiptJson(sourceReceiptText);
+    if (sourceReceiptText !== serializeEvidenceBundleReceipt(receipt)) {
+      throw new TypeError("Evidence bundle receipt bytes are not canonical.");
+    }
+    if (receipt.bundle_schema_version !== bundle.schema_version) {
+      throw new TypeError("Evidence bundle schema version does not match the receipt.");
+    }
+    if (receipt.bundle_id !== bundle.bundle_id) {
+      throw new TypeError("Evidence bundle identifier does not match the receipt.");
+    }
+
+    const canonicalByteLength = new TextEncoder().encode(canonicalBundle).byteLength;
+    if (receipt.canonical_byte_length !== canonicalByteLength) {
+      throw new TypeError("Evidence bundle canonical byte length does not match the receipt.");
+    }
+
+    const bundleSha256 = `sha256:${await sha256Text(canonicalBundle, cryptoRef)}`;
+    if (receipt.bundle_sha256 !== bundleSha256) {
+      throw new TypeError("Evidence bundle SHA-256 digest does not match the receipt.");
+    }
+
+    return { valid: true, bundle, receipt, errors: [] };
+  } catch (error) {
+    return { valid: false, bundle: null, receipt: null, errors: [error.message] };
   }
 }
 

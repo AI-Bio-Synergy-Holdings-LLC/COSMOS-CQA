@@ -6,12 +6,18 @@ import { test } from "node:test";
 import { CONTRACT_SCHEMA_VERSION, assertContract, validateContract } from "../../../packages/schemas/src/index.js";
 import { createDiagnosticPlaceholders } from "../../../packages/core/src/diagnostics/index.js";
 import {
+  EVIDENCE_BUNDLE_RECEIPT_CLAIM_BOUNDARY,
+  createEvidenceBundleReceipt,
   createEvidenceBundle,
   createResearchSession,
+  parseEvidenceBundleReceiptJson,
   parseEvidenceBundleJson,
   serializeEvidenceBundle,
+  serializeEvidenceBundleReceipt,
   summarizeResearchSession,
+  validateEvidenceBundleReceiptJson,
   validateEvidenceBundleJson,
+  verifyEvidenceBundleReceipt,
 } from "../../../packages/core/src/evidence/index.js";
 import { normalizeFeedEvent, parseFeedPayload, validateFeedEvent } from "../../../packages/core/src/feeds/index.js";
 import { buildCSV, createVolunteerLabel, labelsToRows } from "../../../packages/core/src/labels/index.js";
@@ -57,6 +63,9 @@ const researchSessionFixture = JSON.parse(
 );
 const evidenceBundleFixture = JSON.parse(
   await readFile(new URL("../../../examples/evidence-bundle/evidence-bundle.json", import.meta.url), "utf8"),
+);
+const evidenceBundleReceiptFixture = JSON.parse(
+  await readFile(new URL("../../../examples/evidence-bundle/evidence-bundle.receipt.json", import.meta.url), "utf8"),
 );
 const computationalReferenceFixture = JSON.parse(
   await readFile(
@@ -324,6 +333,8 @@ test("package entrypoints expose shared schema and core surfaces", () => {
   assert.equal(typeof createBookmarkPayload, "function");
   assert.equal(typeof createResearchSession, "function");
   assert.equal(typeof createEvidenceBundle, "function");
+  assert.equal(typeof createEvidenceBundleReceipt, "function");
+  assert.equal(typeof verifyEvidenceBundleReceipt, "function");
   assert.equal(typeof createReviewIntakeEnvelope, "function");
   assert.equal(typeof createReviewReturnEnvelope, "function");
   assert.equal(typeof createSbomReference, "function");
@@ -622,6 +633,73 @@ test("research session and evidence bundle fixtures satisfy evidence workspace c
   assert.equal(evidenceBundleFixture.steward, "AI-Bio Synergy Holdings LLC");
   assert.match(evidenceBundleFixture.license, /Research-only public use/);
   assert.ok(evidenceBundleFixture.limitations.some((limitation) => limitation.includes("not production")));
+});
+
+test("evidence bundle integrity receipts are deterministic, canonical, and checksum-limited", async () => {
+  const bundleText = serializeEvidenceBundle(evidenceBundleFixture);
+  const firstReceipt = await createEvidenceBundleReceipt(evidenceBundleFixture);
+  const secondReceipt = await createEvidenceBundleReceipt(evidenceBundleFixture);
+  const receiptText = serializeEvidenceBundleReceipt(firstReceipt);
+
+  assertContract("evidenceBundleReceipt", evidenceBundleReceiptFixture);
+  assert.deepEqual(firstReceipt, evidenceBundleReceiptFixture);
+  assert.deepEqual(secondReceipt, firstReceipt);
+  assert.deepEqual(parseEvidenceBundleReceiptJson(receiptText), evidenceBundleReceiptFixture);
+  assert.deepEqual(validateEvidenceBundleReceiptJson(receiptText), {
+    valid: true,
+    receipt: evidenceBundleReceiptFixture,
+    errors: [],
+  });
+  assert.equal(firstReceipt.canonical_byte_length, Buffer.byteLength(bundleText));
+  assert.equal(firstReceipt.bundle_sha256, `sha256:${createHash("sha256").update(bundleText).digest("hex")}`);
+  assert.equal(firstReceipt.claim_boundary, EVIDENCE_BUNDLE_RECEIPT_CLAIM_BOUNDARY);
+  assert.match(firstReceipt.claim_boundary, /does not establish authorship, authenticity, scientific validity/);
+
+  const verification = await verifyEvidenceBundleReceipt(bundleText, receiptText);
+  assert.equal(verification.valid, true);
+  assert.deepEqual(verification.bundle, evidenceBundleFixture);
+  assert.deepEqual(verification.receipt, evidenceBundleReceiptFixture);
+});
+
+test("evidence bundle receipt verification rejects malformed, noncanonical, and drifted inputs", async () => {
+  const bundleText = serializeEvidenceBundle(evidenceBundleFixture);
+  const receipt = await createEvidenceBundleReceipt(evidenceBundleFixture);
+  const receiptText = serializeEvidenceBundleReceipt(receipt);
+
+  const malformedReceipt = await verifyEvidenceBundleReceipt(bundleText, "{not-json");
+  assert.equal(malformedReceipt.valid, false);
+  assert.match(malformedReceipt.errors[0], /malformed JSON/);
+
+  const noncanonicalBundle = await verifyEvidenceBundleReceipt(JSON.stringify(evidenceBundleFixture), receiptText);
+  assert.equal(noncanonicalBundle.valid, false);
+  assert.match(noncanonicalBundle.errors[0], /bundle bytes are not canonical/);
+
+  const noncanonicalReceipt = await verifyEvidenceBundleReceipt(bundleText, JSON.stringify(receipt));
+  assert.equal(noncanonicalReceipt.valid, false);
+  assert.match(noncanonicalReceipt.errors[0], /receipt bytes are not canonical/);
+
+  const identifierDrift = await verifyEvidenceBundleReceipt(
+    bundleText,
+    serializeEvidenceBundleReceipt({ ...receipt, bundle_id: "bundle_drifted" }),
+  );
+  assert.equal(identifierDrift.valid, false);
+  assert.match(identifierDrift.errors[0], /identifier does not match/);
+
+  const lengthDrift = await verifyEvidenceBundleReceipt(
+    bundleText,
+    serializeEvidenceBundleReceipt({ ...receipt, canonical_byte_length: receipt.canonical_byte_length + 1 }),
+  );
+  assert.equal(lengthDrift.valid, false);
+  assert.match(lengthDrift.errors[0], /byte length does not match/);
+
+  const digestDrift = await verifyEvidenceBundleReceipt(
+    bundleText,
+    serializeEvidenceBundleReceipt({ ...receipt, bundle_sha256: `sha256:${"0".repeat(64)}` }),
+  );
+  assert.equal(digestDrift.valid, false);
+  assert.match(digestDrift.errors[0], /SHA-256 digest does not match/);
+  assert.deepEqual(digestDrift.bundle, null);
+  assert.deepEqual(digestDrift.receipt, null);
 });
 
 test("research session and evidence bundle helpers preserve report evidence counts", () => {

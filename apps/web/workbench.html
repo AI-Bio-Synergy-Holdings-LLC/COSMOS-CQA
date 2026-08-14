@@ -644,9 +644,12 @@
           <div class="export session-actions">
             <button id="exportSession" type="button" class="pill">Export Session JSON</button>
             <button id="exportBundle" type="button" class="pill">Export Evidence Bundle JSON</button>
+            <button id="exportBundleReceipt" type="button" class="pill" disabled>Export Integrity Receipt</button>
+            <label class="pill file-pill">Verify Bundle + Receipt <input id="bundleReceiptInput" type="file" accept=".json,application/json" multiple></label>
             <label class="pill file-pill">Import Session <input id="sessionInput" type="file" accept=".json,application/json"></label>
           </div>
           <div id="sessionStatus" class="small inspector-status">No research session imported.</div>
+          <div id="bundleReceiptStatus" class="small inspector-status">No integrity receipt exported or verified. SHA-256 receipts prove canonical byte consistency only, not authorship, authenticity, scientific validity, production readiness, regulatory suitability, or certification.</div>
           <div class="review-handoff-panel" aria-label="Reviewer handoff boundary and local packet controls">
             <div class="group-title explorer-title">Reviewer Handoff</div>
             <p class="small">Prepare validated local packets for reviewer intake testing. These controls do not submit data, authenticate reviewers, or create a live review queue.</p>

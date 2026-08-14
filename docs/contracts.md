@@ -1,6 +1,6 @@
 # Data Contracts
 
-COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, reviewer intake/return packets, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, computational references, validation reports, checklist target evidence, research sessions, and evidence bundles.
+COSMOS-CQA uses explicit browser-native contracts for research workflow data. The first contract set covers labels, tile observations, observation review events, reviewer intake/return packets, feed events, provenance bookmarks, provenance hashes, research artifacts, tile passports, core pack manifests, SBOM exports/references, computational references, validation reports, checklist target evidence, research sessions, evidence bundles, and evidence-bundle integrity receipts.
 
 The canonical contract implementation lives in `packages/schemas/src/`.
 The browser app re-exports that surface through `apps/web/src/contracts/` for compatibility.
@@ -44,10 +44,13 @@ Bookmark payloads, tile passports, core pack manifests, SBOM references, computa
 - `checklistTestTargets`: generated manifest that converts the legacy manual checklist into tracked evidence targets.
 - `researchSession`: replayable working-state contract that ties loaded artifacts, selected tiles, labels, tile observations, observation review events, diagnostics, validation reports, provenance hashes, SBOM references, and build metadata together.
 - `evidenceBundle`: export-ready wrapper around a research session with steward, research-only license notice, limitations, generated metadata, claim-boundary references, evidence counts, and exportable observation review history.
+- `evidenceBundleReceipt`: closed, deterministic receipt identifying the canonicalization contract, evidence-bundle contract version and ID, canonical UTF-8 byte length, SHA-256 digest, and checksum-only claim boundary.
 
 Checklist targets may include `covered_by` entries that point to automated tests responsible for migrated targets.
 
 Research sessions are intended to capture what was loaded, selected, generated, and reviewed during a reproducible COSMOS-CQA workflow. Evidence bundles are the portable citation/review layer for those sessions. They do not certify scientific validity or production readiness on their own; claim boundaries remain governed by `docs/claim-boundaries.md` and `docs/scientific-scope.md`.
+
+Evidence-bundle receipts use `cosmos-cqa.evidence-bundle-receipt.v1` and canonicalization identifier `cosmos-cqa/evidence-bundle-json-v1`. Verification requires the original bundle and receipt files to retain their canonical JSON bytes. A matching receipt establishes byte-level consistency only; it does not establish authorship, authenticity, scientific validity, production readiness, regulatory suitability, or certification.
 
 Spatial observation notes are interpreted under `docs/tile-observation-notes.md`. They are reviewer-authored location cues inside the reviewed tile, not measured sky coordinates or validated detections. Observation review ledger fields are QA workflow records only; `needs-adjudication`, adjudication queue decisions, and consensus placeholder values do not create scientific validation claims.
 

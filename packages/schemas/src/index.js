@@ -1292,6 +1292,34 @@ export const schemas = {
       },
     },
   },
+
+  evidenceBundleReceipt: {
+    $id: "cosmos-cqa/evidence-bundle-receipt.schema.json",
+    type: "object",
+    required: [
+      "receipt_version",
+      "canonicalization",
+      "bundle_schema_version",
+      "bundle_id",
+      "canonical_byte_length",
+      "bundle_sha256",
+      "claim_boundary",
+    ],
+    additionalProperties: false,
+    properties: {
+      receipt_version: { type: "string", const: "cosmos-cqa.evidence-bundle-receipt.v1" },
+      canonicalization: { type: "string", const: "cosmos-cqa/evidence-bundle-json-v1" },
+      bundle_schema_version: { type: "string", const: CONTRACT_SCHEMA_VERSION },
+      bundle_id: { type: "string", pattern: "^bundle_[A-Za-z0-9._:-]+$" },
+      canonical_byte_length: { type: "integer", minimum: 1 },
+      bundle_sha256: { type: "string", pattern: "^sha256:[a-f0-9]{64}$" },
+      claim_boundary: {
+        type: "string",
+        const:
+          "SHA-256 verifies canonical byte-level consistency only; it does not establish authorship, authenticity, scientific validity, production readiness, regulatory suitability, or certification.",
+      },
+    },
+  },
 };
 
 export function validateContract(name, value) {

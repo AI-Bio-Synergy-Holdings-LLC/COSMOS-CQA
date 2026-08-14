@@ -1,0 +1,9 @@
+{
+  "receipt_version": "cosmos-cqa.evidence-bundle-receipt.v1",
+  "canonicalization": "cosmos-cqa/evidence-bundle-json-v1",
+  "bundle_schema_version": "cosmos-cqa.contracts.v0.1.0",
+  "bundle_id": "bundle_demo-v0.3.0-evidence",
+  "canonical_byte_length": 5587,
+  "bundle_sha256": "sha256:cc998b2da09b9c4f8bf1c56df38fdf7a07d6d305c27446ef0edd018a6069e7cf",
+  "claim_boundary": "SHA-256 verifies canonical byte-level consistency only; it does not establish authorship, authenticity, scientific validity, production readiness, regulatory suitability, or certification."
+}
