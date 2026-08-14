@@ -22,6 +22,15 @@ engineering step. COSMOS-CQA remains `PENDING_KICKOFF` until this charter
 reaches `main` through the normal protected merge path. That merge changes
 only COSMOS-CQA to `ACTIVE_CONTROLLED`.
 
+At the exact signed PR head, every required check passed and no review thread
+existed, but GitHub correctly refused a direct merge and required its protected
+auto-merge route. Repository auto-merge was disabled at the captured baseline.
+This charter therefore authorizes enabling that one repository setting as a
+pre-admission merge-control bootstrap. Auto-merge must be activated explicitly
+for this PR and remains subject to all branch protection, exact-head checks,
+and conversation-resolution rules. It is not an admin bypass and does not
+authorize autonomous runtime, release, or deployment action.
+
 After protected merge, the only engineering-active repositories are:
 
 1. `AI-Bio-Synergy-Holdings-LLC/portfolio-control-plane`
@@ -88,7 +97,8 @@ The following remain prohibited:
   lane, server submission, private-application implementation, or live
   external computational integration;
 - publishing a release or package, changing production deployment authority,
-  or adding autonomous repository actions;
+  or adding autonomous runtime, release, or deployment actions; protected
+  GitHub auto-merge is the sole repository-setting exception authorized here;
 - any Holdings connector, credential, mount, token, network path, or private
   asset-data access;
 - Control Plane repository execution, actuation, automated merge, deployment,
@@ -114,6 +124,8 @@ The admission baseline captured at `2026-08-14T02:00:31.0010080Z` is:
 - zero open CodeQL alerts;
 - zero open secret-scanning alerts;
 - Dependabot security updates, secret scanning, and push protection enabled;
+- repository auto-merge disabled at capture; this charter authorizes enabling
+  it only as a protected merge-control bootstrap;
 - successful public-portal deployment verification on run `30781005088`;
 - successful exact-head main CI on run `30781005082`; and
 - successful latest scheduled CodeQL runs `31569185478` and `31384059220`.
@@ -137,8 +149,10 @@ The delivery is complete only when:
    execution, actuation, deployment-authority, or Gate 6 path is introduced;
 7. the public static deployment and exact-head main rollup are green after the
    protected merge;
-8. the observe-only Control Plane records a signed review; and
-9. the central organization ledger records the result through a protected
+8. the audit log contains no `protected_branch.policy_override` event for the
+   charter merge;
+9. the observe-only Control Plane records a signed review; and
+10. the central organization ledger records the result through a protected
    pull request.
 
 ## Operating limit

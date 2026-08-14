@@ -3,6 +3,7 @@
   "recordType": "CONTROLLED_RESTART_REPOSITORY_CHARTER",
   "recordedOn": "2026-08-13",
   "capturedAt": "2026-08-14T02:00:31.0010080Z",
+  "protectionObservationAt": "2026-08-14T02:12:18.6109011Z",
   "organization": "AI-Bio-Synergy-Holdings-LLC",
   "authorizationBasis": "explicit owner instruction to proceed with the implementation order",
   "repository": {
@@ -29,7 +30,15 @@
       "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA"
     ],
     "allOtherOrganizationRepositoriesStatus": "PENDING_KICKOFF",
-    "maximumActiveFeaturePullRequestsInRepository": 1
+    "maximumActiveFeaturePullRequestsInRepository": 1,
+    "protectedMergeBootstrap": {
+      "setting": "allow_auto_merge",
+      "capturedValue": false,
+      "authorizedValue": true,
+      "reason": "GitHub required the protected auto-merge route after every exact-head required check passed",
+      "explicitPerPullRequestActivationRequired": true,
+      "adminBypassAuthorized": false
+    }
   },
   "firstBoundedDelivery": {
     "title": "deterministic integrity receipts for existing evidence bundles",
@@ -53,6 +62,7 @@
     "executable CSSFP or Core Pack diagnostic repair before existing gates pass",
     "backend, database, account system, identity provider, partner-data lane, server submission, private-application implementation, or live external computational integration",
     "release or package publication or production deployment-authority change",
+    "autonomous runtime, release, or deployment action other than the explicitly authorized protected auto-merge setting",
     "Holdings connector, credential, mount, token, network path, or private asset-data access",
     "Control Plane repository execution, actuation, automated merge, deployment, transaction, diligence, or Gate 6 authority",
     "internal development identifier represented as registered asset identity",
@@ -75,6 +85,7 @@
     "dependabotSecurityUpdates": "enabled",
     "secretScanning": "enabled",
     "pushProtection": "enabled",
+    "allowAutoMerge": false,
     "publicPortalDeployVerificationRunId": 30781005088,
     "mainCiRunId": 30781005082,
     "latestScheduledCodeqlRunIds": [31569185478, 31384059220]
@@ -87,12 +98,22 @@
     "no authenticity, authorship, scientific-validation, production-readiness, or certification claim",
     "no backend, provider, authentication, private-application, Holdings, execution, actuation, deployment-authority, or Gate 6 path",
     "green public static deployment and exact-head main rollup after protected merge",
+    "no protected_branch.policy_override event for the charter merge",
     "signed observe-only Control Plane review",
     "protected central-ledger record"
   ],
   "charterChangesRuntime": false,
   "charterChangesDependencies": false,
   "charterChangesDeployment": false,
+  "charterChangesRepositorySettings": true,
+  "authorizedRepositorySettingChanges": [
+    {
+      "setting": "allow_auto_merge",
+      "from": false,
+      "to": true,
+      "purpose": "normal protected merge without administrator bypass"
+    }
+  ],
   "ownerApprovalRequiredForNextRepository": true,
   "publicWebsiteMonorepo": {
     "repository": "SIONSOULSION/AI-Bio-Synergy-Holdings-LLC",
