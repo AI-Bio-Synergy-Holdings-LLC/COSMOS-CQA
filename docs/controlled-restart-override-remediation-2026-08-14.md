@@ -8,7 +8,7 @@ Delivery pull request: `#93`
 
 Delivery merge commit: `21b76f208809670c5952a6d709cd03fada2bba81`
 
-Status: `PENDING_NORMAL_PROTECTED_PROOF_MERGE`
+Status: `PENDING_CONDITIONAL_CLOSEOUT`
 
 ## Decision
 

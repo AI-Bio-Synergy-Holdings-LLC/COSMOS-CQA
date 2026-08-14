@@ -2,7 +2,7 @@
   "schemaVersion": "cosmos-cqa.controlled-restart-override-remediation.v1",
   "recordedAt": "2026-08-14T04:40:35.701Z",
   "repository": "AI-Bio-Synergy-Holdings-LLC/COSMOS-CQA",
-  "status": "PENDING_NORMAL_PROTECTED_PROOF_MERGE",
+  "status": "PENDING_CONDITIONAL_CLOSEOUT",
   "delivery": {
     "pullRequest": 93,
     "title": "feat(evidence): add deterministic integrity receipts",
